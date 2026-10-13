@@ -23,10 +23,28 @@
         <filter-name>CodificacionFilter</filter-name>
         <filter-class>sv.edu.itca.ticka.filtro.CodificacionFilter</filter-class>
     </filter>
+    <filter>
+        <filter-name>CsrfFilter</filter-name>
+        <filter-class>sv.edu.itca.ticka.filtro.CsrfFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>AutenticacionFilter</filter-name>
+        <filter-class>sv.edu.itca.ticka.filtro.AutenticacionFilter</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>CodificacionFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CsrfFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AutenticacionFilter</filter-name>
+        <url-pattern>/panel</url-pattern>
+        <url-pattern>/organizador/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
 
     <!-- Todas las JSP y fragmentos .jspf se leen en UTF-8 (tildes y ñ). -->

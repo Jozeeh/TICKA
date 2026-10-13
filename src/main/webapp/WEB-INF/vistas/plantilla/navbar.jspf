@@ -1,6 +1,23 @@
-<%-- Barra de navegación común. --%>
+<%-- Barra de navegación común: los enlaces dependen del rol en sesión. --%>
+<c:set var="u" value="${sessionScope.usuarioAutenticado}" />
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <nav class="navbar">
-    <a class="marca" href="${pageContext.request.contextPath}/">TICK<span>A</span></a>
-    <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${pageContext.request.contextPath}/">Inicio</a>
-    <a class="enlace ${paginaActiva == 'diagnostico' ? 'activo' : ''}" href="${pageContext.request.contextPath}/diagnostico">Diagnóstico</a>
+    <a class="marca" href="${ctx}/">TICK<span>A</span></a>
+    <c:choose>
+        <c:when test="${empty u}">
+            <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
+            <a class="enlace ${paginaActiva == 'diagnostico' ? 'activo' : ''}" href="${ctx}/diagnostico">Diagnóstico</a>
+            <div class="usuario"><a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a></div>
+        </c:when>
+        <c:otherwise>
+            <a class="enlace ${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
+            <div class="usuario">
+                <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
+                <form method="post" action="${ctx}/cerrar-sesion">
+                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                    <button type="submit" class="boton borde chico" style="color:#fff;border-color:#fff">Cerrar sesión</button>
+                </form>
+            </div>
+        </c:otherwise>
+    </c:choose>
 </nav>
