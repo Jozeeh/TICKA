@@ -1,0 +1,12 @@
+# Compilación de Maven
+target/
+*.class
+
+# Configuración local con credenciales (nunca se sube)
+db.properties
+
+# Archivos locales del IDE
+nbproject/private/
+nbactions*.xml
+.idea/
+.vscode/
