@@ -1,0 +1,6 @@
+<%-- Barra de navegación común. --%>
+<nav class="navbar">
+    <a class="marca" href="${pageContext.request.contextPath}/">TICK<span>A</span></a>
+    <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${pageContext.request.contextPath}/">Inicio</a>
+    <a class="enlace ${paginaActiva == 'diagnostico' ? 'activo' : ''}" href="${pageContext.request.contextPath}/diagnostico">Diagnóstico</a>
+</nav>
