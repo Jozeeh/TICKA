@@ -15,6 +15,20 @@
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <section class="modulos">
+        <c:if test="${u.gestorEventos}">
+            <a class="tarjeta modulo" href="${ctx}/organizador/eventos" style="text-decoration:none">
+                <h3>Eventos</h3>
+                <p>Crear eventos, fijar precios por zona, publicar, cambiar estado y ver el mapa de asientos.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/organizador/recintos" style="text-decoration:none">
+                <h3>Recintos, zonas y asientos</h3>
+                <p>Registrar recintos, definir sus zonas y generar los asientos numerados por fila.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/organizador/categorias" style="text-decoration:none">
+                <h3>Categorías</h3>
+                <p>Catálogo para clasificar los eventos de la cartelera.</p>
+            </a>
+        </c:if>
         <c:if test="${u.rol == 'CLIENTE' or u.rol == 'CONTROL_ACCESO'}">
             <article class="tarjeta modulo">
                 <h3>Módulo en construcción</h3>

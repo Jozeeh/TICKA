@@ -11,6 +11,11 @@
         </c:when>
         <c:otherwise>
             <a class="enlace ${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
+            <c:if test="${u.gestorEventos}">
+                <a class="enlace ${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
+                <a class="enlace ${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos</a>
+                <a class="enlace ${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
+            </c:if>
             <div class="usuario">
                 <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
                 <form method="post" action="${ctx}/cerrar-sesion">

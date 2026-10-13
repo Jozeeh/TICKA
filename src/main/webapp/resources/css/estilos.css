@@ -214,7 +214,7 @@ input:focus, select:focus, textarea:focus {
 .etiqueta.Borrador { background: #eceff3; color: #4b5563; }
 .etiqueta.Publicado { background: #e3f2ea; color: #1d6b42; }
 .etiqueta.Agotado { background: #fde8d7; color: #9a4a12; }
-.etiqueta.En.curso, .etiqueta.EnCurso { background: #e2ecfa; color: #1f4c7a; }
+.etiqueta.Encurso { background: #e2ecfa; color: #1f4c7a; }
 .etiqueta.Finalizado { background: #e9e4f5; color: #4e3a86; }
 .etiqueta.Cancelado { background: #fbe3e1; color: #8a2a20; }
 .etiqueta.activo { background: #e3f2ea; color: #1d6b42; }
@@ -274,6 +274,7 @@ input:focus, select:focus, textarea:focus {
 .leyenda i { width: 16px; height: 16px; border-radius: 4px; display: inline-block; }
 .zona-mapa { margin-bottom: 22px; }
 .zona-mapa h3 { margin: 0 0 8px; font-size: 1rem; }
+.zona-mapa h3 .ayuda { display: inline; }
 .escenario {
     text-align: center;
     background: #2b3440;
