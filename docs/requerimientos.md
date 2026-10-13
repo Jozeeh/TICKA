@@ -299,37 +299,42 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 
 ---
 
-## 8. Arquitectura propuesta
+## 8. Arquitectura del proyecto
 
 ```
-ticka/
-├── pom.xml
+TICKA/                               (repositorio github.com/Jozeeh/TICKA)
+├── pom.xml                          (WAR, Java 11, Jakarta EE 8 = javax.*)
 ├── README.md
+├── db.properties.example            (plantilla sin secretos)
 ├── docs/
-│   ├── ficha_proyecto.md
-│   ├── requerimientos.md        ← este documento
-│   ├── matriz_entorno.md
-│   ├── bitacora.md
-│   └── sql/ (schema.sql, datos_prueba.sql)
-└── src/main/
-    ├── java/edu/itca/ticka/
-    │   ├── controller/   (DiagnosticoServlet, Login, Evento, Asiento, Compra, Acceso...)
-    │   ├── model/
-    │   ├── dao/
-    │   ├── service/
-    │   ├── filter/       (Autenticación, Autorización, Encoding, CSRF)
-    │   ├── listener/     (liberación de reservas vencidas)
-    │   └── util/         (Conexión, Hash, QR, Validaciones)
-    ├── resources/ (db.properties.example)
-    └── webapp/
-        ├── index.jsp
-        ├── WEB-INF/ (web.xml, views/{organizador,cliente,acceso,admin}/*.jsp)
-        └── resources/ (css, js, img)
+│   ├── requerimientos.md            ← este documento
+│   ├── diagrama_er.md
+│   └── guion_demo.md
+├── sql/
+│   ├── 00_usuario_aplicacion.sql    (usuario MySQL con permisos limitados)
+│   ├── 01_esquema_ticka.sql         (tablas, vista y catálogos)
+│   └── 02_datos_prueba.sql          (recintos, eventos, ventas y accesos de ejemplo)
+└── src/
+    ├── main/java/sv/edu/itca/ticka/
+    │   ├── modelo/                  (Evento, Recinto, Zona, Asiento, Usuario, Rol...)
+    │   ├── dao/  y  dao/impl/       (interfaces DAO e implementaciones JDBC)
+    │   ├── servicio/                (reglas de negocio y transacciones)
+    │   ├── controlador/             (acceso, panel y diagnóstico)
+    │   │   ├── organizador/         (eventos, recintos, zonas, categorías, mapa)
+    │   │   └── admin/               (dashboard, usuarios, clientes, reportes)
+    │   ├── filtro/                  (Codificación, CSRF, Autenticación y rol)
+    │   ├── persistencia/            (ConexionBD)
+    │   └── util/                    (Parámetros, Formatos, Sesión, CSV)
+    ├── main/webapp/
+    │   ├── index.jsp
+    │   ├── resources/css/estilos.css
+    │   └── WEB-INF/ (web.xml, vistas/{plantilla,acceso,panel,organizador,admin,error})
+    └── test/java/                   (pruebas JUnit de las reglas de negocio)
 ```
 
-Organizar las vistas por rol (`views/organizador`, `views/cliente`, `views/acceso`, `views/admin`) facilita que cada integrante trabaje en su carpeta, reduce conflictos en Git y se explica con claridad.
+Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y luego `vistas/cliente` y `vistas/acceso`), así cada integrante trabaja en su carpeta, se reducen los conflictos en Git y se explica con claridad.
 
-**Flujo:** Navegador → Filtro (sesión y rol) → Servlet → Service (reglas) → DAO → MySQL → JSP/JSTL (o JSF/PrimeFaces).
+**Flujo:** Navegador → Filtros (UTF-8, CSRF, sesión y rol) → Servlet → Servicio (reglas) → DAO → MySQL → JSP/JSTL (o JSF/PrimeFaces en una etapa posterior).
 
 **Tecnologías:** JSP + JSTL y Servlets en la etapa base; JSF + PrimeFaces + AJAX para tablas dinámicas, mapa de asientos con refresco, programa y dashboard; ZXing para QR; JasperReports o Apache POI/iText para reportes.
 
