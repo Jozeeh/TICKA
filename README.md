@@ -45,14 +45,12 @@ Copie `src/main/resources/db.properties.example` como `src/main/resources/db.pro
 2. `src/main/resources/db.properties`, el archivo local del proyecto.
 3. `%USERPROFILE%\.ticka\db.properties`, como respaldo.
 
-La página `/diagnostico` muestra de cuál de las tres la tomó.
-
 ### 3. Ejecutar
 
 - **NetBeans:** abra la carpeta del proyecto. En *Propiedades → Run*, elija el servidor **Apache Tomcat 9** (no Tomcat 10/11, que usan `jakarta`). Después use *Run*.
 - **Maven:** ejecute `mvn clean package` y copie `target/ticka.war` a la carpeta `webapps` de Tomcat 9.
 
-Abra <http://localhost:8080/ticka/>. Para comprobar Java, Tomcat y la conexión a MySQL, use `/diagnostico`.
+Abra <http://localhost:8080/ticka/>: la página de inicio muestra la cartelera de eventos leída de MySQL; si aparece un aviso de conexión, revise MySQL y `db.properties`.
 
 ### 4. Primer acceso
 
@@ -99,7 +97,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 
 ### Común
 
-Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo de 15 minutos tras 5 intentos fallidos (RF-41), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y diagnóstico del entorno.
+Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo de 15 minutos tras 5 intentos fallidos (RF-41), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos.
 
 ## Seguridad
 

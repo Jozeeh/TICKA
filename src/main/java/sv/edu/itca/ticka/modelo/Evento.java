@@ -1,6 +1,9 @@
 package sv.edu.itca.ticka.modelo;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import sv.edu.itca.ticka.util.Formatos;
 
 /**
@@ -30,9 +33,35 @@ public class Evento {
     private int totalAsientos;
     private int vendidos;
 
+    // Solo en la cartelera de la página de inicio
+    private int disponibles;
+    private BigDecimal precioMinimo;
+    private List<PrecioZona> precios = new ArrayList<>();
+
     public int getPorcentajeVendido() {
         return Formatos.porcentaje(vendidos, totalAsientos);
     }
+
+    public String getPrecioMinimoTexto() { return Formatos.dinero(precioMinimo); }
+
+    /** Día y mes para el bloque de fecha de la tarjeta: "21" y "NOV". */
+    public String getDia() { return fechaInicio == null ? "" : String.valueOf(fechaInicio.getDayOfMonth()); }
+    public String getMesCorto() { return Formatos.mesCorto(fechaInicio); }
+    public String getDiaSemana() { return Formatos.diaSemana(fechaInicio); }
+
+    /** Pocos asientos libres: menos del 15 % del total. */
+    public boolean isUltimosAsientos() {
+        return totalAsientos > 0 && disponibles > 0 && disponibles * 100 < totalAsientos * 15;
+    }
+
+    public int getDisponibles() { return disponibles; }
+    public void setDisponibles(int disponibles) { this.disponibles = disponibles; }
+
+    public BigDecimal getPrecioMinimo() { return precioMinimo; }
+    public void setPrecioMinimo(BigDecimal precioMinimo) { this.precioMinimo = precioMinimo; }
+
+    public List<PrecioZona> getPrecios() { return precios; }
+    public void setPrecios(List<PrecioZona> precios) { this.precios = precios; }
 
     public String getFechaInicioTexto() { return Formatos.fechaHora(fechaInicio); }
     public String getFechaFinTexto() { return Formatos.fechaHora(fechaFin); }

@@ -35,7 +35,6 @@ public final class ConexionBD {
             System.getProperty("user.home"), ".ticka", "db.properties");
 
     private static Properties config;
-    private static String origen;
 
     static {
         try {
@@ -62,14 +61,14 @@ public final class ConexionBD {
             p.setProperty("db.url", url);
             p.setProperty("db.user", valorOVacio(System.getenv("TICKA_DB_USER")));
             p.setProperty("db.password", valorOVacio(System.getenv("TICKA_DB_PASSWORD")));
-            return guardar(p, "variables de entorno TICKA_DB_*");
+            return guardar(p);
         }
 
         // 2. Archivo dentro del proyecto (src/main/resources/db.properties)
         try (InputStream in = ConexionBD.class.getClassLoader().getResourceAsStream(RECURSO)) {
             if (in != null) {
                 p.load(in);
-                return guardar(p, "src/main/resources/db.properties (archivo local del proyecto)");
+                return guardar(p);
             }
         } catch (IOException ex) {
             throw new IllegalStateException("No se pudo leer db.properties del proyecto.", ex);
@@ -79,7 +78,7 @@ public final class ConexionBD {
         if (Files.exists(RUTA_PERSONAL)) {
             try (InputStream in = Files.newInputStream(RUTA_PERSONAL)) {
                 p.load(in);
-                return guardar(p, RUTA_PERSONAL.toString());
+                return guardar(p);
             } catch (IOException ex) {
                 throw new IllegalStateException("No se pudo leer " + RUTA_PERSONAL, ex);
             }
@@ -90,9 +89,8 @@ public final class ConexionBD {
                 + "complete sus credenciales y vuelva a compilar.");
     }
 
-    private static Properties guardar(Properties p, String descripcion) {
+    private static Properties guardar(Properties p) {
         config = p;
-        origen = descripcion;
         return p;
     }
 
@@ -110,15 +108,5 @@ public final class ConexionBD {
                 p.getProperty("db.url"),
                 p.getProperty("db.user"),
                 p.getProperty("db.password"));
-    }
-
-    /** De dónde se tomó la configuración (para la página de diagnóstico). */
-    public static synchronized String origenConfiguracion() {
-        try {
-            obtenerConfiguracion();
-            return origen;
-        } catch (IllegalStateException ex) {
-            return "No encontrada";
-        }
     }
 }

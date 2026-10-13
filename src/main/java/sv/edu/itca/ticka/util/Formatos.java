@@ -38,6 +38,20 @@ public final class Formatos {
         return f == null ? "" : f.format(ENTRADA);
     }
 
+    private static final String[] MESES = {"ENE", "FEB", "MAR", "ABR", "MAY", "JUN",
+        "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"};
+    private static final String[] DIAS = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"};
+
+    /** Mes abreviado en español: "NOV". */
+    public static String mesCorto(LocalDateTime f) {
+        return f == null ? "" : MESES[f.getMonthValue() - 1];
+    }
+
+    /** Día de la semana en español: "Viernes". */
+    public static String diaSemana(LocalDateTime f) {
+        return f == null ? "" : DIAS[f.getDayOfWeek().getValue() - 1];
+    }
+
     /** Montos en dólares: $1,234.50 */
     public static String dinero(BigDecimal monto) {
         if (monto == null) {

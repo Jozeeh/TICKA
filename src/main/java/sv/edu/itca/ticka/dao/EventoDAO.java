@@ -7,6 +7,7 @@ import java.util.Optional;
 import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroEvento;
+import sv.edu.itca.ticka.modelo.TipoEvento;
 
 /**
  * DAO de la tabla evento (RF-01 a RF-03). Los métodos que reciben una
@@ -34,6 +35,13 @@ public interface EventoDAO {
 
     /** true si el evento tiene boletos vigentes (no anulados). */
     boolean tieneVentas(long idEvento);
+
+    /**
+     * Cartelera pública: eventos publicados, agotados o en curso que todavía
+     * no terminan, con precio mínimo, asientos libres y precios por zona.
+     * Si tipo no es null, filtra por tipo de evento.
+     */
+    List<Evento> listarCartelera(TipoEvento tipo);
 
     // ---- Operaciones dentro de una transacción ----
 

@@ -56,10 +56,6 @@
         </jsp-property-group>
     </jsp-config>
 
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
-
     <!-- Páginas de error personalizadas (RNF-11). -->
     <error-page>
         <error-code>403</error-code>

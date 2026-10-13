@@ -57,7 +57,7 @@ public class AccesoServlet extends HttpServlet {
             }
         } catch (DAOException ex) {
             log("Error de persistencia", ex);
-            req.setAttribute("error", "No hay conexión con la base de datos. Revise la página de diagnóstico.");
+            req.setAttribute("error", "No hay conexión con la base de datos. Revise que MySQL esté activo y la configuración de db.properties.");
         }
 
         String estado = req.getParameter("estado");

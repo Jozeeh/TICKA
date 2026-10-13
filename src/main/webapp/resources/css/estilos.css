@@ -373,3 +373,160 @@ dl.datos dd { margin: 0; }
     .navbar .usuario { margin-left: 0; width: 100%; }
     .contenedor { padding: 0 16px; }
 }
+
+/* =====================================================================
+   Página de inicio: portada, cifras y cartelera en tarjetas
+   ===================================================================== */
+.portada-inicio {
+    background: radial-gradient(circle at 85% 20%, rgba(228, 87, 46, .45), transparent 45%),
+                linear-gradient(135deg, #10233d 0%, var(--primario) 55%, #2c5282 100%);
+    color: #fff;
+    padding: 56px 24px 64px;
+}
+.portada-contenido {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 36px;
+    align-items: center;
+}
+.sobretitulo { text-transform: uppercase; letter-spacing: 2px; font-size: .8rem; color: #f4b39d; font-weight: 700; }
+.portada-texto h1 { font-size: 2.7rem; line-height: 1.15; margin: 10px 0 14px; }
+.portada-texto h1 span { color: var(--acento); }
+.portada-texto p { color: #d7e1ee; font-size: 1.05rem; max-width: 560px; margin: 0 0 24px; }
+.boton.borde-claro { background: transparent; border: 1px solid rgba(255, 255, 255, .7); color: #fff; }
+.destacado {
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 14px;
+    padding: 22px 24px;
+}
+.etiqueta-destacado {
+    display: inline-block; background: var(--acento); color: #fff; border-radius: 999px;
+    padding: 3px 10px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+}
+.destacado h2 { margin: 12px 0 4px; font-size: 1.45rem; }
+.destacado-participantes { margin: 0 0 12px; color: #d7e1ee; }
+.destacado .datos-evento li { color: #eef3f9; }
+.destacado-precio { margin-top: 14px; font-size: 1.05rem; color: #d7e1ee; }
+.destacado-precio strong { color: #fff; font-size: 1.4rem; }
+
+.franja-cifras {
+    max-width: 1180px;
+    margin: -30px auto 0;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    position: relative;
+}
+.franja-cifras div {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px 18px;
+    box-shadow: 0 6px 18px rgba(20, 40, 70, .08);
+}
+.franja-cifras strong { display: block; font-size: 1.8rem; color: var(--primario-oscuro); }
+.franja-cifras span { color: var(--texto-suave); font-size: .9rem; }
+
+.seccion { margin: 34px 0 10px; }
+.titulo-seccion { font-size: 1.5rem; margin: 0 0 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+    padding: 7px 14px; border-radius: 999px; border: 1px solid var(--borde); background: #fff;
+    color: var(--texto); text-decoration: none; font-weight: 600; font-size: .9rem;
+}
+.chip:hover { border-color: var(--primario); }
+.chip.activo { background: var(--primario); border-color: var(--primario); color: #fff; }
+
+.cartelera {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+.tarjeta-evento {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(20, 40, 70, .06);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.tarjeta-evento:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(20, 40, 70, .12); }
+.cartel {
+    position: relative;
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--primario);
+}
+.cartel.tipo-CONCIERTO { background-image: linear-gradient(135deg, #7b2ff7 0%, #e4572e 100%); }
+.cartel.tipo-PARTIDO { background-image: linear-gradient(135deg, #0f7b4f 0%, #3cb371 100%); }
+.cartel.tipo-OPERA { background-image: linear-gradient(135deg, #5b1a3a 0%, #b8860b 100%); }
+.cartel.tipo-TEATRO { background-image: linear-gradient(135deg, #8b1e1e 0%, #d4a017 100%); }
+.cartel.tipo-OTRO { background-image: linear-gradient(135deg, #1f3a5f 0%, #2f6fb3 100%); }
+.fecha-bloque {
+    position: absolute; top: 14px; left: 14px;
+    background: #fff; color: var(--primario-oscuro);
+    border-radius: 10px; width: 58px; text-align: center; padding: 6px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+}
+.fecha-bloque .dia { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1; }
+.fecha-bloque .mes { display: block; font-size: .75rem; font-weight: 700; color: var(--acento); letter-spacing: 1px; }
+.tipo-chip {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0, 0, 0, .35); color: #fff; border-radius: 999px;
+    padding: 3px 10px; font-size: .78rem; font-weight: 700;
+}
+.aviso-cartel {
+    position: absolute; bottom: 12px; right: 14px;
+    border-radius: 6px; padding: 3px 9px; font-size: .78rem; font-weight: 800; color: #fff;
+}
+.aviso-cartel.agotado { background: var(--rojo); }
+.aviso-cartel.en-curso { background: var(--azul); }
+.aviso-cartel.ultimos { background: var(--amarillo); color: #1f1f1f; }
+.cartel-nombre {
+    position: absolute; bottom: 12px; left: 14px;
+    color: rgba(255, 255, 255, .9); font-weight: 700; font-size: .85rem; letter-spacing: 1px; text-transform: uppercase;
+}
+.tarjeta-cuerpo { padding: 16px 18px 6px; flex: 1; }
+.tarjeta-cuerpo h3 { margin: 0 0 2px; font-size: 1.2rem; }
+.tarjeta-cuerpo .participantes { margin: 0 0 10px; color: var(--acento); font-weight: 600; font-size: .92rem; }
+.datos-evento { list-style: none; margin: 0; padding: 0; font-size: .9rem; color: var(--texto-suave); }
+.datos-evento li { display: flex; gap: 8px; margin-bottom: 4px; }
+.datos-evento .icono { width: 18px; text-align: center; }
+.tarjeta-cuerpo .descripcion { font-size: .88rem; color: var(--texto); margin: 10px 0 0; }
+.precios-zona { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.precios-zona span {
+    background: #f1f4f8; border: 1px solid var(--borde); border-radius: 6px;
+    padding: 3px 8px; font-size: .8rem; color: var(--texto-suave);
+}
+.precios-zona strong { color: var(--primario-oscuro); }
+.disponibilidad { margin: 14px 0 6px; font-size: .82rem; color: var(--texto-suave); }
+.disponibilidad .barra { margin-bottom: 5px; }
+.tarjeta-pie {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 12px 18px; border-top: 1px solid var(--borde); background: #fafbfd;
+}
+.desde { font-size: .88rem; color: var(--texto-suave); }
+.desde strong { font-size: 1.15rem; color: var(--primario-oscuro); }
+
+.pasos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px; }
+.paso { background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; }
+.paso .numero {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%; background: var(--acento); color: #fff; font-weight: 800;
+}
+.paso h3 { margin: 10px 0 4px; color: var(--primario); }
+.paso p { margin: 0; color: var(--texto-suave); font-size: .92rem; }
+.seccion .modulos { margin-top: 14px; }
+
+@media (max-width: 860px) {
+    .portada-contenido { grid-template-columns: 1fr; }
+    .portada-texto h1 { font-size: 2rem; }
+    .franja-cifras { grid-template-columns: repeat(2, 1fr); }
+}

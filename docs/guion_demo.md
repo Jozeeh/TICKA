@@ -5,7 +5,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 ## Preparación (antes de la clase)
 
 1. Ejecutar de nuevo `sql/01_esquema_ticka.sql` y `sql/02_datos_prueba.sql` para tener los datos limpios. Las fechas de los eventos se calculan desde el día en que se ejecuta el script.
-2. Iniciar la aplicación en Tomcat 9 y abrir `/diagnostico`: debe decir "Conexión a MySQL correcta" y 15 tablas.
+2. Iniciar la aplicación en Tomcat 9 y abrir la página de inicio: deben aparecer los eventos en cartelera (si no aparecen, revisar MySQL y `db.properties`).
 3. Entrar a `/acceso`, crear el administrador en **Configuración inicial** y, desde **Usuarios**, crear una cuenta de Organizador.
 4. Tener abiertas dos ventanas: una normal (Administrador) y otra de incógnito (Organizador).
 5. Tener a mano `docs/diagrama_er.md` (en GitHub se ven los diagramas).

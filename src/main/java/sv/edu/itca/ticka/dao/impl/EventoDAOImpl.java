@@ -7,13 +7,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.EventoDAO;
 import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroEvento;
+import sv.edu.itca.ticka.modelo.PrecioZona;
 import sv.edu.itca.ticka.modelo.TipoEvento;
 import sv.edu.itca.ticka.persistencia.ConexionBD;
 
@@ -225,6 +228,71 @@ public class EventoDAOImpl implements EventoDAO {
             }
         } catch (SQLException ex) {
             throw new DAOException("No se pudo verificar las ventas del evento", ex);
+        }
+    }
+
+    @Override
+    public List<Evento> listarCartelera(TipoEvento tipo) {
+        String condicion = "e.activo = 1 AND e.estado IN ('Publicado', 'Agotado', 'En curso') AND e.fecha_fin >= NOW() ";
+        String sqlEventos = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, e.imagen, e.id_recinto, "
+                + "e.apertura_puertas, e.fecha_inicio, e.fecha_fin, e.estado, c.nombre AS categoria, r.nombre AS recinto, "
+                + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id) AS total, "
+                + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id AND ea.estado = 'Vendido') AS vendidos, "
+                + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id AND (ea.estado = 'Disponible' "
+                + " OR (ea.estado = 'Reservado' AND ea.reservado_hasta < NOW()))) AS disponibles, "
+                + "(SELECT MIN(pz.precio) FROM precio_zona pz WHERE pz.id_evento = e.id) AS precio_min "
+                + "FROM evento e LEFT JOIN categoria c ON c.id = e.id_categoria JOIN recinto r ON r.id = e.id_recinto "
+                + "WHERE " + condicion + "AND (? IS NULL OR e.tipo = ?) ORDER BY e.fecha_inicio";
+        // Precios por zona de los mismos eventos, del más caro al más barato.
+        String sqlPrecios = "SELECT pz.id_evento, z.nombre, pz.precio FROM precio_zona pz "
+                + "JOIN zona z ON z.id = pz.id_zona JOIN evento e ON e.id = pz.id_evento "
+                + "WHERE " + condicion + "ORDER BY pz.id_evento, pz.precio DESC";
+
+        Map<Long, Evento> eventos = new LinkedHashMap<>();
+        try (Connection cn = ConexionBD.obtenerConexion()) {
+            try (PreparedStatement ps = cn.prepareStatement(sqlEventos)) {
+                String valorTipo = tipo == null ? null : tipo.getBd();
+                ps.setString(1, valorTipo);
+                ps.setString(2, valorTipo);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Evento e = new Evento();
+                        e.setId(rs.getLong("id"));
+                        e.setNombre(rs.getString("nombre"));
+                        e.setTipo(TipoEvento.desdeBd(rs.getString("tipo")));
+                        e.setDescripcion(rs.getString("descripcion"));
+                        e.setParticipantes(rs.getString("participantes"));
+                        e.setImagen(rs.getString("imagen"));
+                        e.setIdRecinto(rs.getLong("id_recinto"));
+                        e.setAperturaPuertas(rs.getObject("apertura_puertas", LocalDateTime.class));
+                        e.setFechaInicio(rs.getObject("fecha_inicio", LocalDateTime.class));
+                        e.setFechaFin(rs.getObject("fecha_fin", LocalDateTime.class));
+                        e.setEstado(EstadoEvento.desdeBd(rs.getString("estado")));
+                        e.setCategoria(rs.getString("categoria"));
+                        e.setRecinto(rs.getString("recinto"));
+                        e.setTotalAsientos(rs.getInt("total"));
+                        e.setVendidos(rs.getInt("vendidos"));
+                        e.setDisponibles(rs.getInt("disponibles"));
+                        e.setPrecioMinimo(rs.getBigDecimal("precio_min"));
+                        eventos.put(e.getId(), e);
+                    }
+                }
+            }
+            try (PreparedStatement ps = cn.prepareStatement(sqlPrecios);
+                    ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Evento e = eventos.get(rs.getLong("id_evento"));
+                    if (e != null) {
+                        PrecioZona p = new PrecioZona();
+                        p.setZona(rs.getString("nombre"));
+                        p.setPrecio(rs.getBigDecimal("precio"));
+                        e.getPrecios().add(p);
+                    }
+                }
+            }
+            return new ArrayList<>(eventos.values());
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo cargar la cartelera", ex);
         }
     }
 

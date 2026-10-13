@@ -6,10 +6,11 @@
     <c:choose>
         <c:when test="${empty u}">
             <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
-            <a class="enlace ${paginaActiva == 'diagnostico' ? 'activo' : ''}" href="${ctx}/diagnostico">Diagnóstico</a>
+            <a class="enlace" href="${ctx}/#cartelera">Cartelera</a>
             <div class="usuario"><a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a></div>
         </c:when>
         <c:otherwise>
+            <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
             <a class="enlace ${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
             <c:if test="${u.administrador}">
                 <a class="enlace ${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
