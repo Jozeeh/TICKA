@@ -11,10 +11,18 @@
         </c:when>
         <c:otherwise>
             <a class="enlace ${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
+            <c:if test="${u.administrador}">
+                <a class="enlace ${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
+            </c:if>
             <c:if test="${u.gestorEventos}">
                 <a class="enlace ${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
                 <a class="enlace ${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos</a>
                 <a class="enlace ${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
+            </c:if>
+            <c:if test="${u.administrador}">
+                <a class="enlace ${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
+                <a class="enlace ${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
+                <a class="enlace ${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/admin/reportes">Reportes</a>
             </c:if>
             <div class="usuario">
                 <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>

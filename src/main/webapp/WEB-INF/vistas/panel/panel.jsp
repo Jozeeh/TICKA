@@ -15,6 +15,24 @@
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <section class="modulos">
+        <c:if test="${u.administrador}">
+            <a class="tarjeta modulo" href="${ctx}/admin/dashboard" style="text-decoration:none">
+                <h3>Dashboard</h3>
+                <p>Indicadores de ventas, ocupación, asistencia e incidencias.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/admin/usuarios" style="text-decoration:none">
+                <h3>Usuarios y roles</h3>
+                <p>Crear cuentas del personal, asignar roles, restablecer contraseñas y desbloquear.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/admin/clientes" style="text-decoration:none">
+                <h3>Clientes</h3>
+                <p>Consultar clientes registrados y sus compras; activar o desactivar cuentas.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/admin/reportes" style="text-decoration:none">
+                <h3>Reportes</h3>
+                <p>Ventas, asistencia, ocupación e incidencias con exportación a CSV.</p>
+            </a>
+        </c:if>
         <c:if test="${u.gestorEventos}">
             <a class="tarjeta modulo" href="${ctx}/organizador/eventos" style="text-decoration:none">
                 <h3>Eventos</h3>
