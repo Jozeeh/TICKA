@@ -10,7 +10,7 @@
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
 
-<%-- Portada con el próximo evento destacado --%>
+<%-- Portada --%>
 <header class="portada-inicio">
     <div class="portada-contenido">
         <div class="portada-texto">
@@ -25,21 +25,6 @@
                 </c:if>
             </div>
         </div>
-        <c:if test="${not empty destacado}">
-            <aside class="destacado">
-                <span class="etiqueta-destacado">Próximo evento</span>
-                <h2><c:out value="${destacado.nombre}" /></h2>
-                <p class="destacado-participantes"><c:out value="${destacado.participantes}" /></p>
-                <ul class="datos-evento">
-                    <li><span class="icono">📅</span>${destacado.diaSemana} ${destacado.fechaInicioTexto}</li>
-                    <li><span class="icono">📍</span><c:out value="${destacado.recinto}" /></li>
-                    <li><span class="icono">🎟️</span>${destacado.disponibles} asientos disponibles</li>
-                </ul>
-                <c:if test="${not empty destacado.precioMinimo}">
-                    <div class="destacado-precio">Desde <strong>${destacado.precioMinimoTexto}</strong></div>
-                </c:if>
-            </aside>
-        </c:if>
     </div>
 </header>
 

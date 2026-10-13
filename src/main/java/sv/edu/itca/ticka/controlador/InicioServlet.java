@@ -47,7 +47,6 @@ public class InicioServlet extends HttpServlet {
             Set<String> recintos = new HashSet<>();
             todos.forEach(e -> recintos.add(e.getRecinto()));
             req.setAttribute("totalRecintos", recintos.size());
-            req.setAttribute("destacado", eventos.isEmpty() ? null : eventos.get(0));
         } catch (DAOException | IllegalStateException ex) {
             log("No se pudo cargar la cartelera", ex);
             req.setAttribute("error", "La cartelera no está disponible por el momento (sin conexión con la base de datos).");
