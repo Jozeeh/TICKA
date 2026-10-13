@@ -6,7 +6,7 @@
 --
 -- IMPORTANTE: la contraseña de este script es solo un marcador. Cámbiela
 -- localmente antes de ejecutarlo, escriba la misma en
--- %USERPROFILE%\.ticka\db.properties y no la suba a Git.
+-- src/main/resources/db.properties (ignorado por Git) y no la suba.
 -- El permiso sobre ticka.* se conserva aunque 01_esquema_ticka.sql
 -- vuelva a crear la base, así que el orden de ejecución no importa.
 -- =====================================================================

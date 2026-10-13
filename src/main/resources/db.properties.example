@@ -1,0 +1,15 @@
+# Plantilla de configuración JDBC SIN secretos reales (funciona como un .env.example).
+# Este archivo sí se sube al repositorio.
+#
+# Para usarlo: cópielo en esta MISMA carpeta con el nombre db.properties
+#   src/main/resources/db.properties
+# y escriba su usuario y contraseña de MySQL. db.properties está en
+# .gitignore, así que nunca se sube a GitHub. Vuelva a compilar (Clean and
+# Build) después de cambiarlo.
+#
+# Recomendado: usar el usuario ticka_app creado con sql/00_usuario_aplicacion.sql
+# en lugar de root.
+
+db.url=jdbc:mysql://localhost:3306/ticka?serverTimezone=America/El_Salvador&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+db.user=ticka_app
+db.password=CAMBIAR_LOCALMENTE

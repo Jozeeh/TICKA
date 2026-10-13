@@ -38,7 +38,7 @@
             <c:otherwise>
                 <div class="alerta error">No fue posible conectar: <c:out value="${errorConexion}" /></div>
                 <p>Revise que MySQL esté activo, que se hayan ejecutado los scripts de <code>sql/</code>
-                    y que exista el archivo <code>db.properties</code> indicado arriba.</p>
+                    y que exista <code>src/main/resources/db.properties</code> (copia de <code>db.properties.example</code>) con sus credenciales; después vuelva a compilar.</p>
             </c:otherwise>
         </c:choose>
     </section>

@@ -305,7 +305,6 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 TICKA/                               (repositorio github.com/Jozeeh/TICKA)
 ├── pom.xml                          (WAR, Java 11, Jakarta EE 8 = javax.*)
 ├── README.md
-├── db.properties.example            (plantilla sin secretos)
 ├── docs/
 │   ├── requerimientos.md            ← este documento
 │   ├── diagrama_er.md
@@ -325,6 +324,7 @@ TICKA/                               (repositorio github.com/Jozeeh/TICKA)
     │   ├── filtro/                  (Codificación, CSRF, Autenticación y rol)
     │   ├── persistencia/            (ConexionBD)
     │   └── util/                    (Parámetros, Formatos, Sesión, CSV)
+    ├── main/resources/              (db.properties.example; db.properties local, ignorado por Git)
     ├── main/webapp/
     │   ├── index.jsp
     │   ├── resources/css/estilos.css

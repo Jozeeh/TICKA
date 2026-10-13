@@ -12,11 +12,17 @@ import java.util.Properties;
 /**
  * Clase de conexión JDBC reutilizable para TICKA.
  *
- * La URL, el usuario y la contraseña se leen de un archivo de propiedades
- * ubicado fuera del proyecto (%USERPROFILE%\.ticka\db.properties), nunca
- * incrustados en el código ni subidos al repositorio (ver
- * db.properties.example). No se mantiene una Connection estática compartida:
- * cada operación abre y cierra la suya con try-with-resources.
+ * Las credenciales funcionan como un archivo .env: viven en un archivo local
+ * que Git ignora y nunca se escriben en el código. Se buscan en este orden:
+ *
+ * 1. Variables de entorno TICKA_DB_URL, TICKA_DB_USER y TICKA_DB_PASSWORD
+ *    (útil en un servidor de producción).
+ * 2. src/main/resources/db.properties dentro del proyecto. Maven lo copia a
+ *    WEB-INF/classes al compilar, por eso se lee desde el classpath.
+ * 3. %USERPROFILE%\.ticka\db.properties (respaldo, como en las guías).
+ *
+ * No se mantiene una Connection estática compartida: cada operación abre y
+ * cierra la suya con try-with-resources.
  *
  * Se registra el driver con Class.forName porque en un Tomcat con varias
  * aplicaciones desplegadas el registro automático puede no quedar visible
@@ -24,10 +30,12 @@ import java.util.Properties;
  */
 public final class ConexionBD {
 
-    private static final Path RUTA_CONFIG = Path.of(
+    private static final String RECURSO = "db.properties";
+    private static final Path RUTA_PERSONAL = Path.of(
             System.getProperty("user.home"), ".ticka", "db.properties");
 
     private static Properties config;
+    private static String origen;
 
     static {
         try {
@@ -43,19 +51,53 @@ public final class ConexionBD {
 
     /** Carga la configuración la primera vez que se necesita. */
     private static synchronized Properties obtenerConfiguracion() {
-        if (config == null) {
-            Properties p = new Properties();
-            try (InputStream in = Files.newInputStream(RUTA_CONFIG)) {
-                p.load(in);
-            } catch (IOException ex) {
-                throw new IllegalStateException(
-                        "No se pudo cargar la configuración JDBC en " + RUTA_CONFIG
-                        + ". Copie db.properties.example a esa ruta y complete sus "
-                        + "credenciales locales.", ex);
-            }
-            config = p;
+        if (config != null) {
+            return config;
         }
-        return config;
+        Properties p = new Properties();
+
+        // 1. Variables de entorno
+        String url = System.getenv("TICKA_DB_URL");
+        if (url != null && !url.isBlank()) {
+            p.setProperty("db.url", url);
+            p.setProperty("db.user", valorOVacio(System.getenv("TICKA_DB_USER")));
+            p.setProperty("db.password", valorOVacio(System.getenv("TICKA_DB_PASSWORD")));
+            return guardar(p, "variables de entorno TICKA_DB_*");
+        }
+
+        // 2. Archivo dentro del proyecto (src/main/resources/db.properties)
+        try (InputStream in = ConexionBD.class.getClassLoader().getResourceAsStream(RECURSO)) {
+            if (in != null) {
+                p.load(in);
+                return guardar(p, "src/main/resources/db.properties (archivo local del proyecto)");
+            }
+        } catch (IOException ex) {
+            throw new IllegalStateException("No se pudo leer db.properties del proyecto.", ex);
+        }
+
+        // 3. Carpeta personal del usuario
+        if (Files.exists(RUTA_PERSONAL)) {
+            try (InputStream in = Files.newInputStream(RUTA_PERSONAL)) {
+                p.load(in);
+                return guardar(p, RUTA_PERSONAL.toString());
+            } catch (IOException ex) {
+                throw new IllegalStateException("No se pudo leer " + RUTA_PERSONAL, ex);
+            }
+        }
+
+        throw new IllegalStateException("No hay configuración de base de datos. Copie "
+                + "src/main/resources/db.properties.example como db.properties en esa misma carpeta, "
+                + "complete sus credenciales y vuelva a compilar.");
+    }
+
+    private static Properties guardar(Properties p, String descripcion) {
+        config = p;
+        origen = descripcion;
+        return p;
+    }
+
+    private static String valorOVacio(String valor) {
+        return valor == null ? "" : valor;
     }
 
     /**
@@ -70,8 +112,13 @@ public final class ConexionBD {
                 p.getProperty("db.password"));
     }
 
-    /** Ruta donde se espera el archivo de configuración (para el diagnóstico). */
-    public static Path rutaConfiguracion() {
-        return RUTA_CONFIG;
+    /** De dónde se tomó la configuración (para la página de diagnóstico). */
+    public static synchronized String origenConfiguracion() {
+        try {
+            obtenerConfiguracion();
+            return origen;
+        } catch (IllegalStateException ex) {
+            return "No encontrada";
+        }
     }
 }

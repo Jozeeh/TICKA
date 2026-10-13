@@ -36,9 +36,16 @@ Luego abra `sql/00_usuario_aplicacion.sql`, cambie `CAMBIAR_LOCALMENTE` por una 
 
 > `01_esquema_ticka.sql` borra y vuelve a crear la base `ticka`. Ejecútelo solo cuando quiera empezar de cero.
 
-### 2. Credenciales locales (no se suben a Git)
+### 2. Credenciales locales (como un `.env`, no se suben a Git)
 
-Copie `db.properties.example` a `%USERPROFILE%\.ticka\db.properties` (en Linux/macOS, `~/.ticka/db.properties`) y escriba la contraseña que usó en el paso anterior.
+Copie `src/main/resources/db.properties.example` como `src/main/resources/db.properties` (en la misma carpeta) y escriba su usuario y contraseña de MySQL. Ese archivo está en `.gitignore`. Después de cambiarlo, use **Clean and Build**.
+
+`ConexionBD` busca la configuración en este orden:
+1. Variables de entorno `TICKA_DB_URL`, `TICKA_DB_USER` y `TICKA_DB_PASSWORD`, para un servidor de producción.
+2. `src/main/resources/db.properties`, el archivo local del proyecto.
+3. `%USERPROFILE%\.ticka\db.properties`, como respaldo.
+
+La página `/diagnostico` muestra de cuál de las tres la tomó.
 
 ### 3. Ejecutar
 
@@ -101,7 +108,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
 - Consultas parametrizadas (sin concatenar datos del usuario) y salida escapada con `c:out` (XSS).
 - Se descarta la sesión anónima al iniciar sesión (contra fijación de sesión), y la cookie de sesión es `HttpOnly`.
-- Credenciales de MySQL fuera del repositorio (`db.properties` está en `.gitignore`).
+- Credenciales de MySQL en un archivo local tipo `.env` (`src/main/resources/db.properties`, en `.gitignore`).
 
 ## Reglas de negocio destacadas
 
@@ -152,6 +159,6 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 
 ## Control de credenciales
 
-- `db.properties` (contraseña de MySQL) vive en la carpeta personal del usuario y no se sube.
+- `src/main/resources/db.properties` (contraseña de MySQL) es local, como un `.env`, y está en `.gitignore`. En el repositorio solo va `db.properties.example`.
 - `sql/00_usuario_aplicacion.sql` solo trae un marcador (`CAMBIAR_LOCALMENTE`).
 - El repositorio no contiene usuarios con contraseña: el administrador se crea en la configuración inicial.

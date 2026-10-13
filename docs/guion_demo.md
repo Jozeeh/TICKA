@@ -20,7 +20,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
   - `evento_asiento` es la copia de esos asientos para un evento, con su estado. La restricción `UNIQUE (id_evento, id_asiento)` garantiza **un asiento = un boleto** (RN-01).
   - `entrada` es el boleto, con un código único para el QR; `acceso` registra cada escaneo en puerta.
   - La vista `v_ocupacion_evento_zona` alimenta el dashboard y los reportes.
-- **Seguridad:** la aplicación usa el usuario MySQL `ticka_app`, con permisos limitados, y la contraseña está fuera del repositorio (`db.properties`).
+- **Seguridad:** la aplicación usa el usuario MySQL `ticka_app`, con permisos limitados, y sus credenciales están en `src/main/resources/db.properties`, un archivo local tipo `.env` que Git ignora (en el repositorio solo va `db.properties.example`).
 
 ## 2. Seguridad y Administrador (5 a 6 min)
 

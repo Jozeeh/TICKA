@@ -32,7 +32,7 @@ public class DiagnosticoServlet extends HttpServlet {
         entorno.put("Servidor", getServletContext().getServerInfo());
         entorno.put("API Servlet", getServletContext().getMajorVersion() + "." + getServletContext().getMinorVersion());
         entorno.put("Ruta de contexto", req.getContextPath());
-        entorno.put("Archivo de configuración", ConexionBD.rutaConfiguracion().toString());
+        entorno.put("Configuración de la base de datos", ConexionBD.origenConfiguracion());
         req.setAttribute("entorno", entorno);
 
         Map<String, String> baseDatos = new LinkedHashMap<>();
