@@ -59,12 +59,13 @@
         <div class="cartelera">
             <c:forEach var="ev" items="${eventos}">
                 <article class="tarjeta-evento">
+                    <%-- Si el evento no tiene afiche (o no carga) se ve la imagen por defecto. --%>
                     <c:choose>
                         <c:when test="${not empty ev.imagen}">
-                            <div class="cartel" style="background-image:url('<c:out value="${ev.imagen}" />')">
+                            <div class="cartel" style="background-image:url('<c:out value="${ev.imagen}" />'), url('${ctx}/resources/img/sin-imagen.png')">
                         </c:when>
                         <c:otherwise>
-                            <div class="cartel tipo-${ev.tipo}">
+                            <div class="cartel">
                         </c:otherwise>
                     </c:choose>
                         <div class="fecha-bloque">
