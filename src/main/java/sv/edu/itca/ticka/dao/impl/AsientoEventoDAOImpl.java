@@ -71,6 +71,20 @@ public class AsientoEventoDAOImpl implements AsientoEventoDAO {
     }
 
     @Override
+    public void eliminarPreciosDeOtrosRecintos(long idEvento, long idRecinto) {
+        String sql = "DELETE pz FROM precio_zona pz JOIN zona z ON z.id = pz.id_zona "
+                + "WHERE pz.id_evento = ? AND z.id_recinto <> ?";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, idEvento);
+            ps.setLong(2, idRecinto);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo actualizar los precios", ex);
+        }
+    }
+
+    @Override
     public List<Asiento> listarMapa(long idEvento) {
         // Una reserva vencida se muestra como Disponible (RN-02).
         String sql = "SELECT ea.id AS id_ea, a.id, a.id_zona, a.fila, a.numero, "

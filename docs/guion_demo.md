@@ -48,7 +48,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 2. **Eventos:**
    - Listado con filtros por tipo, estado, recinto y fechas, y búsqueda por nombre o participantes.
    - Abrir **Festival Pop Centroamericano** (Borrador) y pulsar **Publicar** sin precios: aparece "Faltan precios en 3 zonas".
-   - Llenar los precios, guardarlos y **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
+   - Pulsar **Editar datos**: al elegir el recinto aparecen sus zonas y el precio de cada una se escribe en el mismo formulario. Guardar y **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
    - **Editar datos** y adjuntar un afiche (imagen de hasta 2 MB) con su vista previa; volver al **Inicio** para verlo en la tarjeta de la cartelera. Los eventos sin afiche muestran la imagen por defecto.
 3. **Mapa de asientos** de *Noche de Rock Salvadoreño*:
    - Colores por estado: vendido, reservado, bloqueado y disponible.

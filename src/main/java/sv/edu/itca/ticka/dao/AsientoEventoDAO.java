@@ -21,6 +21,9 @@ public interface AsientoEventoDAO {
     /** Inserta o actualiza el precio de cada zona (RF-05) en una transacción. */
     void guardarPrecios(long idEvento, Map<Long, BigDecimal> precios);
 
+    /** Borra los precios del evento que pertenecen a zonas de otro recinto. */
+    void eliminarPreciosDeOtrosRecintos(long idEvento, long idRecinto);
+
     /** Asientos del evento con su estado, ordenados por zona, fila y número. */
     List<Asiento> listarMapa(long idEvento);
 

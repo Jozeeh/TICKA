@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -25,6 +26,7 @@ import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroEvento;
 import sv.edu.itca.ticka.modelo.PrecioZona;
+import sv.edu.itca.ticka.modelo.Recinto;
 import sv.edu.itca.ticka.modelo.TipoEvento;
 import sv.edu.itca.ticka.servicio.EventoServicio;
 import sv.edu.itca.ticka.servicio.ServicioException;
@@ -160,7 +162,23 @@ public class EventoServlet extends HttpServlet {
         req.setAttribute("evento", e);
         cargarCatalogos(req);
         // Para nuevos eventos solo se ofrecen recintos activos.
-        req.setAttribute("recintos", e.getId() == null ? recintoDAO.listarActivos() : recintoDAO.listar());
+        List<Recinto> recintos = e.getId() == null ? recintoDAO.listarActivos() : recintoDAO.listar();
+        req.setAttribute("recintos", recintos);
+        // Zonas de cada recinto con su precio: la vista muestra las del recinto elegido.
+        long idEvento = e.getId() == null ? 0 : e.getId();
+        Map<Long, List<PrecioZona>> preciosPorRecinto = new LinkedHashMap<>();
+        for (Recinto r : recintos) {
+            List<PrecioZona> precios = asientoEventoDAO.listarPrecios(idEvento, r.getId());
+            for (PrecioZona pz : precios) {
+                // Si el formulario volvió con un error, se conserva lo que se escribió.
+                String escrito = req.getParameter("precio_" + pz.getIdZona());
+                if (escrito != null) {
+                    pz.setPrecio(Parametros.decimal(escrito));
+                }
+            }
+            preciosPorRecinto.put(r.getId(), precios);
+        }
+        req.setAttribute("preciosPorRecinto", preciosPorRecinto);
         req.getRequestDispatcher(VISTA_FORMULARIO).forward(req, resp);
     }
 
@@ -182,9 +200,6 @@ public class EventoServlet extends HttpServlet {
             switch (accion == null ? "" : accion) {
                 case "guardar":
                     guardar(req, resp);
-                    return;
-                case "precios":
-                    guardarPrecios(req, resp, id);
                     return;
                 case "publicar":
                     int asientos = eventoServicio.publicar(requerido(id));
@@ -232,16 +247,19 @@ public class EventoServlet extends HttpServlet {
             byte[] afiche = leerAfiche(req);
             String tipoAfiche = afiche == null ? null : ValidadorImagen.validar(afiche);
             boolean quitarAfiche = "si".equals(req.getParameter("quitarAfiche"));
+            // Los precios por zona se envían en el mismo formulario y también se validan antes.
+            Map<Long, BigDecimal> precios = leerPrecios(req, e.getIdRecinto());
             if (error == null) {
                 boolean esNuevo = e.getId() == null;
                 long id = eventoServicio.guardar(e, Sesion.usuario(req).getId());
+                eventoServicio.guardarPrecios(id, e.getIdRecinto(), precios);
                 if (afiche != null) {
                     eventoDAO.guardarAfiche(id, afiche, tipoAfiche);
                 } else if (quitarAfiche) {
                     eventoDAO.quitarAfiche(id);
                 }
                 Sesion.exito(req, esNuevo
-                        ? "Evento registrado en Borrador. Defina los precios por zona y publíquelo."
+                        ? "Evento registrado en Borrador con sus precios. Cuando esté listo, publíquelo."
                         : "Evento actualizado.");
                 resp.sendRedirect(req.getContextPath() + "/organizador/eventos?accion=ver&id=" + id);
                 return;
@@ -289,31 +307,29 @@ public class EventoServlet extends HttpServlet {
         }
     }
 
-    /** Lee los campos precio_{idZona} del formulario de precios. */
-    private void guardarPrecios(HttpServletRequest req, HttpServletResponse resp, Long id)
-            throws IOException {
-        try {
-            Evento e = eventoDAO.buscarPorId(requerido(id))
-                    .orElseThrow(() -> new ServicioException("El evento no existe."));
-            Map<Long, BigDecimal> precios = new LinkedHashMap<>();
-            for (PrecioZona p : asientoEventoDAO.listarPrecios(e.getId(), e.getIdRecinto())) {
-                String escrito = req.getParameter("precio_" + p.getIdZona());
-                BigDecimal precio = Parametros.decimal(escrito);
-                if (Parametros.invalido(escrito, precio)) {
-                    throw new ServicioException("El precio de la zona " + p.getZona() + " no es un número válido.");
-                }
-                if (precio != null) {
-                    precios.put(p.getIdZona(), precio);
-                }
-            }
-            eventoServicio.guardarPrecios(e.getId(), precios);
-            Sesion.exito(req, "Precios guardados.");
-        } catch (ServicioException ex) {
-            Sesion.error(req, ex.getMessage());
-        } catch (DAOException ex) {
-            log("Error de persistencia", ex);
-            Sesion.error(req, "No se pudo guardar los precios.");
+    /**
+     * Lee los campos precio_{idZona} de las zonas del recinto elegido. Toda
+     * zona con asientos activos debe tener precio; se valida antes de guardar.
+     */
+    private Map<Long, BigDecimal> leerPrecios(HttpServletRequest req, Long idRecinto) {
+        Map<Long, BigDecimal> precios = new LinkedHashMap<>();
+        if (idRecinto == null) {
+            return precios;
         }
-        resp.sendRedirect(req.getContextPath() + "/organizador/eventos?accion=ver&id=" + id);
+        for (PrecioZona p : asientoEventoDAO.listarPrecios(0, idRecinto)) {
+            String escrito = req.getParameter("precio_" + p.getIdZona());
+            BigDecimal precio = Parametros.decimal(escrito);
+            if (Parametros.invalido(escrito, precio)) {
+                throw new ServicioException("El precio de la zona " + p.getZona() + " no es un número válido.");
+            }
+            if (precio == null && p.getAsientosActivos() > 0) {
+                throw new ServicioException("Escriba el precio de la zona " + p.getZona() + ".");
+            }
+            if (precio != null) {
+                precios.put(p.getIdZona(), precio);
+            }
+        }
+        EventoServicio.validarPrecios(precios);
+        return precios;
     }
 }

@@ -81,8 +81,8 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
 | Eventos: listado con búsqueda, filtros y paginación | `/organizador/eventos` | RF-01, RF-03 |
-| Nuevo / editar evento (participantes, fechas, recinto y afiche adjunto opcional: JPG, PNG, WEBP o GIF de hasta 2 MB, guardado en MySQL) | `?accion=nuevo`, `?accion=editar&id=` | RF-01, RF-06, RN-05, RN-06 |
-| Detalle: precios por zona, ocupación, publicar, cambiar estado, cancelar | `?accion=ver&id=` | RF-02, RF-05, RF-07, RN-09 |
+| Nuevo / editar evento (participantes, fechas, recinto con los **precios de sus zonas en el mismo formulario** y afiche adjunto opcional: JPG, PNG, WEBP o GIF de hasta 2 MB, guardado en MySQL) | `?accion=nuevo`, `?accion=editar&id=` | RF-01, RF-06, RN-05, RN-06 |
+| Detalle: precios por zona (consulta), ocupación, publicar, cambiar estado, cancelar | `?accion=ver&id=` | RF-02, RF-05, RF-07, RN-09 |
 | Mapa de asientos con bloqueo y desbloqueo | `/organizador/mapa?evento=` | RF-08, RN-01, RN-11 |
 | Recintos | `/organizador/recintos` | RF-10 |
 | Zonas, generación de asientos e inhabilitación | `/organizador/zonas?recinto=` | RF-11, RF-12, RN-14 |
@@ -152,6 +152,7 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 | 6 | Administrador intenta desactivarse | Rechazado | Verificado |
 | 7 | Publicar evento sin precios | "Faltan precios en 3 zonas" | Verificado |
 | 8 | Publicar con precios | Evento publicado y 320 asientos habilitados | Verificado |
+| 8b | Guardar un evento sin el precio de una zona con asientos | "Escriba el precio de la zona…"; lo escrito se conserva | Verificado |
 | 9 | Evento en el mismo recinto y horario | Rechazado por choque de horario (RN-05) | Verificado |
 | 10 | Bloquear un asiento vendido | Rechazado; solo se bloquean disponibles | Verificado |
 | 11 | Generar asientos repetidos | Omite los existentes e informa cuántos | Verificado |

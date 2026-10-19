@@ -14,7 +14,7 @@
 <main class="contenedor">
     <div class="migas"><a href="${ctx}/organizador/eventos">Eventos</a> › <c:out value="${titulo}" /></div>
     <h1><c:out value="${titulo}" /></h1>
-    <p class="subtitulo">Los eventos nuevos quedan en <strong>Borrador</strong> hasta que se definan los precios y se publiquen.</p>
+    <p class="subtitulo">Al elegir el recinto aparecen sus zonas para asignar el precio de cada una. Los eventos nuevos quedan en <strong>Borrador</strong> hasta que se publiquen.</p>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <section class="tarjeta formulario" style="max-width:900px">
@@ -60,6 +60,40 @@
                         <input type="hidden" name="recinto" value="${evento.idRecinto}">
                         <span class="ayuda">El recinto no se puede cambiar después de publicar.</span>
                     </c:if>
+                </div>
+                <%-- Precios por zona (RF-05): se muestran las zonas del recinto elegido. --%>
+                <div class="grupo-campo completo">
+                    <label>Precios por zona (USD)</label>
+                    <p id="sinRecinto" class="ayuda">Seleccione un recinto para asignar el precio de cada zona.</p>
+                    <c:forEach var="r" items="${recintos}">
+                        <div class="precios-recinto" data-recinto="${r.id}" hidden>
+                            <c:set var="zonasRecinto" value="${preciosPorRecinto[r.id]}" />
+                            <c:choose>
+                                <c:when test="${empty zonasRecinto}">
+                                    <div class="alerta aviso">Este recinto no tiene zonas. Agréguelas en
+                                        <a href="${ctx}/organizador/zonas?recinto=${r.id}">Zonas y asientos</a>.</div>
+                                </c:when>
+                                <c:otherwise>
+                                    <table class="tabla">
+                                        <thead><tr><th>Zona</th><th class="numero">Asientos activos</th><th>Precio (USD)</th></tr></thead>
+                                        <tbody>
+                                        <c:forEach var="pz" items="${zonasRecinto}">
+                                            <tr>
+                                                <td><c:out value="${pz.zona}" /></td>
+                                                <td class="numero">${pz.asientosActivos}</td>
+                                                <td style="max-width:180px">
+                                                    <input type="number" name="precio_${pz.idZona}" min="0" max="99999.99" step="0.01"
+                                                           value="${pz.precio}" placeholder="0.00"
+                                                           data-obligatorio="${pz.asientosActivos > 0}">
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </c:forEach>
                 </div>
                 <div class="grupo-campo completo">
                     <label for="participantes">Participantes</label>
@@ -112,6 +146,26 @@
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>
 <script>
+    // Muestra solo las zonas del recinto elegido. Los precios de las zonas visibles
+    // con asientos son obligatorios; los de otros recintos se ignoran.
+    (function () {
+        var selector = document.getElementById('recinto');
+        function mostrarZonas() {
+            var elegido = selector.value;
+            document.getElementById('sinRecinto').hidden = elegido !== '';
+            document.querySelectorAll('.precios-recinto').forEach(function (grupo) {
+                var visible = grupo.dataset.recinto === elegido;
+                grupo.hidden = !visible;
+                grupo.querySelectorAll('input').forEach(function (campo) {
+                    campo.disabled = !visible;
+                    campo.required = visible && campo.dataset.obligatorio === 'true';
+                });
+            });
+        }
+        selector.addEventListener('change', mostrarZonas);
+        mostrarZonas();
+    })();
+
     // Vista previa del afiche y aviso inmediato si pesa más de 2 MB
     // (el servidor vuelve a validar el tamaño y el tipo real de la imagen).
     document.getElementById('afiche').addEventListener('change', function () {

@@ -86,23 +86,26 @@ public class EventoServicio {
         }
     }
 
-    /** Guarda los precios por zona (solo los campos escritos). */
-    public void guardarPrecios(long idEvento, Map<Long, BigDecimal> precios) {
-        Evento evento = eventoDAO.buscarPorId(idEvento)
-                .orElseThrow(() -> new ServicioException("El evento no existe."));
-        if (!evento.getEstado().isEditable()) {
-            throw new ServicioException("Los precios de un evento " + evento.getEstado().getBd().toLowerCase()
-                    + " ya no se pueden cambiar.");
-        }
-        if (precios.isEmpty()) {
-            throw new ServicioException("Escriba al menos un precio.");
-        }
+    /** Verifica que cada precio esté entre $0.00 y $99,999.99 con dos decimales como máximo. */
+    public static void validarPrecios(Map<Long, BigDecimal> precios) {
         for (BigDecimal precio : precios.values()) {
             if (precio.signum() < 0 || precio.compareTo(PRECIO_MAXIMO) > 0 || precio.scale() > 2) {
                 throw new ServicioException("Cada precio debe estar entre $0.00 y $99,999.99, con dos decimales.");
             }
         }
-        asientoEventoDAO.guardarPrecios(idEvento, precios);
+    }
+
+    /**
+     * Guarda los precios por zona del evento (RF-05), que llegan en el mismo
+     * formulario del evento. Si el recinto cambió, borra los precios de las
+     * zonas del recinto anterior.
+     */
+    public void guardarPrecios(long idEvento, long idRecinto, Map<Long, BigDecimal> precios) {
+        validarPrecios(precios);
+        asientoEventoDAO.eliminarPreciosDeOtrosRecintos(idEvento, idRecinto);
+        if (!precios.isEmpty()) {
+            asientoEventoDAO.guardarPrecios(idEvento, precios);
+        }
     }
 
     /**

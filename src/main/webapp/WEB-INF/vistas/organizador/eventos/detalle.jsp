@@ -50,36 +50,22 @@
                     <a href="${ctx}/organizador/zonas?recinto=${evento.idRecinto}">Zonas y asientos</a>.</div>
             </c:when>
             <c:otherwise>
-                <form method="post" action="${ctx}/organizador/eventos">
-                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                    <input type="hidden" name="accion" value="precios">
-                    <input type="hidden" name="id" value="${evento.id}">
-                    <table class="tabla">
-                        <thead><tr><th>Zona</th><th class="numero">Asientos activos</th><th>Precio (USD)</th></tr></thead>
-                        <tbody>
-                        <c:forEach var="p" items="${precios}">
-                            <tr>
-                                <td><c:out value="${p.zona}" /></td>
-                                <td class="numero">${p.asientosActivos}</td>
-                                <td style="max-width:180px">
-                                    <c:choose>
-                                        <c:when test="${evento.estado.editable}">
-                                            <input type="number" name="precio_${p.idZona}" min="0" max="99999.99" step="0.01"
-                                                   value="${p.precio}" placeholder="Sin precio">
-                                        </c:when>
-                                        <c:otherwise>${empty p.precio ? '—' : p.precioTexto}</c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                    <c:if test="${evento.estado.editable}">
-                        <div class="acciones-formulario" style="margin-top:12px">
-                            <button type="submit" class="boton verde">Guardar precios</button>
-                        </div>
-                    </c:if>
-                </form>
+                <table class="tabla">
+                    <thead><tr><th>Zona</th><th class="numero">Asientos activos</th><th class="numero">Precio</th></tr></thead>
+                    <tbody>
+                    <c:forEach var="p" items="${precios}">
+                        <tr>
+                            <td><c:out value="${p.zona}" /></td>
+                            <td class="numero">${p.asientosActivos}</td>
+                            <td class="numero">${empty p.precio ? 'Sin precio' : p.precioTexto}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <c:if test="${evento.estado.editable}">
+                    <p class="ayuda" style="margin-top:10px">Los precios se cambian en
+                        <a href="${ctx}/organizador/eventos?accion=editar&id=${evento.id}">Editar datos</a>.</p>
+                </c:if>
             </c:otherwise>
         </c:choose>
     </section>
