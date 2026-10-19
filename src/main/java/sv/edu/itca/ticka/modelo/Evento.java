@@ -49,6 +49,7 @@ public class Evento {
     public String getDia() { return fechaInicio == null ? "" : String.valueOf(fechaInicio.getDayOfMonth()); }
     public String getMesCorto() { return Formatos.mesCorto(fechaInicio); }
     public String getDiaSemana() { return Formatos.diaSemana(fechaInicio); }
+    public String getFechaLarga() { return Formatos.fechaLarga(fechaInicio); }
 
     /** Pocos asientos libres: menos del 15 % del total. */
     public boolean isUltimosAsientos() {

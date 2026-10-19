@@ -431,74 +431,38 @@ dl.datos dd { margin: 0; }
 
 .cartelera {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px 22px;
 }
-.tarjeta-evento {
-    background: #fff;
-    border: 1px solid var(--borde);
-    border-radius: 14px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 2px 10px rgba(20, 40, 70, .06);
-    transition: transform .15s ease, box-shadow .15s ease;
+/* Tarjeta minimalista: recinto, afiche, título, línea de datos y botón. */
+.tarjeta-evento { display: flex; flex-direction: column; }
+.evento-recinto {
+    background: var(--azul); color: #fff;
+    font-size: .85rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 4px 4px 0 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.tarjeta-evento:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(20, 40, 70, .12); }
 .cartel {
     position: relative;
-    height: 150px;
+    aspect-ratio: 8 / 3;
+    border-radius: 0 0 6px 6px;
     background-color: #f2f2f2;
     background-image: url("../img/sin-imagen.png");
     background-size: cover;
     background-position: center;
 }
-.fecha-bloque {
-    position: absolute; top: 14px; left: 14px;
-    background: #fff; color: var(--primario-oscuro);
-    border-radius: 10px; width: 58px; text-align: center; padding: 6px 0;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
-}
-.fecha-bloque .dia { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1; }
-.fecha-bloque .mes { display: block; font-size: .75rem; font-weight: 700; color: var(--acento); letter-spacing: 1px; }
-.tipo-chip {
-    position: absolute; top: 14px; right: 14px;
-    background: rgba(0, 0, 0, .35); color: #fff; border-radius: 999px;
-    padding: 3px 10px; font-size: .78rem; font-weight: 700;
-}
 .aviso-cartel {
-    position: absolute; bottom: 12px; right: 14px;
-    border-radius: 6px; padding: 3px 9px; font-size: .78rem; font-weight: 800; color: #fff;
+    position: absolute; top: 8px; right: 8px;
+    border-radius: 4px; padding: 2px 8px; font-size: .75rem; font-weight: 700; color: #fff;
 }
 .aviso-cartel.agotado { background: var(--rojo); }
 .aviso-cartel.en-curso { background: var(--azul); }
 .aviso-cartel.ultimos { background: var(--amarillo); color: #1f1f1f; }
-.cartel-nombre {
-    position: absolute; bottom: 12px; left: 14px;
-    background: rgba(0, 0, 0, .55); color: #fff; border-radius: 6px; padding: 3px 9px;
-    font-weight: 700; font-size: .78rem; letter-spacing: 1px; text-transform: uppercase;
-}
-.tarjeta-cuerpo { padding: 16px 18px 6px; flex: 1; }
-.tarjeta-cuerpo h3 { margin: 0 0 2px; font-size: 1.2rem; }
-.tarjeta-cuerpo .participantes { margin: 0 0 10px; color: var(--acento); font-weight: 600; font-size: .92rem; }
-.datos-evento { list-style: none; margin: 0; padding: 0; font-size: .9rem; color: var(--texto-suave); }
-.datos-evento li { display: flex; gap: 8px; margin-bottom: 4px; }
-.datos-evento .icono { width: 18px; text-align: center; }
-.tarjeta-cuerpo .descripcion { font-size: .88rem; color: var(--texto); margin: 10px 0 0; }
-.precios-zona { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
-.precios-zona span {
-    background: #f1f4f8; border: 1px solid var(--borde); border-radius: 6px;
-    padding: 3px 8px; font-size: .8rem; color: var(--texto-suave);
-}
-.precios-zona strong { color: var(--primario-oscuro); }
-.disponibilidad { margin: 14px 0 6px; font-size: .82rem; color: var(--texto-suave); }
-.disponibilidad .barra { margin-bottom: 5px; }
-.tarjeta-pie {
-    display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    padding: 12px 18px; border-top: 1px solid var(--borde); background: #fafbfd;
-}
-.desde { font-size: .88rem; color: var(--texto-suave); }
-.desde strong { font-size: 1.15rem; color: var(--primario-oscuro); }
+.tarjeta-cuerpo { padding: 12px 0 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+.tarjeta-cuerpo h3 { margin: 0; font-size: 1.1rem; line-height: 1.3; }
+.evento-linea { margin: 0; font-size: .92rem; color: var(--texto); }
+.evento-suave { margin: 0 0 8px; font-size: .88rem; color: var(--texto-suave); }
+.tarjeta-cuerpo .boton { margin-top: auto; background: var(--azul); }
 
 .pasos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px; }
 .paso { background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; }

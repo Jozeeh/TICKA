@@ -47,6 +47,15 @@ public final class Formatos {
         return f == null ? "" : MESES[f.getMonthValue() - 1];
     }
 
+    private static final String[] MESES_LARGOS = {"enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+
+    /** Fecha larga en español: "Martes 17 de noviembre de 2026". */
+    public static String fechaLarga(LocalDateTime f) {
+        return f == null ? "" : diaSemana(f) + " " + f.getDayOfMonth() + " de "
+                + MESES_LARGOS[f.getMonthValue() - 1] + " de " + f.getYear();
+    }
+
     /** Día de la semana en español: "Viernes". */
     public static String diaSemana(LocalDateTime f) {
         return f == null ? "" : DIAS[f.getDayOfWeek().getValue() - 1];

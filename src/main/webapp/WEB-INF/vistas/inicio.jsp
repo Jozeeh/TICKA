@@ -59,6 +59,7 @@
         <div class="cartelera">
             <c:forEach var="ev" items="${eventos}">
                 <article class="tarjeta-evento">
+                    <div class="evento-recinto"><c:out value="${ev.recinto}" /></div>
                     <%-- Si el evento no tiene afiche (o no carga) se ve la imagen por defecto. --%>
                     <c:choose>
                         <c:when test="${ev.conAfiche}">
@@ -68,11 +69,6 @@
                             <div class="cartel">
                         </c:otherwise>
                     </c:choose>
-                        <div class="fecha-bloque">
-                            <span class="dia">${ev.dia}</span>
-                            <span class="mes">${ev.mesCorto}</span>
-                        </div>
-                        <span class="tipo-chip">${ev.tipo.etiqueta}</span>
                         <c:choose>
                             <c:when test="${ev.estado == 'AGOTADO' or ev.disponibles == 0}">
                                 <span class="aviso-cartel agotado">Agotado</span>
@@ -81,44 +77,16 @@
                                 <span class="aviso-cartel en-curso">En curso</span>
                             </c:when>
                             <c:when test="${ev.ultimosAsientos}">
-                                <span class="aviso-cartel ultimos">¡Últimos asientos!</span>
+                                <span class="aviso-cartel ultimos">Últimos asientos</span>
                             </c:when>
                         </c:choose>
-                        <span class="cartel-nombre"><c:out value="${ev.categoria}" default="${ev.tipo.etiqueta}" /></span>
                     </div>
-
                     <div class="tarjeta-cuerpo">
                         <h3><c:out value="${ev.nombre}" /></h3>
-                        <p class="participantes"><c:out value="${ev.participantes}" /></p>
-                        <ul class="datos-evento">
-                            <li><span class="icono">📅</span>${ev.diaSemana} ${ev.fechaTexto} · ${ev.horarioTexto}</li>
-                            <li><span class="icono">📍</span><c:out value="${ev.recinto}" /></li>
-                            <li><span class="icono">🚪</span>Apertura de puertas: ${ev.aperturaPuertasTexto}</li>
-                        </ul>
-                        <c:if test="${not empty ev.descripcion}">
-                            <p class="descripcion"><c:out value="${ev.descripcion}" /></p>
-                        </c:if>
-
-                        <c:if test="${not empty ev.precios}">
-                            <div class="precios-zona">
-                                <c:forEach var="p" items="${ev.precios}">
-                                    <span><c:out value="${p.zona}" /> <strong>${p.precioTexto}</strong></span>
-                                </c:forEach>
-                            </div>
-                        </c:if>
-
-                        <div class="disponibilidad">
-                            <div class="barra"><span style="width:${ev.porcentajeVendido}%"></span></div>
-                            <span>${ev.disponibles} de ${ev.totalAsientos} asientos disponibles</span>
-                        </div>
-                    </div>
-
-                    <div class="tarjeta-pie">
-                        <div class="desde">
-                            <c:if test="${not empty ev.precioMinimo}">Desde <strong>${ev.precioMinimoTexto}</strong></c:if>
-                        </div>
+                        <p class="evento-linea"><c:if test="${not empty ev.participantes}"><c:out value="${ev.participantes}" /> | </c:if>${ev.fechaLarga}</p>
+                        <p class="evento-suave">${ev.tipo.etiqueta}<c:if test="${not empty ev.categoria}"> · <c:out value="${ev.categoria}" /></c:if> · ${ev.horarioTexto}</p>
                         <button type="button" class="boton chico" disabled
-                                title="La compra en línea llega con el portal del cliente">Comprar · próximamente</button>
+                                title="La compra en línea llega con el portal del cliente">Ver boletos</button>
                     </div>
                 </article>
             </c:forEach>
