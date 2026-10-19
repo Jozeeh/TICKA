@@ -112,7 +112,7 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 ### M1 — Eventos y cartelera *(Organizador)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
-| RF-01 | Crear, editar, consultar y desactivar eventos (nombre, tipo, descripción, participantes —artista, elenco o equipos, en texto—, afiche opcional, categoría, recinto, apertura de puertas, inicio, fin, estado). | A |
+| RF-01 | Crear, editar, consultar y desactivar eventos (nombre, tipo, descripción, participantes —artista, elenco o equipos, en texto—, afiche opcional como imagen adjunta (JPG, PNG, WEBP o GIF de hasta 2 MB), categoría, recinto, apertura de puertas, inicio, fin, estado). | A |
 | RF-02 | Gestionar estados: *Borrador → Publicado (venta abierta) → Agotado → En curso → Finalizado → Cancelado*. | A |
 | RF-03 | Listar eventos con búsqueda por nombre y filtros por tipo, fecha, categoría, recinto y estado, con paginación. | A |
 | RF-04 | Mantener catálogo de categorías (rock, pop, ópera, fútbol, básquetbol, teatro…). | M |
@@ -255,7 +255,7 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RNF-01 | Plataforma | Java 11+, Maven, WAR, Apache Tomcat 9 con `javax.servlet.*` (**nunca** `jakarta`). |
 | RNF-02 | Base de datos | MySQL 8, JDBC con DAO y `PreparedStatement`. |
 | RNF-03 | Arquitectura | MVC en capas: `controller`, `model`, `dao`, `service`, `filter`, `util`; vistas en `webapp`. |
-| RNF-04 | Seguridad | Consultas parametrizadas (SQL Injection), escape de salida (XSS, JSTL `c:out`), filtros de autorización, token CSRF en formularios, QR/códigos no predecibles, control de propiedad (un cliente no accede a boletos ajenos cambiando un id en la URL). |
+| RNF-04 | Seguridad | Consultas parametrizadas (SQL Injection), escape de salida (XSS, JSTL `c:out`), filtros de autorización, token CSRF en formularios, QR/códigos no predecibles, control de propiedad (un cliente no accede a boletos ajenos cambiando un id en la URL), validación de imágenes adjuntas por su firma de bytes y tamaño máximo. |
 | RNF-05 | Concurrencia | Dos clientes nunca obtienen el mismo asiento en el mismo evento; un mismo código no ingresa dos veces. Verificable con pruebas de compra simultánea. |
 | RNF-06 | Configuración | Credenciales fuera del repositorio (`db.properties.example` versionado, el real en `.gitignore`); minutos de reserva, máximo por compra y horas de anulación configurables. |
 | RNF-07 | Usabilidad | Interfaz responsive; mapa de asientos legible en celular; pantalla de **validación en puerta** usable desde celular/tablet, con resultado claro (válido/rechazado). |
@@ -312,13 +312,14 @@ TICKA/                               (repositorio github.com/Jozeeh/TICKA)
 ├── sql/
 │   ├── 00_usuario_aplicacion.sql    (usuario MySQL con permisos limitados)
 │   ├── 01_esquema_ticka.sql         (tablas, vista y catálogos)
-│   └── 02_datos_prueba.sql          (recintos, eventos, ventas y accesos de ejemplo)
+│   ├── 02_datos_prueba.sql          (recintos, eventos, ventas y accesos de ejemplo)
+│   └── 03_afiche_evento.sql         (migración: afiche como imagen adjunta, solo bases anteriores)
 └── src/
     ├── main/java/sv/edu/itca/ticka/
     │   ├── modelo/                  (Evento, Recinto, Zona, Asiento, Usuario, Rol...)
     │   ├── dao/  y  dao/impl/       (interfaces DAO e implementaciones JDBC)
     │   ├── servicio/                (reglas de negocio y transacciones)
-    │   ├── controlador/             (inicio/cartelera, acceso y panel)
+    │   ├── controlador/             (inicio/cartelera, afiche, acceso y panel)
     │   │   ├── organizador/         (eventos, recintos, zonas, categorías, mapa)
     │   │   └── admin/               (dashboard, usuarios, clientes, reportes)
     │   ├── filtro/                  (Codificación, CSRF, Autenticación y rol)

@@ -99,7 +99,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 
 ### Común
 
-Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo de 15 minutos tras 5 intentos fallidos (RF-41), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos.
+Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo de 15 minutos tras 5 intentos fallidos (RF-41), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos en tarjetas (el afiche se sirve en `/afiche?evento=ID`; sin afiche se usa una imagen por defecto).
 
 ## Seguridad
 
@@ -107,6 +107,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo
 - **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` admite Organizador y Administrador; cualquier otro rol recibe 403.
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
 - Consultas parametrizadas (sin concatenar datos del usuario) y salida escapada con `c:out` (XSS).
+- Afiches adjuntos validados por su contenido real (firma de JPG, PNG, WEBP o GIF) y con un máximo de 2 MB, no por la extensión del archivo.
 - Se descarta la sesión anónima al iniciar sesión (contra fijación de sesión), y la cookie de sesión es `HttpOnly`.
 - Credenciales de MySQL en un archivo local tipo `.env` (`src/main/resources/db.properties`, en `.gitignore`).
 
@@ -124,7 +125,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo
 mvn test
 ```
 
-Son 28 pruebas JUnit, sin base de datos:
+Son 31 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
@@ -135,6 +136,7 @@ Son 28 pruebas JUnit, sin base de datos:
 | `ValidadorEventoTest` | Fechas del evento y regla de traslape de horarios |
 | `GeneradorAsientosTest` | Cálculo de filas y límites; flujo de estados del evento |
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |
+| `ValidadorImagenTest` | Afiche: tipo real por firma de bytes, archivo falso y límite de 2 MB |
 
 ## Matriz de pruebas manuales
 
@@ -156,6 +158,10 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 | 12 | Cancelar evento con ventas | 22 boletos anulados y asientos liberados | Verificado |
 | 13 | Reporte de asistencia en CSV | Archivo con BOM UTF-8 y totales | Verificado |
 | 14 | Tildes y ñ en formularios | Se guardan y muestran correctamente | Verificado |
+| 15 | Adjuntar afiche PNG a un evento | Se guarda en MySQL y se ve en la cartelera y el detalle | Verificado |
+| 16 | Adjuntar un archivo de texto renombrado como `.png` | "El afiche debe ser una imagen JPG, PNG, WEBP o GIF" | Verificado |
+| 17 | Afiche de más de 2 MB | Mensaje de tamaño máximo; el evento no se modifica | Verificado |
+| 18 | Editar sin adjuntar / marcar "Quitar el afiche actual" | Conserva el afiche / vuelve a la imagen por defecto | Verificado |
 
 ## Control de credenciales
 
