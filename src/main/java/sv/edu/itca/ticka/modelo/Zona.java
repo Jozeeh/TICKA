@@ -14,6 +14,10 @@ public class Zona {
     // Datos de lectura
     private int totalAsientos;
     private int asientosActivos;
+    /** Distribución actual (asientos activos), para rellenar el formulario. */
+    private String filaDesde;
+    private String filaHasta;
+    private Integer asientosPorFila;
     /** Asientos agrupados por fila para dibujar la cuadrícula. */
     private List<FilaAsientos> filas = new ArrayList<>();
 
@@ -34,6 +38,15 @@ public class Zona {
 
     public int getAsientosActivos() { return asientosActivos; }
     public void setAsientosActivos(int asientosActivos) { this.asientosActivos = asientosActivos; }
+
+    public String getFilaDesde() { return filaDesde; }
+    public void setFilaDesde(String filaDesde) { this.filaDesde = filaDesde; }
+
+    public String getFilaHasta() { return filaHasta; }
+    public void setFilaHasta(String filaHasta) { this.filaHasta = filaHasta; }
+
+    public Integer getAsientosPorFila() { return asientosPorFila; }
+    public void setAsientosPorFila(Integer asientosPorFila) { this.asientosPorFila = asientosPorFila; }
 
     public List<FilaAsientos> getFilas() { return filas; }
     public void setFilas(List<FilaAsientos> filas) { this.filas = filas; }

@@ -522,3 +522,8 @@ dl.datos dd { margin: 0; }
     border-radius: 8px; border: 1px solid var(--borde); background: #f2f2f2;
 }
 .vista-afiche.flotante { float: right; margin: 0 0 12px 16px; }
+
+/* ---------- Formulario de zona (datos + distribución de asientos) ---------- */
+.form-zona { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: flex-end; margin-bottom: 14px; }
+.form-zona .grupo-campo { margin: 0; flex: 1 1 180px; }
+.form-zona .grupo-campo.corto { flex: 0 0 120px; }

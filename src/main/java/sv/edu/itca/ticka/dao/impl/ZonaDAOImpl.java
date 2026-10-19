@@ -155,36 +155,56 @@ public class ZonaDAOImpl implements ZonaDAO {
     }
 
     @Override
-    public int generarAsientos(long idZona, List<String> filas, int porFila) {
+    public int[] configurarAsientos(long idZona, List<String> filas, int porFila) {
         // INSERT IGNORE omite los asientos que ya existen (UNIQUE zona+fila+número).
-        String sql = "INSERT IGNORE INTO asiento (id_zona, fila, numero) VALUES (?, ?, ?)";
-        try (Connection cn = ConexionBD.obtenerConexion();
-                PreparedStatement ps = cn.prepareStatement(sql)) {
+        String sqlCrear = "INSERT IGNORE INTO asiento (id_zona, fila, numero) VALUES (?, ?, ?)";
+        String enFilas = String.join(",", java.util.Collections.nCopies(filas.size(), "?"));
+        String sqlActivar = "UPDATE asiento SET activo = 1 WHERE id_zona = ? AND activo = 0 "
+                + "AND fila IN (" + enFilas + ") AND numero <= ?";
+        String sqlInactivar = "UPDATE asiento SET activo = 0 WHERE id_zona = ? AND activo = 1 "
+                + "AND (fila NOT IN (" + enFilas + ") OR numero > ?)";
+        try (Connection cn = ConexionBD.obtenerConexion()) {
             cn.setAutoCommit(false);
-            try {
+            try (PreparedStatement crear = cn.prepareStatement(sqlCrear);
+                    PreparedStatement activar = cn.prepareStatement(sqlActivar);
+                    PreparedStatement inactivar = cn.prepareStatement(sqlInactivar)) {
                 for (String fila : filas) {
                     for (int numero = 1; numero <= porFila; numero++) {
-                        ps.setLong(1, idZona);
-                        ps.setString(2, fila);
-                        ps.setInt(3, numero);
-                        ps.addBatch();
+                        crear.setLong(1, idZona);
+                        crear.setString(2, fila);
+                        crear.setInt(3, numero);
+                        crear.addBatch();
                     }
                 }
                 int creados = 0;
-                for (int r : ps.executeBatch()) {
+                for (int r : crear.executeBatch()) {
                     if (r > 0) {
                         creados += r;
                     }
                 }
+                int activados = ejecutarConFilas(activar, idZona, filas, porFila);
+                int inactivados = ejecutarConFilas(inactivar, idZona, filas, porFila);
                 cn.commit();
-                return creados;
+                return new int[]{creados, activados, inactivados};
             } catch (SQLException ex) {
                 cn.rollback();
                 throw ex;
             }
         } catch (SQLException ex) {
-            throw new DAOException("No se pudo generar los asientos", ex);
+            throw new DAOException("No se pudo actualizar los asientos de la zona", ex);
         }
+    }
+
+    /** Parámetros: zona, cada letra de fila y el número máximo de asiento. */
+    private static int ejecutarConFilas(PreparedStatement ps, long idZona, List<String> filas, int porFila)
+            throws SQLException {
+        int i = 1;
+        ps.setLong(i++, idZona);
+        for (String fila : filas) {
+            ps.setString(i++, fila);
+        }
+        ps.setInt(i, porFila);
+        return ps.executeUpdate();
     }
 
     @Override

@@ -85,7 +85,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Detalle: precios por zona (consulta), ocupación, publicar, cambiar estado, cancelar | `?accion=ver&id=` | RF-02, RF-05, RF-07, RN-09 |
 | Mapa de asientos con bloqueo y desbloqueo | `/organizador/mapa?evento=` | RF-08, RN-01, RN-11 |
 | Recintos | `/organizador/recintos` | RF-10 |
-| Zonas, generación de asientos e inhabilitación | `/organizador/zonas?recinto=` | RF-11, RF-12, RN-14 |
+| Zonas: un solo formulario "Guardar zona" con nombre, descripción y distribución de asientos; inhabilitación de asientos sueltos con un clic | `/organizador/zonas?recinto=` | RF-11, RF-12, RN-14 |
 | Categorías | `/organizador/categorias` | RF-04 |
 
 ### Administrador (`/admin/*`)
@@ -155,7 +155,8 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 | 8b | Guardar un evento sin el precio de una zona con asientos | "Escriba el precio de la zona…"; lo escrito se conserva | Verificado |
 | 9 | Evento en el mismo recinto y horario | Rechazado por choque de horario (RN-05) | Verificado |
 | 10 | Bloquear un asiento vendido | Rechazado; solo se bloquean disponibles | Verificado |
-| 11 | Generar asientos repetidos | Omite los existentes e informa cuántos | Verificado |
+| 11 | Cambiar la distribución de una zona (reducir y ampliar filas o asientos por fila) | Crea los que faltan e inactiva, sin borrar, los que quedan fuera; informa cuántos | Verificado |
+| 11b | Guardar una zona cambiando solo el nombre | No toca los asientos (se conservan los inhabilitados uno por uno) | Verificado |
 | 12 | Cancelar evento con ventas | 22 boletos anulados y asientos liberados | Verificado |
 | 13 | Reporte de asistencia en CSV | Archivo con BOM UTF-8 y totales | Verificado |
 | 14 | Tildes y ñ en formularios | Se guardan y muestran correctamente | Verificado |

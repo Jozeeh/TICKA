@@ -43,7 +43,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 
 1. **Recintos → Zonas y asientos** (Teatro Presidente):
    - Mostrar la cuadrícula por zona.
-   - Crear una zona nueva y **generar asientos** de la fila A a la C con 8 por fila; repetir la generación para mostrar que omite los asientos que ya existen.
+   - Agregar una zona nueva con su distribución (fila A a la C, 8 asientos por fila) en un solo paso. Luego cambiar la distribución (por ejemplo, hasta la fila D) y pulsar **Guardar zona**: crea los que faltan e inactiva, sin borrar, los que quedan fuera.
    - Hacer clic en un asiento para inhabilitarlo (RN-14: no se borra).
 2. **Eventos:**
    - Listado con filtros por tipo, estado, recinto y fechas, y búsqueda por nombre o participantes.

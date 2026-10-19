@@ -26,10 +26,12 @@ public interface ZonaDAO {
     List<Asiento> listarAsientosPorRecinto(long idRecinto);
 
     /**
-     * Inserta los asientos filas × porFila. Los que ya existen (misma zona,
-     * fila y número) se omiten. Devuelve cuántos se crearon.
+     * Aplica la distribución filas × porFila a la zona en una transacción:
+     * crea los asientos que falten, activa los que están dentro de la
+     * cuadrícula e inactiva (sin borrar, RN-14) los que quedaron fuera.
+     * Devuelve {creados, activados, inactivados}.
      */
-    int generarAsientos(long idZona, List<String> filas, int porFila);
+    int[] configurarAsientos(long idZona, List<String> filas, int porFila);
 
     /** Habilita o inhabilita un asiento de la plantilla (RN-14). */
     boolean cambiarActivoAsiento(long idAsiento, boolean activo);

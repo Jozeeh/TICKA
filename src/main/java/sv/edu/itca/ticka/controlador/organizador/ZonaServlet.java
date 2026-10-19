@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,9 +25,13 @@ import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
 /**
- * Zonas y asientos de un recinto (RF-11, RF-12, RN-14):
- * crear/editar/eliminar zonas, generar asientos por filas y habilitar o
- * inhabilitar asientos sueltos haciendo clic en la cuadrícula.
+ * Zonas y asientos de un recinto (RF-11, RF-12, RN-14).
+ *
+ * Cada zona se configura con un solo formulario ("Guardar zona"): nombre,
+ * descripción y distribución de asientos (fila desde, fila hasta y asientos
+ * por fila). Al guardar se crean los asientos que falten y se inactivan, sin
+ * borrarlos, los que quedan fuera de la cuadrícula. Los asientos sueltos se
+ * habilitan o inhabilitan con un clic en la cuadrícula.
  */
 @WebServlet("/organizador/zonas")
 public class ZonaServlet extends HttpServlet {
@@ -53,12 +58,7 @@ public class ZonaServlet extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/organizador/recintos");
                 return;
             }
-            Zona edicion = new Zona();
-            Long idZona = Parametros.enteroLargo(req.getParameter("zona"));
-            if ("editar".equals(req.getParameter("accion")) && idZona != null) {
-                edicion = zonaDAO.buscarPorId(idZona).orElse(new Zona());
-            }
-            mostrar(req, resp, recinto, edicion);
+            mostrar(req, resp, recinto);
         } catch (DAOException ex) {
             log("Error de persistencia", ex);
             Sesion.error(req, "No se pudo cargar las zonas. Verifique la conexión con MySQL.");
@@ -66,30 +66,41 @@ public class ZonaServlet extends HttpServlet {
         }
     }
 
-    private void mostrar(HttpServletRequest req, HttpServletResponse resp, Recinto recinto, Zona edicion)
+    private void mostrar(HttpServletRequest req, HttpServletResponse resp, Recinto recinto)
             throws ServletException, IOException {
-        List<Zona> zonas = zonaDAO.listarPorRecinto(recinto.getId());
-        agruparAsientos(zonas, zonaDAO.listarAsientosPorRecinto(recinto.getId()));
         req.setAttribute("recinto", recinto);
-        req.setAttribute("zonas", zonas);
-        req.setAttribute("zona", edicion);
+        req.setAttribute("zonas", cargarZonas(recinto.getId()));
         req.getRequestDispatcher(VISTA).forward(req, resp);
     }
 
-    /** Reparte los asientos (ya ordenados) en sus zonas y filas para la cuadrícula. */
-    private void agruparAsientos(List<Zona> zonas, List<Asiento> asientos) {
+    /** Zonas del recinto con su cuadrícula de asientos y su distribución actual. */
+    private List<Zona> cargarZonas(long idRecinto) {
+        List<Zona> zonas = zonaDAO.listarPorRecinto(idRecinto);
         Map<Long, Zona> porId = new LinkedHashMap<>();
         for (Zona z : zonas) {
             porId.put(z.getId(), z);
         }
-        for (Asiento a : asientos) {
+        // Los asientos llegan ordenados por zona, fila y número.
+        for (Asiento a : zonaDAO.listarAsientosPorRecinto(idRecinto)) {
             Zona z = porId.get(a.getIdZona());
             List<FilaAsientos> filas = z.getFilas();
             if (filas.isEmpty() || !filas.get(filas.size() - 1).getLetra().equals(a.getFila())) {
                 filas.add(new FilaAsientos(a.getFila()));
             }
             filas.get(filas.size() - 1).getAsientos().add(a);
+            if (a.isActivo()) {
+                if (z.getFilaDesde() == null || a.getFila().compareTo(z.getFilaDesde()) < 0) {
+                    z.setFilaDesde(a.getFila());
+                }
+                if (z.getFilaHasta() == null || a.getFila().compareTo(z.getFilaHasta()) > 0) {
+                    z.setFilaHasta(a.getFila());
+                }
+                if (z.getAsientosPorFila() == null || a.getNumero() > z.getAsientosPorFila()) {
+                    z.setAsientosPorFila(a.getNumero());
+                }
+            }
         }
+        return zonas;
     }
 
     @Override
@@ -104,15 +115,10 @@ public class ZonaServlet extends HttpServlet {
         try {
             switch (accion == null ? "" : accion) {
                 case "guardar":
-                    if (!guardar(req, resp, idRecinto)) {
-                        return;
-                    }
+                    guardar(req, idRecinto);
                     break;
                 case "eliminar":
                     eliminar(req);
-                    break;
-                case "generar":
-                    generar(req);
                     break;
                 case "asiento":
                     cambiarAsiento(req);
@@ -130,38 +136,57 @@ public class ZonaServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/organizador/zonas?recinto=" + idRecinto);
     }
 
-    /** Devuelve false si mostró el formulario con errores (ya respondió). */
-    private boolean guardar(HttpServletRequest req, HttpServletResponse resp, long idRecinto)
-            throws ServletException, IOException {
+    /** Crea o actualiza la zona y aplica su distribución de asientos. */
+    private void guardar(HttpServletRequest req, long idRecinto) {
         Zona z = new Zona();
         z.setId(Parametros.enteroLargo(req.getParameter("id")));
         z.setIdRecinto(idRecinto);
         z.setNombre(Parametros.texto(req.getParameter("nombre")));
         z.setDescripcion(Parametros.texto(req.getParameter("descripcion")));
 
-        String error = null;
         if (z.getNombre() == null) {
-            error = "El nombre de la zona es obligatorio.";
-        } else if (z.getNombre().length() > 60) {
-            error = "El nombre no puede superar los 60 caracteres.";
-        } else if (z.getDescripcion() != null && z.getDescripcion().length() > 200) {
-            error = "La descripción no puede superar los 200 caracteres.";
-        } else if (zonaDAO.existeNombre(idRecinto, z.getNombre(), z.getId())) {
-            error = "El recinto ya tiene una zona con ese nombre.";
+            throw new ServicioException("El nombre de la zona es obligatorio.");
         }
-        if (error != null) {
-            req.setAttribute("error", error);
-            mostrar(req, resp, recintoDAO.buscarPorId(idRecinto).orElseThrow(), z);
-            return false;
+        if (z.getNombre().length() > 60) {
+            throw new ServicioException("El nombre no puede superar los 60 caracteres.");
         }
-        if (z.getId() == null) {
-            zonaDAO.insertar(z);
-            Sesion.exito(req, "Zona registrada. Genere sus asientos con el formulario de la zona.");
+        if (z.getDescripcion() != null && z.getDescripcion().length() > 200) {
+            throw new ServicioException("La descripción no puede superar los 200 caracteres.");
+        }
+        if (zonaDAO.existeNombre(idRecinto, z.getNombre(), z.getId())) {
+            throw new ServicioException("El recinto ya tiene una zona con ese nombre.");
+        }
+        // Se valida la distribución antes de guardar nada.
+        String desde = req.getParameter("desde");
+        String hasta = req.getParameter("hasta");
+        Integer porFila = Parametros.entero(req.getParameter("porFila"));
+        List<String> filas = GeneradorAsientos.calcularFilas(desde, hasta, porFila);
+
+        boolean esNueva = z.getId() == null;
+        boolean cambiaDistribucion = true;
+        if (esNueva) {
+            z.setId(zonaDAO.insertar(z));
         } else {
+            Zona actual = cargarZonas(idRecinto).stream()
+                    .filter(x -> x.getId().equals(z.getId())).findFirst()
+                    .orElseThrow(() -> new ServicioException("La zona no existe."));
             zonaDAO.actualizar(z);
-            Sesion.exito(req, "Zona actualizada.");
+            // Si solo cambió el nombre o la descripción no se tocan los asientos, así se
+            // conservan los que se inhabilitaron uno por uno.
+            cambiaDistribucion = !(filas.get(0).equals(actual.getFilaDesde())
+                    && filas.get(filas.size() - 1).equals(actual.getFilaHasta())
+                    && Objects.equals(porFila, actual.getAsientosPorFila()));
         }
-        return true;
+
+        String mensaje = esNueva ? "Zona registrada" : "Zona actualizada";
+        if (cambiaDistribucion) {
+            int[] r = zonaDAO.configurarAsientos(z.getId(), filas, porFila);
+            mensaje += ": " + filas.size() + " filas × " + porFila + " asientos ("
+                    + r[0] + " creados, " + r[1] + " reactivados, " + r[2] + " inactivados).";
+        } else {
+            mensaje += ".";
+        }
+        Sesion.exito(req, mensaje);
     }
 
     private void eliminar(HttpServletRequest req) {
@@ -171,20 +196,6 @@ public class ZonaServlet extends HttpServlet {
         } else {
             Sesion.error(req, "No se puede eliminar una zona que ya tiene asientos o precios asignados.");
         }
-    }
-
-    private void generar(HttpServletRequest req) {
-        Long idZona = Parametros.enteroLargo(req.getParameter("id"));
-        if (idZona == null) {
-            throw new ServicioException("Zona no válida.");
-        }
-        List<String> filas = GeneradorAsientos.calcularFilas(req.getParameter("desde"),
-                req.getParameter("hasta"), Parametros.entero(req.getParameter("porFila")));
-        int porFila = Parametros.entero(req.getParameter("porFila"));
-        int creados = zonaDAO.generarAsientos(idZona, filas, porFila);
-        int pedidos = filas.size() * porFila;
-        Sesion.exito(req, "Se generaron " + creados + " asientos"
-                + (creados < pedidos ? " (" + (pedidos - creados) + " ya existían y se omitieron)." : "."));
     }
 
     /**
