@@ -19,7 +19,7 @@ import sv.edu.itca.ticka.util.ExportadorCsv;
 import sv.edu.itca.ticka.util.Parametros;
 
 /**
- * Reportes del Administrador (RF-44 a RF-49): ventas, asistencia, ocupación
+ * Reportes del Administrador (RF-43 a RF-48): ventas, asistencia, ocupación
  * e incidencias, con filtros por rango de fechas y evento. Con
  * formato=csv el mismo reporte se descarga para abrirlo en Excel.
  */

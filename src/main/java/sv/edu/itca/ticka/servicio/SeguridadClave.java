@@ -3,7 +3,7 @@ package sv.edu.itca.ticka.servicio;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
- * Transforma y verifica contraseñas con BCrypt (hash + salt, RF-40).
+ * Transforma y verifica contraseñas con BCrypt (hash + salt, RF-39).
  *
  * A diferencia del SHA-256 de las guías, BCrypt agrega un salt aleatorio y
  * un factor de costo, así dos contraseñas iguales producen hashes distintos

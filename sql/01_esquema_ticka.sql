@@ -208,21 +208,6 @@ CREATE TABLE entrada (
     CONSTRAINT ck_entrada_precio CHECK (precio >= 0)
 ) ENGINE=InnoDB;
 
--- Cliente que se anota para ser avisado cuando se libere un asiento de una zona agotada.
-CREATE TABLE aviso_disponibilidad (
-    id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    id_cliente INT UNSIGNED NOT NULL,
-    id_evento  INT UNSIGNED NOT NULL,
-    id_zona    INT UNSIGNED NOT NULL,
-    fecha      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    notificado BOOLEAN     NOT NULL DEFAULT 0,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_aviso (id_cliente, id_evento, id_zona),
-    CONSTRAINT fk_aviso_cliente FOREIGN KEY (id_cliente) REFERENCES cliente (id),
-    CONSTRAINT fk_aviso_evento  FOREIGN KEY (id_evento)  REFERENCES evento (id),
-    CONSTRAINT fk_aviso_zona    FOREIGN KEY (id_zona)    REFERENCES zona (id)
-) ENGINE=InnoDB;
-
 -- =====================================================================
 -- M4 · Control de acceso   |   M5 · Incidencias
 -- =====================================================================
@@ -266,7 +251,7 @@ CREATE TABLE incidencia (
 ) ENGINE=InnoDB;
 
 -- =====================================================================
--- Vista de apoyo para dashboard y reporte de ocupación (RF-43, RF-46)
+-- Vista de apoyo para dashboard y reporte de ocupación (RF-42, RF-45)
 -- =====================================================================
 -- Calcula por evento y zona los asientos vendidos, reservados, disponibles y bloqueados.
 CREATE VIEW v_ocupacion_evento_zona AS

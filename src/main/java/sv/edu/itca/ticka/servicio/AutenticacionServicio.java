@@ -8,7 +8,7 @@ import sv.edu.itca.ticka.modelo.Usuario;
 
 /**
  * Valida credenciales y aplica el bloqueo temporal por intentos fallidos
- * (RF-41): al llegar a MAX_INTENTOS la cuenta queda bloqueada
+ * (RF-40): al llegar a MAX_INTENTOS la cuenta queda bloqueada
  * MINUTOS_BLOQUEO minutos.
  */
 public class AutenticacionServicio {

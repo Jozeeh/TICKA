@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Resultado tabular de un reporte (RF-44 a RF-47): título, encabezados y
+ * Resultado tabular de un reporte (RF-43 a RF-46): título, encabezados y
  * filas ya formateadas como texto. La misma estructura se muestra en la JSP
- * y se exporta a CSV (RF-48), así no se duplica la lógica de cada reporte.
+ * y se exporta a CSV (RF-47), así no se duplica la lógica de cada reporte.
  */
 public class Reporte {
 

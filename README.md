@@ -32,7 +32,7 @@ mysql -u root -p < sql/01_esquema_ticka.sql
 mysql -u root -p < sql/02_datos_prueba.sql
 ```
 
-Si su base `ticka` se creó antes de que existieran los afiches adjuntos (la columna `evento.imagen` era texto), ejecute también `sql/03_afiche_evento.sql`.
+Si su base `ticka` se creó antes de que existieran los afiches adjuntos (la columna `evento.imagen` era texto), ejecute también `sql/03_afiche_evento.sql`. Si además tiene la tabla `aviso_disponibilidad` (función retirada del alcance), ejecute `sql/04_quitar_aviso_disponibilidad.sql`.
 
 Luego abra `sql/00_usuario_aplicacion.sql`, cambie `CAMBIAR_LOCALMENTE` por una contraseña propia y ejecútelo. Crea el usuario `ticka_app`, con permisos solo de lectura y escritura sobre `ticka`; la aplicación nunca se conecta como root.
 
@@ -92,14 +92,14 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
-| Dashboard de indicadores | `/admin/dashboard` | RF-43 |
-| Usuarios del personal: crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-38, RF-40, RF-41 |
-| Clientes: consulta y activación | `/admin/clientes` | RF-38 |
-| Reportes de ventas, asistencia, ocupación e incidencias, con exportación CSV | `/admin/reportes` | RF-44 a RF-49 |
+| Dashboard de indicadores | `/admin/dashboard` | RF-42 |
+| Usuarios del personal: crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40 |
+| Clientes: consulta y activación | `/admin/clientes` | RF-37 |
+| Reportes de ventas, asistencia, ocupación e incidencias, con exportación CSV | `/admin/reportes` | RF-43 a RF-48 |
 
 ### Común
 
-Inicio y cierre de sesión con cookie "recordar usuario" (RF-37, RF-42), bloqueo de 15 minutos tras 5 intentos fallidos (RF-41), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos en tarjetas (el afiche se sirve en `/afiche?evento=ID`; sin afiche se usa una imagen por defecto).
+Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo de 15 minutos tras 5 intentos fallidos (RF-40), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos en tarjetas (el afiche se sirve en `/afiche?evento=ID`; sin afiche se usa una imagen por defecto).
 
 ## Seguridad
 

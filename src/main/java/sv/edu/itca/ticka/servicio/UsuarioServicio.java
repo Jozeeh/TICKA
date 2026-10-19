@@ -6,7 +6,7 @@ import sv.edu.itca.ticka.modelo.Rol;
 import sv.edu.itca.ticka.modelo.Usuario;
 
 /**
- * Reglas de negocio de las cuentas del personal interno (RF-38): creación,
+ * Reglas de negocio de las cuentas del personal interno (RF-37): creación,
  * edición, restablecimiento de contraseña, activación y desbloqueo. Las
  * cuentas de Cliente se crean por autorregistro en el portal del cliente.
  */

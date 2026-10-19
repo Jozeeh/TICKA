@@ -4,7 +4,7 @@ import java.util.List;
 import sv.edu.itca.ticka.modelo.Reporte;
 
 /**
- * Convierte un Reporte a CSV (RF-48). Se antepone el BOM de UTF-8 para que
+ * Convierte un Reporte a CSV (RF-47). Se antepone el BOM de UTF-8 para que
  * Excel abra bien las tildes, y cada valor va entre comillas dobles.
  */
 public final class ExportadorCsv {

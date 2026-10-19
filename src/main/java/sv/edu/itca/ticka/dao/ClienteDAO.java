@@ -3,7 +3,7 @@ package sv.edu.itca.ticka.dao;
 import java.util.List;
 import sv.edu.itca.ticka.modelo.Cliente;
 
-/** DAO de consulta de clientes para el Administrador (RF-38). */
+/** DAO de consulta de clientes para el Administrador (RF-37). */
 public interface ClienteDAO {
 
     /**

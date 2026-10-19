@@ -13,7 +13,7 @@ import sv.edu.itca.ticka.dao.impl.ReporteDAOImpl;
 import sv.edu.itca.ticka.modelo.Indicadores;
 
 /**
- * Dashboard del Administrador (RF-43): indicadores generales y próximos
+ * Dashboard del Administrador (RF-42): indicadores generales y próximos
  * eventos con su avance de ventas. Solo lectura.
  */
 @WebServlet("/admin/dashboard")

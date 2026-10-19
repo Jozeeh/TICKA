@@ -17,7 +17,7 @@ import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
 /**
- * Clientes registrados (RF-38): el Administrador los consulta con su resumen
+ * Clientes registrados (RF-37): el Administrador los consulta con su resumen
  * de compras y puede activar o desactivar su cuenta. Las cuentas se crean
  * por autorregistro en el portal del cliente, no desde aquí.
  */

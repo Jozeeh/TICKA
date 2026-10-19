@@ -19,7 +19,7 @@ import sv.edu.itca.ticka.servicio.AutenticacionServicio;
 import sv.edu.itca.ticka.servicio.ServicioException;
 
 /**
- * Inicio de sesión (RF-37). La validación de credenciales y el bloqueo por
+ * Inicio de sesión (RF-36). La validación de credenciales y el bloqueo por
  * intentos se delegan a AutenticacionServicio. Esta ruta no está protegida
  * por AutenticacionFilter porque un usuario anónimo necesita llegar aquí.
  *
@@ -114,7 +114,7 @@ public class AccesoServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/panel");
     }
 
-    /** Cookie "recordar usuario" (RF-42): solo guarda el username, nunca la contraseña. */
+    /** Cookie "recordar usuario" (RF-41): solo guarda el username, nunca la contraseña. */
     private void agregarCookie(HttpServletRequest req, HttpServletResponse resp, String valor, int segundos) {
         Cookie cookie = new Cookie(COOKIE_USUARIO, valor);
         cookie.setMaxAge(segundos);

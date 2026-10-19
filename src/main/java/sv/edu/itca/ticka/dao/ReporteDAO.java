@@ -8,7 +8,7 @@ import sv.edu.itca.ticka.modelo.Reporte;
 
 /**
  * Consultas agregadas para el dashboard y los reportes del Administrador
- * (RF-43 a RF-49). Los filtros desde/hasta se aplican sobre la fecha de
+ * (RF-42 a RF-48). Los filtros desde/hasta se aplican sobre la fecha de
  * inicio del evento; idEvento null significa "todos".
  */
 public interface ReporteDAO {

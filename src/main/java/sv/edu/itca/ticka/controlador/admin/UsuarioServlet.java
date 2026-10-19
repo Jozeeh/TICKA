@@ -19,7 +19,7 @@ import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
 /**
- * Usuarios del personal interno (RF-38 a RF-41): Organizador, Control de
+ * Usuarios del personal interno (RF-37 a RF-40): Organizador, Control de
  * acceso y Administrador. Permite crear, editar nombre/rol/estado,
  * restablecer la contraseña y desbloquear cuentas bloqueadas por intentos.
  */

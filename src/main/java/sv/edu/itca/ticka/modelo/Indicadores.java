@@ -3,7 +3,7 @@ package sv.edu.itca.ticka.modelo;
 import java.math.BigDecimal;
 import sv.edu.itca.ticka.util.Formatos;
 
-/** Indicadores generales del dashboard del Administrador (RF-43). */
+/** Indicadores generales del dashboard del Administrador (RF-42). */
 public class Indicadores {
 
     private int eventosActivos;

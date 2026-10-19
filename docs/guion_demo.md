@@ -25,8 +25,8 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 ## 2. Seguridad y Administrador (5 a 6 min)
 
 1. **Inicio de sesión:**
-   - Escribir mal la contraseña: aparece "Le quedan N intentos" (bloqueo de 15 min al quinto intento, RF-41).
-   - Entrar bien y marcar "Recordar mi usuario" (cookie, RF-42).
+   - Escribir mal la contraseña: aparece "Le quedan N intentos" (bloqueo de 15 min al quinto intento, RF-40).
+   - Entrar bien y marcar "Recordar mi usuario" (cookie, RF-41).
    - Explicar que la contraseña está con **BCrypt** y que todos los formularios llevan **token CSRF**.
 2. **Dashboard** (`/admin/dashboard`): boletos vendidos, ingresos, ocupación de eventos activos, asistencia del evento finalizado (La Traviata: 79 %) e incidencias abiertas.
 3. **Usuarios:**

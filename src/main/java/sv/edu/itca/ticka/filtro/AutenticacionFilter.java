@@ -15,7 +15,7 @@ import sv.edu.itca.ticka.modelo.Usuario;
  * Protege las rutas privadas en dos pasos:
  * 1) Autenticación: debe existir una sesión con usuarioAutenticado; si no,
  *    redirige a /acceso?estado=sesion.
- * 2) Autorización por rol (RF-39, matriz 2.2 de requerimientos):
+ * 2) Autorización por rol (RF-38, matriz 2.2 de requerimientos):
  *    /admin/*        solo Administrador.
  *    /organizador/*  Organizador y Administrador.
  *    Si el rol no corresponde responde 403 (página de error personalizada).

@@ -73,7 +73,7 @@ El sistema tiene **4 roles**; cada integrante es responsable de **un rol** y de 
 | 3 | **Control de acceso** (puerta y seguridad) | **M4** Control de acceso · **M5** Incidencias | Valida boletos en puerta, impide reingresos fraudulentos, lleva la ocupación en vivo y registra incidentes. |
 | 4 | **Administrador** | **M6** Usuarios y seguridad · **M7** Dashboard y reportes | Gestiona usuarios y roles y la seguridad; consulta dashboard y reportes de todo el sistema. |
 
-> El rol **Cliente** reemplaza al antiguo rol Taquilla: la compra la hace el propio usuario desde el portal. La venta presencial en mostrador queda como función opcional del Administrador (RF-25). La cartelera (RF-15) es pública; todo lo demás del Cliente requiere cuenta.
+> El rol **Cliente** reemplaza al antiguo rol Taquilla: la compra la hace el propio usuario desde el portal. La venta presencial en mostrador queda como función opcional del Administrador (RF-24). La cartelera (RF-15) es pública; todo lo demás del Cliente requiere cuenta.
 
 ### 2.2 Matriz de acceso (✔ completo · 👁 solo consulta · ✖ sin acceso)
 
@@ -143,48 +143,47 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-21 | Registrar forma de pago (tarjeta, transferencia, efectivo) y total — **sin procesar el cobro**. | A |
 | RF-22 | "Mis boletos": historial de compras, estado de cada boleto (Emitido/Usado/Anulado), asiento, ver/descargar QR y comprobante en PDF. | A |
 | RF-23 | Anular una compra propia dentro del plazo permitido (RN-12), liberando los asientos (reembolso simulado, con motivo). | A |
-| RF-24 | Aviso de disponibilidad: el cliente se anota para una zona agotada y se le notifica en pantalla al liberarse asientos. | B |
-| RF-25 | Venta en mostrador: el Administrador registra una venta a nombre de un cliente (canal *Mostrador*) eligiendo asientos en el mismo mapa. | M |
+| RF-24 | Venta en mostrador: el Administrador registra una venta a nombre de un cliente (canal *Mostrador*) eligiendo asientos en el mismo mapa. | M |
 
 ### M4 — Control de acceso *(Control de acceso)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
-| RF-26 | Validar un boleto por código/QR o por documento del cliente. | A |
-| RF-27 | Rechazar boletos inexistentes, anulados, ya usados o de otro evento, indicando el motivo. | A |
-| RF-28 | Registrar cada ingreso (fecha/hora, puerta, usuario que valida, resultado) y mostrar zona, fila y asiento. | A |
-| RF-29 | Mostrar ocupación en tiempo real: ingresados vs. vendidos por zona. | M |
-| RF-30 | Anular un ingreso registrado por error, con motivo (queda guardado). | M |
-| RF-31 | Permitir validar solo desde la apertura de puertas hasta el fin del evento. | M |
-| RF-32 | Re-entrada opcional con regla configurable. | B |
+| RF-25 | Validar un boleto por código/QR o por documento del cliente. | A |
+| RF-26 | Rechazar boletos inexistentes, anulados, ya usados o de otro evento, indicando el motivo. | A |
+| RF-27 | Registrar cada ingreso (fecha/hora, puerta, usuario que valida, resultado) y mostrar zona, fila y asiento. | A |
+| RF-28 | Mostrar ocupación en tiempo real: ingresados vs. vendidos por zona. | M |
+| RF-29 | Anular un ingreso registrado por error, con motivo (queda guardado). | M |
+| RF-30 | Permitir validar solo desde la apertura de puertas hasta el fin del evento. | M |
+| RF-31 | Re-entrada opcional con regla configurable. | B |
 
 ### M5 — Incidencias *(Control de acceso)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
-| RF-33 | Registrar incidencias (tipo: seguridad, médica, acceso denegado, asiento en disputa, objeto perdido, otro; descripción, gravedad, puerta, hora). | A |
-| RF-34 | Dar seguimiento por estado: *Abierta → En atención → Cerrada* con observaciones. | M |
-| RF-35 | Consultar incidencias por evento, tipo y gravedad. | M |
-| RF-36 | Registrar automáticamente como incidencia de "acceso denegado" los rechazos de RF-27 (opcional por configuración). | B |
+| RF-32 | Registrar incidencias (tipo: seguridad, médica, acceso denegado, asiento en disputa, objeto perdido, otro; descripción, gravedad, puerta, hora). | A |
+| RF-33 | Dar seguimiento por estado: *Abierta → En atención → Cerrada* con observaciones. | M |
+| RF-34 | Consultar incidencias por evento, tipo y gravedad. | M |
+| RF-35 | Registrar automáticamente como incidencia de "acceso denegado" los rechazos de RF-26 (opcional por configuración). | B |
 
 ### M6 — Usuarios y seguridad *(Administrador)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
-| RF-37 | Inicio y cierre de sesión con usuario/contraseña. | A |
-| RF-38 | CRUD de usuarios (personal interno) y asignación de uno de los 4 roles; las cuentas de Cliente se crean por autorregistro (RF-13) y el Administrador solo las consulta/desactiva. | A |
-| RF-39 | Control de acceso por rol a páginas y acciones (filtro de autorización, según la matriz 2.2). | A |
-| RF-40 | Contraseñas con hash + salt (BCrypt), nunca en texto plano. | A |
-| RF-41 | Bloqueo temporal tras N intentos fallidos de login. | M |
-| RF-42 | Cookie "recordar usuario" opcional y expiración de sesión por inactividad. | B |
+| RF-36 | Inicio y cierre de sesión con usuario/contraseña. | A |
+| RF-37 | CRUD de usuarios (personal interno) y asignación de uno de los 4 roles; las cuentas de Cliente se crean por autorregistro (RF-13) y el Administrador solo las consulta/desactiva. | A |
+| RF-38 | Control de acceso por rol a páginas y acciones (filtro de autorización, según la matriz 2.2). | A |
+| RF-39 | Contraseñas con hash + salt (BCrypt), nunca en texto plano. | A |
+| RF-40 | Bloqueo temporal tras N intentos fallidos de login. | M |
+| RF-41 | Cookie "recordar usuario" opcional y expiración de sesión por inactividad. | B |
 
 ### M7 — Dashboard y reportes *(Administrador)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
-| RF-43 | Dashboard: eventos activos, boletos vendidos, ingresos, ocupación por zona, asistencia. | M |
-| RF-44 | Reporte de ventas por evento, zona, canal (Web/Mostrador) y vendedor. | A |
-| RF-45 | Reporte de asistencia: vendidos vs. ingresados y porcentaje de ausentismo. | A |
-| RF-46 | Reporte de ocupación de asientos por zona y evento. | M |
-| RF-47 | Reporte de incidencias por evento, tipo y gravedad. | M |
-| RF-48 | Exportar reportes a PDF y Excel/CSV. | M |
-| RF-49 | Filtros por rango de fechas, evento, tipo, categoría y zona. | M |
+| RF-42 | Dashboard: eventos activos, boletos vendidos, ingresos, ocupación por zona, asistencia. | M |
+| RF-43 | Reporte de ventas por evento, zona, canal (Web/Mostrador) y vendedor. | A |
+| RF-44 | Reporte de asistencia: vendidos vs. ingresados y porcentaje de ausentismo. | A |
+| RF-45 | Reporte de ocupación de asientos por zona y evento. | M |
+| RF-46 | Reporte de incidencias por evento, tipo y gravedad. | M |
+| RF-47 | Exportar reportes a PDF y Excel/CSV. | M |
+| RF-48 | Filtros por rango de fechas, evento, tipo, categoría y zona. | M |
 
 ---
 
@@ -224,7 +223,6 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | **Cliente** | M3 | id, id_usuario (único), nombres, apellidos, documento (único), correo (único), telefono |
 | **Venta** | M3 | id, id_cliente, canal (Web/Mostrador), id_usuario_vendedor (solo mostrador), fecha, total, forma_pago, estado |
 | **Entrada** (boleto) | M3 | id, id_venta, id_evento_asiento, precio, codigo (único), estado (Emitida/Usada/Anulada) |
-| **AvisoDisponibilidad** | M3 | id, id_cliente, id_evento, id_zona, fecha, notificado |
 | **Acceso** | M4 | id, id_entrada, fecha_hora, puerta, id_usuario, resultado, anulado, motivo_anulacion |
 | **Incidencia** | M5 | id, id_evento, tipo, descripcion, gravedad, puerta, estado, fecha_hora, id_usuario |
 | **Usuario** | M6 | id, username (único), password_hash, nombre, id_rol, activo, intentos_fallidos |
@@ -313,7 +311,8 @@ TICKA/                               (repositorio github.com/Jozeeh/TICKA)
 │   ├── 00_usuario_aplicacion.sql    (usuario MySQL con permisos limitados)
 │   ├── 01_esquema_ticka.sql         (tablas, vista y catálogos)
 │   ├── 02_datos_prueba.sql          (recintos, eventos, ventas y accesos de ejemplo)
-│   └── 03_afiche_evento.sql         (migración: afiche como imagen adjunta, solo bases anteriores)
+│   ├── 03_afiche_evento.sql         (migración: afiche como imagen adjunta, solo bases anteriores)
+│   └── 04_quitar_aviso_disponibilidad.sql (migración: retira el aviso de disponibilidad, solo bases anteriores)
 └── src/
     ├── main/java/sv/edu/itca/ticka/
     │   ├── modelo/                  (Evento, Recinto, Zona, Asiento, Usuario, Rol...)
@@ -346,13 +345,13 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 | Tema de la guía | Dónde se aplica | Rol |
 |---|---|---|
 | Formularios y validación | Evento, precios, registro de cliente, compra (RF-01, RF-06, RF-13, RF-17) | Organizador / Cliente |
-| Control de flujo y excepciones | Choque de horario en el recinto, asiento ya tomado, boleto inválido (RF-06, RF-17, RF-27) | Organizador / Cliente / Acceso |
-| Sesiones y cookies | Login, rol en sesión, reserva ligada al usuario, "recordar usuario" (RF-37, RF-18, RF-42) | Administrador / Cliente |
+| Control de flujo y excepciones | Choque de horario en el recinto, asiento ya tomado, boleto inválido (RF-06, RF-17, RF-26) | Organizador / Cliente / Acceso |
+| Sesiones y cookies | Login, rol en sesión, reserva ligada al usuario, "recordar usuario" (RF-36, RF-18, RF-41) | Administrador / Cliente |
 | POO y MVC | Entidades, servicios y controladores separados (RNF-03) | Todos |
 | Persistencia JDBC/DAO | Todas las entidades; transacciones en compra, reserva y anulación (RNF-05) | Todos |
-| JSF, PrimeFaces, AJAX | Listados con filtro, mapa de asientos con refresco, ocupación en vivo, dashboard (RF-03, RF-16, RF-29, RF-43) | Todos |
-| Seguridad | Hash, filtros de rol, CSRF, control de propiedad (RF-39, RF-40, RF-41, RNF-04) | Administrador |
-| Reportería | Ventas, asistencia, ocupación, incidencias (RF-44 a RF-49) | Administrador |
+| JSF, PrimeFaces, AJAX | Listados con filtro, mapa de asientos con refresco, ocupación en vivo, dashboard (RF-03, RF-16, RF-28, RF-42) | Todos |
+| Seguridad | Hash, filtros de rol, CSRF, control de propiedad (RF-38, RF-39, RF-40, RNF-04) | Administrador |
+| Reportería | Ventas, asistencia, ocupación, incidencias (RF-43 a RF-48) | Administrador |
 
 ---
 
@@ -366,7 +365,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 | **12** | — | Generación de asientos, precios por zona, publicación (RF-07) | Mapa de asientos y compra con actualización condicional | Validación de código y registro de acceso | Filtros de autorización por rol, hash |
 | **13** | Integración de flujo compra → acceso | Regla de choque de horario por recinto, bloqueo de asientos | Reserva temporal, mis boletos, QR, anulación | Rechazos con motivo, ocupación en vivo, incidencias | Bloqueo por intentos fallidos, expiración de sesión |
 | **14** | Migración/mejora de vistas a JSF + PrimeFaces | Listado de eventos con AJAX | Mapa de asientos con AJAX | Ocupación en vivo con AJAX | Dashboard |
-| **15** | — | Duplicar evento, pulido de validaciones | Aviso de disponibilidad, venta en mostrador | Re-entrada, anulación de ingreso | Reportes y exportación PDF/Excel |
+| **15** | — | Duplicar evento, pulido de validaciones | Venta en mostrador | Re-entrada, anulación de ingreso | Reportes y exportación PDF/Excel |
 | **16** | Pruebas cruzadas (incluida compra simultánea), documentación final, despliegue y presentación | | | | |
 
 ---
@@ -393,7 +392,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 | El mapa de asientos y la concurrencia concentran la complejidad en el rol Cliente. | Usar cuadrícula HTML simple; resolver la concurrencia con una actualización condicional; la reserva temporal (M) puede entrar en la semana 13. |
 | Dependencia entre roles (Acceso necesita boletos del Cliente; el Cliente necesita asientos del Organizador). | Fijar el esquema de BD común en la semana 11 y cargar datos de prueba compartidos (recinto con asientos y evento publicado). |
 | Liberar reservas vencidas sin un servicio externo. | Evaluar el vencimiento al consultar el mapa y, opcionalmente, con un `ServletContextListener` programado. |
-| Carga desigual entre roles. | Revisar semanalmente; reasignar RF de prioridad B/M (p. ej. RF-09, RF-24, RF-25) si hace falta. |
+| Carga desigual entre roles. | Revisar semanalmente; reasignar RF de prioridad B/M (p. ej. RF-09, RF-24) si hace falta. |
 | Confusión `javax` / `jakarta` al agregar librerías. | Validar compatibilidad con Tomcat 9 antes de agregar dependencias. |
 | JSF/PrimeFaces no compatibles con Tomcat 9. | Usar variantes `javax` (Mojarra 2.3.x, PrimeFaces 11–12) y probar temprano. |
 | Conflictos de integración en Git. | Ramas por rol/funcionalidad y vistas separadas por carpeta de rol. |
@@ -406,6 +405,6 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 - [ ] Confirmar nombre definitivo (TICKA) y ruta de contexto.
 - [ ] Asignar cada rol a un integrante y registrarlo en la bitácora.
 - [ ] Decidir cuántos minutos dura la reserva temporal y cuántos asientos se permiten por compra.
-- [ ] Decidir si entran la venta en mostrador (RF-25) y el aviso de disponibilidad (RF-24).
-- [ ] Decidir si habrá re-entrada (RF-32).
+- [ ] Decidir si entra la venta en mostrador (RF-24).
+- [ ] Decidir si habrá re-entrada (RF-31).
 - [ ] Elegir librería de reportes (JasperReports vs. Apache POI/iText).
