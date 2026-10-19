@@ -381,10 +381,13 @@ dl.datos dd { margin: 0; }
    Página de inicio: portada, cifras y cartelera en tarjetas
    ===================================================================== */
 .portada-inicio {
-    background: radial-gradient(circle at 85% 20%, rgba(228, 87, 46, .45), transparent 45%),
-                linear-gradient(135deg, #10233d 0%, var(--primario) 55%, #2c5282 100%);
+    /* Foto del público con una capa oscura encima para que el texto se lea bien. */
+    background:
+        linear-gradient(90deg, rgba(16, 35, 61, .92) 0%, rgba(16, 35, 61, .7) 45%, rgba(16, 35, 61, .25) 100%),
+        url("../img/portada.webp") center / cover no-repeat;
+    background-color: #10233d;
     color: #fff;
-    padding: 56px 24px 64px;
+    padding: 80px 24px 96px;
 }
 .portada-contenido {
     max-width: 1180px;
