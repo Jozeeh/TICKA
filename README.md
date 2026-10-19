@@ -32,6 +32,8 @@ mysql -u root -p < sql/01_esquema_ticka.sql
 mysql -u root -p < sql/02_datos_prueba.sql
 ```
 
+Si su base `ticka` se creó antes de que existieran los afiches adjuntos (la columna `evento.imagen` era texto), ejecute también `sql/03_afiche_evento.sql`.
+
 Luego abra `sql/00_usuario_aplicacion.sql`, cambie `CAMBIAR_LOCALMENTE` por una contraseña propia y ejecútelo. Crea el usuario `ticka_app`, con permisos solo de lectura y escritura sobre `ticka`; la aplicación nunca se conecta como root.
 
 > `01_esquema_ticka.sql` borra y vuelve a crear la base `ticka`. Ejecútelo solo cuando quiera empezar de cero.
@@ -79,7 +81,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
 | Eventos: listado con búsqueda, filtros y paginación | `/organizador/eventos` | RF-01, RF-03 |
-| Nuevo / editar evento (participantes, fechas, recinto) | `?accion=nuevo`, `?accion=editar&id=` | RF-01, RF-06, RN-05, RN-06 |
+| Nuevo / editar evento (participantes, fechas, recinto y afiche adjunto opcional: JPG, PNG, WEBP o GIF de hasta 2 MB, guardado en MySQL) | `?accion=nuevo`, `?accion=editar&id=` | RF-01, RF-06, RN-05, RN-06 |
 | Detalle: precios por zona, ocupación, publicar, cambiar estado, cancelar | `?accion=ver&id=` | RF-02, RF-05, RF-07, RN-09 |
 | Mapa de asientos con bloqueo y desbloqueo | `/organizador/mapa?evento=` | RF-08, RN-01, RN-11 |
 | Recintos | `/organizador/recintos` | RF-10 |

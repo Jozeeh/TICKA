@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import sv.edu.itca.ticka.modelo.Afiche;
 import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroEvento;
@@ -42,6 +43,14 @@ public interface EventoDAO {
      * Si tipo no es null, filtra por tipo de evento.
      */
     List<Evento> listarCartelera(TipoEvento tipo);
+
+    /** Guarda (o reemplaza) la imagen adjunta del evento. */
+    void guardarAfiche(long idEvento, byte[] contenido, String tipo);
+
+    void quitarAfiche(long idEvento);
+
+    /** Imagen adjunta del evento, si tiene. */
+    Optional<Afiche> obtenerAfiche(long idEvento);
 
     // ---- Operaciones dentro de una transacción ----
 

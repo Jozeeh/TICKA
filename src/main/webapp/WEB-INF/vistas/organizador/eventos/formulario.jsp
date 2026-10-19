@@ -18,7 +18,7 @@
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <section class="tarjeta formulario" style="max-width:900px">
-        <form method="post" action="${ctx}/organizador/eventos">
+        <form method="post" action="${ctx}/organizador/eventos" enctype="multipart/form-data">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="id" value="${evento.id}">
@@ -87,9 +87,20 @@
                            value="${evento.fechaFinEntrada}">
                 </div>
                 <div class="grupo-campo completo">
-                    <label for="imagen">Afiche (opcional)</label>
-                    <input type="text" id="imagen" name="imagen" maxlength="255"
-                           placeholder="Ruta o URL de la imagen" value="<c:out value='${evento.imagen}' />">
+                    <label for="afiche">Afiche (opcional)</label>
+                    <div class="campo-afiche">
+                        <img id="vistaAfiche" class="vista-afiche" alt="Vista previa del afiche"
+                             src="${evento.conAfiche ? ctx += '/afiche?evento=' += evento.id : ctx += '/resources/img/sin-imagen.png'}">
+                        <div>
+                            <input type="file" id="afiche" name="afiche" accept="image/png,image/jpeg,image/webp,image/gif">
+                            <span class="ayuda">JPG, PNG, WEBP o GIF de hasta 2 MB. Si no adjunta ninguno, se usa la imagen por defecto.</span>
+                            <c:if test="${evento.conAfiche}">
+                                <label class="casilla" style="margin-top:8px">
+                                    <input type="checkbox" name="quitarAfiche" value="si"> Quitar el afiche actual
+                                </label>
+                            </c:if>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="acciones-formulario">
@@ -100,5 +111,21 @@
     </section>
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>
+<script>
+    // Vista previa del afiche y aviso inmediato si pesa más de 2 MB
+    // (el servidor vuelve a validar el tamaño y el tipo real de la imagen).
+    document.getElementById('afiche').addEventListener('change', function () {
+        var archivo = this.files[0];
+        if (!archivo) {
+            return;
+        }
+        if (archivo.size > 2 * 1024 * 1024) {
+            alert('El afiche no puede pesar más de 2 MB.');
+            this.value = '';
+            return;
+        }
+        document.getElementById('vistaAfiche').src = URL.createObjectURL(archivo);
+    });
+</script>
 </body>
 </html>

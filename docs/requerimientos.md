@@ -214,7 +214,7 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 ### 5.1 Entidades
 | Entidad | Módulo | Atributos clave |
 |---|---|---|
-| **Evento** | M1 | id, nombre, tipo (Concierto/Partido/Ópera/Teatro/Otro), descripcion, participantes, imagen, id_categoria, id_recinto, apertura_puertas, fecha_inicio, fecha_fin, estado, activo |
+| **Evento** | M1 | id, nombre, tipo (Concierto/Partido/Ópera/Teatro/Otro), descripcion, participantes, afiche (imagen adjunta), afiche_tipo, id_categoria, id_recinto, apertura_puertas, fecha_inicio, fecha_fin, estado, activo |
 | **Categoria** | M1 | id, nombre |
 | **PrecioZona** | M1 | id, id_evento, id_zona, precio — `UNIQUE (id_evento, id_zona)` |
 | **EventoAsiento** | M1 | id, id_evento, id_asiento, estado (Disponible/Reservado/Vendido/Bloqueado), reservado_hasta, id_cliente_reserva — `UNIQUE (id_evento, id_asiento)` |

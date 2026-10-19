@@ -34,9 +34,6 @@ public final class ValidadorEvento {
         if (e.getParticipantes() != null && e.getParticipantes().length() > 200) {
             return "Los participantes no pueden superar los 200 caracteres.";
         }
-        if (e.getImagen() != null && e.getImagen().length() > 255) {
-            return "La ruta de la imagen no puede superar los 255 caracteres.";
-        }
         if (e.getAperturaPuertas() == null || e.getFechaInicio() == null || e.getFechaFin() == null) {
             return "La apertura de puertas, el inicio y el fin son obligatorios.";
         }

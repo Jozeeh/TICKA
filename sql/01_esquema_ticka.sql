@@ -116,7 +116,8 @@ CREATE TABLE evento (
     tipo            ENUM('Concierto','Partido','Opera','Teatro','Otro') NOT NULL,
     descripcion     TEXT         NULL,
     participantes   VARCHAR(200) NULL,                    -- artista(s), elenco o equipos
-    imagen          VARCHAR(255) NULL,                    -- afiche (ruta o URL), opcional
+    afiche          MEDIUMBLOB   NULL,                    -- imagen adjunta (opcional, máx. 2 MB)
+    afiche_tipo     VARCHAR(30)  NULL,                    -- image/jpeg, image/png, image/webp o image/gif
     id_categoria    INT UNSIGNED NULL,
     id_recinto      INT UNSIGNED NOT NULL,
     apertura_puertas DATETIME    NOT NULL,

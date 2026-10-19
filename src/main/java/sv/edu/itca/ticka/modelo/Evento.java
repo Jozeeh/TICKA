@@ -18,7 +18,8 @@ public class Evento {
     private TipoEvento tipo;
     private String descripcion;
     private String participantes;
-    private String imagen;
+    /** true si el evento tiene un afiche adjunto (la imagen se sirve en /afiche). */
+    private boolean conAfiche;
     private Long idCategoria;
     private Long idRecinto;
     private LocalDateTime aperturaPuertas;
@@ -89,8 +90,8 @@ public class Evento {
     public String getParticipantes() { return participantes; }
     public void setParticipantes(String participantes) { this.participantes = participantes; }
 
-    public String getImagen() { return imagen; }
-    public void setImagen(String imagen) { this.imagen = imagen; }
+    public boolean isConAfiche() { return conAfiche; }
+    public void setConAfiche(boolean conAfiche) { this.conAfiche = conAfiche; }
 
     public Long getIdCategoria() { return idCategoria; }
     public void setIdCategoria(Long idCategoria) { this.idCategoria = idCategoria; }

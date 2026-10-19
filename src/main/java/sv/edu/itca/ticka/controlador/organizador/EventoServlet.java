@@ -6,10 +6,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import sv.edu.itca.ticka.dao.AsientoEventoDAO;
 import sv.edu.itca.ticka.dao.CategoriaDAO;
 import sv.edu.itca.ticka.dao.DAOException;
@@ -26,6 +28,7 @@ import sv.edu.itca.ticka.modelo.PrecioZona;
 import sv.edu.itca.ticka.modelo.TipoEvento;
 import sv.edu.itca.ticka.servicio.EventoServicio;
 import sv.edu.itca.ticka.servicio.ServicioException;
+import sv.edu.itca.ticka.servicio.ValidadorImagen;
 import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
@@ -38,6 +41,9 @@ import sv.edu.itca.ticka.util.Sesion;
  * formulario, delega y decide a qué vista ir.
  */
 @WebServlet("/organizador/eventos")
+// El formulario del evento se envía como multipart/form-data para adjuntar el afiche.
+// El límite real (2 MB) se valida en ValidadorImagen; aquí se deja margen para el mensaje.
+@MultipartConfig(maxFileSize = 12 * 1024 * 1024, maxRequestSize = 12 * 1024 * 1024)
 public class EventoServlet extends HttpServlet {
 
     private static final String VISTA_LISTA = "/WEB-INF/vistas/organizador/eventos/lista.jsp";
@@ -222,9 +228,18 @@ public class EventoServlet extends HttpServlet {
             error = "Revise el formato de las fechas y horas.";
         }
         try {
+            // El afiche es opcional: se valida antes de guardar para no dejar el evento a medias.
+            byte[] afiche = leerAfiche(req);
+            String tipoAfiche = afiche == null ? null : ValidadorImagen.validar(afiche);
+            boolean quitarAfiche = "si".equals(req.getParameter("quitarAfiche"));
             if (error == null) {
                 boolean esNuevo = e.getId() == null;
                 long id = eventoServicio.guardar(e, Sesion.usuario(req).getId());
+                if (afiche != null) {
+                    eventoDAO.guardarAfiche(id, afiche, tipoAfiche);
+                } else if (quitarAfiche) {
+                    eventoDAO.quitarAfiche(id);
+                }
                 Sesion.exito(req, esNuevo
                         ? "Evento registrado en Borrador. Defina los precios por zona y publíquelo."
                         : "Evento actualizado.");
@@ -236,7 +251,10 @@ public class EventoServlet extends HttpServlet {
         }
         // Se conserva el estado real del evento para que la vista muestre lo correcto.
         if (e.getId() != null) {
-            eventoDAO.buscarPorId(e.getId()).ifPresent(actual -> e.setEstado(actual.getEstado()));
+            eventoDAO.buscarPorId(e.getId()).ifPresent(actual -> {
+                e.setEstado(actual.getEstado());
+                e.setConAfiche(actual.isConAfiche());
+            });
         }
         req.setAttribute("error", error);
         mostrarFormulario(req, resp, e);
@@ -249,13 +267,26 @@ public class EventoServlet extends HttpServlet {
         e.setTipo(TipoEvento.desdeBd(req.getParameter("tipo")));
         e.setDescripcion(Parametros.texto(req.getParameter("descripcion")));
         e.setParticipantes(Parametros.texto(req.getParameter("participantes")));
-        e.setImagen(Parametros.texto(req.getParameter("imagen")));
         e.setIdCategoria(Parametros.enteroLargo(req.getParameter("categoria")));
         e.setIdRecinto(Parametros.enteroLargo(req.getParameter("recinto")));
         e.setAperturaPuertas(Parametros.fechaHora(req.getParameter("aperturaPuertas")));
         e.setFechaInicio(Parametros.fechaHora(req.getParameter("fechaInicio")));
         e.setFechaFin(Parametros.fechaHora(req.getParameter("fechaFin")));
         return e;
+    }
+
+    /** Contenido del archivo adjunto "afiche", o null si no se eligió ninguno. */
+    private static byte[] leerAfiche(HttpServletRequest req) throws IOException, ServletException {
+        Part parte = req.getPart("afiche");
+        if (parte == null || parte.getSize() == 0) {
+            return null;
+        }
+        if (parte.getSize() > ValidadorImagen.TAMANO_MAXIMO) {
+            throw new ServicioException("El afiche no puede pesar más de 2 MB.");
+        }
+        try (java.io.InputStream in = parte.getInputStream()) {
+            return in.readAllBytes();
+        }
     }
 
     /** Lee los campos precio_{idZona} del formulario de precios. */

@@ -23,6 +23,8 @@ import javax.servlet.http.HttpSession;
 public class CsrfFilter implements Filter {
 
     public static final String ATRIBUTO = "csrf";
+    /** Debe coincidir con maxRequestSize de @MultipartConfig en EventoServlet (12 MB). */
+    public static final long LIMITE_ADJUNTOS = 12L * 1024 * 1024;
     private static final SecureRandom ALEATORIO = new SecureRandom();
 
     @Override
@@ -44,8 +46,17 @@ public class CsrfFilter implements Filter {
             sesion.setAttribute(ATRIBUTO, token);
         }
 
-        if ("POST".equalsIgnoreCase(request.getMethod())
-                && !coinciden(token, request.getParameter(ATRIBUTO))) {
+        // Si un formulario con archivo supera el límite de @MultipartConfig, Tomcat no puede
+        // leer ningún campo (ni el token). Se avisa al usuario en lugar de responder 403.
+        String tipoContenido = request.getContentType();
+        if (tipoContenido != null && tipoContenido.startsWith("multipart/")
+                && request.getContentLengthLong() > LIMITE_ADJUNTOS) {
+            sesion.setAttribute("flashError", "El archivo adjunto es demasiado grande (máximo 2 MB).");
+            response.sendRedirect(request.getContextPath() + "/organizador/eventos");
+            return;
+        }
+        String recibido = request.getParameter(ATRIBUTO);
+        if ("POST".equalsIgnoreCase(request.getMethod()) && !coinciden(token, recibido)) {
             if ("/acceso".equals(request.getServletPath())) {
                 // Formulario de acceso abierto antes de que expirara la sesión.
                 response.sendRedirect(request.getContextPath() + "/acceso?estado=expirada");

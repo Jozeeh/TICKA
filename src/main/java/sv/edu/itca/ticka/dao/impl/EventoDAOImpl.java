@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.EventoDAO;
+import sv.edu.itca.ticka.modelo.Afiche;
 import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroEvento;
@@ -25,7 +26,7 @@ public class EventoDAOImpl implements EventoDAO {
 
     /** SELECT con JOIN para traer el nombre de la categoría y del recinto. */
     private static final String SQL_SELECT
-            = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, e.imagen, "
+            = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, (e.afiche IS NOT NULL) AS con_afiche, "
             + "e.id_categoria, e.id_recinto, e.apertura_puertas, e.fecha_inicio, e.fecha_fin, "
             + "e.estado, e.creado_por, c.nombre AS categoria, r.nombre AS recinto, "
             + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id) AS total_asientos, "
@@ -42,7 +43,7 @@ public class EventoDAOImpl implements EventoDAO {
         e.setTipo(TipoEvento.desdeBd(rs.getString("tipo")));
         e.setDescripcion(rs.getString("descripcion"));
         e.setParticipantes(rs.getString("participantes"));
-        e.setImagen(rs.getString("imagen"));
+        e.setConAfiche(rs.getBoolean("con_afiche"));
         long categoria = rs.getLong("id_categoria");
         e.setIdCategoria(rs.wasNull() ? null : categoria);
         e.setIdRecinto(rs.getLong("id_recinto"));
@@ -147,14 +148,14 @@ public class EventoDAOImpl implements EventoDAO {
 
     @Override
     public long insertar(Evento e) {
-        String sql = "INSERT INTO evento (nombre, tipo, descripcion, participantes, imagen, id_categoria, "
+        String sql = "INSERT INTO evento (nombre, tipo, descripcion, participantes, id_categoria, "
                 + "id_recinto, apertura_puertas, fecha_inicio, fecha_fin, estado, creado_por) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             asignarDatos(ps, e);
-            ps.setString(11, EstadoEvento.BORRADOR.getBd());
-            ps.setObject(12, e.getCreadoPor());
+            ps.setString(10, EstadoEvento.BORRADOR.getBd());
+            ps.setObject(11, e.getCreadoPor());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 rs.next();
@@ -169,31 +170,65 @@ public class EventoDAOImpl implements EventoDAO {
 
     @Override
     public boolean actualizar(Evento e) {
-        String sql = "UPDATE evento SET nombre = ?, tipo = ?, descripcion = ?, participantes = ?, imagen = ?, "
+        String sql = "UPDATE evento SET nombre = ?, tipo = ?, descripcion = ?, participantes = ?, "
                 + "id_categoria = ?, id_recinto = ?, apertura_puertas = ?, fecha_inicio = ?, fecha_fin = ? "
                 + "WHERE id = ?";
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
             asignarDatos(ps, e);
-            ps.setLong(11, e.getId());
+            ps.setLong(10, e.getId());
             return ps.executeUpdate() == 1;
         } catch (SQLException ex) {
             throw new DAOException("No se pudo actualizar el evento", ex);
         }
     }
 
-    /** Parámetros 1 a 10, comunes a INSERT y UPDATE. */
+    /** Parámetros 1 a 9, comunes a INSERT y UPDATE (el afiche se guarda aparte). */
     private static void asignarDatos(PreparedStatement ps, Evento e) throws SQLException {
         ps.setString(1, e.getNombre());
         ps.setString(2, e.getTipo().getBd());
         ps.setString(3, e.getDescripcion());
         ps.setString(4, e.getParticipantes());
-        ps.setString(5, e.getImagen());
-        ps.setObject(6, e.getIdCategoria());
-        ps.setLong(7, e.getIdRecinto());
-        ps.setObject(8, e.getAperturaPuertas());
-        ps.setObject(9, e.getFechaInicio());
-        ps.setObject(10, e.getFechaFin());
+        ps.setObject(5, e.getIdCategoria());
+        ps.setLong(6, e.getIdRecinto());
+        ps.setObject(7, e.getAperturaPuertas());
+        ps.setObject(8, e.getFechaInicio());
+        ps.setObject(9, e.getFechaFin());
+    }
+
+    @Override
+    public void guardarAfiche(long idEvento, byte[] contenido, String tipo) {
+        String sql = "UPDATE evento SET afiche = ?, afiche_tipo = ? WHERE id = ?";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setBytes(1, contenido);
+            ps.setString(2, tipo);
+            ps.setLong(3, idEvento);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo guardar el afiche", ex);
+        }
+    }
+
+    @Override
+    public void quitarAfiche(long idEvento) {
+        guardarAfiche(idEvento, null, null);
+    }
+
+    @Override
+    public Optional<Afiche> obtenerAfiche(long idEvento) {
+        String sql = "SELECT afiche, afiche_tipo FROM evento WHERE id = ? AND activo = 1 AND afiche IS NOT NULL";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, idEvento);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next()
+                        ? Optional.of(new Afiche(rs.getBytes("afiche"), rs.getString("afiche_tipo")))
+                        : Optional.empty();
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo leer el afiche", ex);
+        }
     }
 
     @Override
@@ -234,7 +269,8 @@ public class EventoDAOImpl implements EventoDAO {
     @Override
     public List<Evento> listarCartelera(TipoEvento tipo) {
         String condicion = "e.activo = 1 AND e.estado IN ('Publicado', 'Agotado', 'En curso') AND e.fecha_fin >= NOW() ";
-        String sqlEventos = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, e.imagen, e.id_recinto, "
+        String sqlEventos = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, "
+                + "(e.afiche IS NOT NULL) AS con_afiche, e.id_recinto, "
                 + "e.apertura_puertas, e.fecha_inicio, e.fecha_fin, e.estado, c.nombre AS categoria, r.nombre AS recinto, "
                 + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id) AS total, "
                 + "(SELECT COUNT(*) FROM evento_asiento ea WHERE ea.id_evento = e.id AND ea.estado = 'Vendido') AS vendidos, "
@@ -262,7 +298,7 @@ public class EventoDAOImpl implements EventoDAO {
                         e.setTipo(TipoEvento.desdeBd(rs.getString("tipo")));
                         e.setDescripcion(rs.getString("descripcion"));
                         e.setParticipantes(rs.getString("participantes"));
-                        e.setImagen(rs.getString("imagen"));
+                        e.setConAfiche(rs.getBoolean("con_afiche"));
                         e.setIdRecinto(rs.getLong("id_recinto"));
                         e.setAperturaPuertas(rs.getObject("apertura_puertas", LocalDateTime.class));
                         e.setFechaInicio(rs.getObject("fecha_inicio", LocalDateTime.class));

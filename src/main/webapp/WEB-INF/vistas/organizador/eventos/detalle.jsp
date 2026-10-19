@@ -29,6 +29,8 @@
 
     <section class="tarjeta">
         <h2 style="margin-top:0">Datos del evento</h2>
+        <img class="vista-afiche flotante" alt="Afiche del evento"
+             src="${evento.conAfiche ? ctx += '/afiche?evento=' += evento.id : ctx += '/resources/img/sin-imagen.png'}">
         <dl class="datos">
             <dt>Participantes</dt><dd><c:out value="${evento.participantes}" default="—" /></dd>
             <dt>Categoría</dt><dd><c:out value="${evento.categoria}" default="Sin categoría" /></dd>
