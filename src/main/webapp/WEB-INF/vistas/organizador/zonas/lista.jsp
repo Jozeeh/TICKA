@@ -54,8 +54,6 @@
     <div class="leyenda">
         <span><i class="Activo"></i> Asiento activo</span>
         <span><i class="Inactivo"></i> Inhabilitado</span>
-        <span class="ayuda">Cambie las filas o los asientos por fila y pulse <strong>Guardar zona</strong> para ajustar la cuadrícula (los asientos dentro de la nueva cuadrícula quedan activos; si solo cambia el nombre, no se tocan).
-            Haga clic en un asiento para habilitarlo o inhabilitarlo (los asientos no se borran, RN-14).</span>
     </div>
 
     <c:forEach var="z" items="${zonas}">
