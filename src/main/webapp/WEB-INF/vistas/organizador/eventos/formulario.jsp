@@ -105,7 +105,7 @@
                 <div class="grupo-campo completo">
                     <label for="participantes">Participantes</label>
                     <input type="text" id="participantes" name="participantes" maxlength="200"
-                           placeholder="Artista, elenco o equipos (ej. Águilas FC vs. Tigres del Norte)"
+                           placeholder="Artista, elenco o equipos (ej. Alianza FC vs. CD FAS)"
                            value="<c:out value='${evento.participantes}' />">
                 </div>
                 <div class="grupo-campo completo">

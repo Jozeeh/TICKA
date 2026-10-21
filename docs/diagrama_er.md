@@ -140,7 +140,7 @@ erDiagram
 
 > `evento.afiche` guarda la imagen adjunta del evento (opcional, JPG/PNG/WEBP/GIF de hasta 2 MB) y `afiche_tipo` su formato; si no hay afiche se muestra una imagen por defecto.
 >
-> `evento.participantes` guarda en texto quién actúa o juega (por ejemplo, "Coldplay" o "Águilas vs Tigres"). Un recinto no puede tener dos eventos con horarios traslapados (RN-05).
+> `evento.participantes` guarda en texto quién actúa o juega (por ejemplo, "Maná" o "Alianza FC vs. CD FAS"). Un recinto no puede tener dos eventos con horarios traslapados (RN-05).
 >
 > `evento_asiento.estado` puede ser *Disponible*, *Reservado*, *Vendido* o *Bloqueado*. Por la restricción única (evento + asiento), **un asiento = un boleto**.
 

@@ -109,7 +109,7 @@ CREATE TABLE categoria (
 ) ENGINE=InnoDB;
 
 -- El espectáculo (concierto, partido, ópera, teatro): recinto, fechas, apertura de puertas y estado. Tabla central.
--- 'participantes' guarda en texto quién actúa o juega (p. ej. "Coldplay" o "Águilas vs Tigres").
+-- 'participantes' guarda en texto quién actúa o juega (p. ej. "Maná" o "Alianza FC vs. CD FAS").
 CREATE TABLE evento (
     id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
     nombre          VARCHAR(150) NOT NULL,
