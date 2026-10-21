@@ -54,6 +54,15 @@
             </select>
         </div>
         <div class="grupo-campo">
+            <label for="categoria">Categoría</label>
+            <select id="categoria" name="categoria">
+                <option value="">Todas</option>
+                <c:forEach var="cat" items="${categorias}">
+                    <option value="${cat.id}" ${filtro.idCategoria == cat.id ? 'selected' : ''}><c:out value="${cat.nombre}" /></option>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="grupo-campo">
             <label for="desde">Desde</label>
             <input type="date" id="desde" name="desde" value="${filtro.desde}">
         </div>
@@ -91,11 +100,14 @@
                             <c:otherwise><span class="ayuda">Sin publicar</span></c:otherwise>
                         </c:choose>
                     </td>
-                    <td class="acciones-linea">
-                        <a class="boton chico" href="${ctx}/organizador/eventos?accion=ver&id=${ev.id}">Ver</a>
-                        <c:if test="${ev.estado.conMapa}">
-                            <a class="boton borde chico" href="${ctx}/organizador/mapa?evento=${ev.id}">Mapa</a>
-                        </c:if>
+                    <td>
+                        <div class="acciones-linea">
+                            <a class="boton chico" href="${ctx}/organizador/eventos?accion=ver&id=${ev.id}">Ver</a>
+                            <c:if test="${ev.estado.conMapa}">
+                                <a class="boton borde chico" href="${ctx}/organizador/mapa?evento=${ev.id}">Mapa</a>
+                            </c:if>
+                            <a class="boton gris chico" href="${ctx}/organizador/eventos?accion=duplicar&id=${ev.id}">Duplicar</a>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>
@@ -113,6 +125,7 @@
                         <c:param name="tipo" value="${filtro.tipo.bd}" />
                         <c:param name="estado" value="${filtro.estado}" />
                         <c:param name="recinto" value="${filtro.idRecinto}" />
+                        <c:param name="categoria" value="${filtro.idCategoria}" />
                         <c:param name="desde" value="${filtro.desde}" />
                         <c:param name="hasta" value="${filtro.hasta}" />
                         <c:param name="pagina" value="${p}" />

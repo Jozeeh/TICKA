@@ -38,25 +38,27 @@
                         </c:if>
                     </td>
                     <td>${us.creadoEnTexto}</td>
-                    <td class="acciones-linea">
-                        <a class="boton amarillo chico" href="${ctx}/admin/usuarios?accion=editar&id=${us.id}">Editar</a>
-                        <c:if test="${us.bloqueado}">
-                            <form method="post" action="${ctx}/admin/usuarios" class="linea">
-                                <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                                <input type="hidden" name="accion" value="desbloquear">
-                                <input type="hidden" name="id" value="${us.id}">
-                                <button type="submit" class="boton chico">Desbloquear</button>
-                            </form>
-                        </c:if>
-                        <c:if test="${us.id != u.id}">
-                            <form method="post" action="${ctx}/admin/usuarios" class="linea">
-                                <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                                <input type="hidden" name="accion" value="estado">
-                                <input type="hidden" name="id" value="${us.id}">
-                                <input type="hidden" name="activar" value="${us.activo ? 'no' : 'si'}">
-                                <button type="submit" class="boton chico ${us.activo ? 'rojo' : 'verde'}">${us.activo ? 'Desactivar' : 'Activar'}</button>
-                            </form>
-                        </c:if>
+                    <td>
+                        <div class="acciones-linea">
+                            <a class="boton amarillo chico" href="${ctx}/admin/usuarios?accion=editar&id=${us.id}">Editar</a>
+                            <c:if test="${us.bloqueado}">
+                                <form method="post" action="${ctx}/admin/usuarios" class="linea">
+                                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                    <input type="hidden" name="accion" value="desbloquear">
+                                    <input type="hidden" name="id" value="${us.id}">
+                                    <button type="submit" class="boton chico">Desbloquear</button>
+                                </form>
+                            </c:if>
+                            <c:if test="${us.id != u.id}">
+                                <form method="post" action="${ctx}/admin/usuarios" class="linea">
+                                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                    <input type="hidden" name="accion" value="estado">
+                                    <input type="hidden" name="id" value="${us.id}">
+                                    <input type="hidden" name="activar" value="${us.activo ? 'no' : 'si'}">
+                                    <button type="submit" class="boton chico ${us.activo ? 'rojo' : 'verde'}">${us.activo ? 'Desactivar' : 'Activar'}</button>
+                                </form>
+                            </c:if>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>

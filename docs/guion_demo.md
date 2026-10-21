@@ -24,6 +24,8 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 
 ## 2. Seguridad y Administrador (5 a 6 min)
 
+> Las opciones de cada rol están en el **menú lateral** izquierdo; la barra superior solo tiene la marca, la cartelera y la sesión.
+
 1. **Inicio de sesión:**
    - Escribir mal la contraseña: aparece "Le quedan N intentos" (bloqueo de 15 min al quinto intento, RF-40).
    - Entrar bien y marcar "Recordar mi usuario" (cookie, RF-41).
@@ -36,7 +38,8 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 4. **Clientes:** buscar un cliente, ver sus compras y total, y desactivar y volver a activar su cuenta.
 5. **Reportes:**
    - Pestañas de ventas (por zona y canal Web/Mostrador), asistencia (vendidos frente a ingresados, ausentes y rechazos en puerta), ocupación e incidencias.
-   - Filtrar por evento y **Exportar CSV**; abrirlo en Excel para mostrar que las tildes se ven bien.
+   - La pestaña de ventas incluye el **vendedor** (las ventas de mostrador muestran quién las registró).
+   - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**; luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
 6. **Autorización:** en la ventana del Organizador, abrir `/ticka/admin/dashboard`: responde **403 Acceso denegado**.
 
 ## 3. Organizador (6 a 7 min)
@@ -46,9 +49,10 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Agregar una zona nueva con su distribución (fila A a la C, 8 asientos por fila) en un solo paso. Luego cambiar la distribución (por ejemplo, hasta la fila D) y pulsar **Guardar zona**: crea los que faltan e inactiva, sin borrar, los que quedan fuera.
    - Hacer clic en un asiento para inhabilitarlo (RN-14: no se borra).
 2. **Eventos:**
-   - Listado con filtros por tipo, estado, recinto y fechas, y búsqueda por nombre o participantes.
+   - Listado con filtros por tipo, estado, recinto, categoría y fechas, y búsqueda por nombre o participantes.
    - Abrir **Festival Pop Centroamericano** (Borrador) y pulsar **Publicar** sin precios: aparece "Faltan precios en 3 zonas".
    - Pulsar **Editar datos**: al elegir el recinto aparecen sus zonas y el precio de cada una se escribe en el mismo formulario. Guardar y **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
+   - Pulsar **Duplicar** en un evento (RF-09): se abre el formulario con sus datos, precios y afiche; solo se eligen fechas nuevas y queda en Borrador. En el detalle de esa copia, **Desactivar** la quita del listado (borrado lógico, RN-10).
    - **Editar datos** y adjuntar un afiche (imagen de hasta 2 MB) con su vista previa; volver al **Inicio** para verlo en la tarjeta de la cartelera. Los eventos sin afiche muestran la imagen por defecto.
 3. **Mapa de asientos** de *Noche de Rock Salvadoreño*:
    - Colores por estado: vendido, reservado, bloqueado y disponible.
@@ -63,7 +67,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 ## 4. Cierre (1 min)
 
 - **Arquitectura MVC en capas:** Servlet → Servicio (reglas y transacciones) → DAO (JDBC) → MySQL, con vistas JSP/JSTL.
-- **Pruebas:** 31 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
+- **Pruebas:** 33 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
 - **Siguiente entrega:** rol Cliente (compra eligiendo asientos en el mismo mapa) y rol Control de acceso (validación del QR en puerta). La base de datos ya los soporta.
 
 ## Preguntas frecuentes

@@ -37,15 +37,17 @@
                     <td class="numero">${r.totalZonas}</td>
                     <td class="numero">${r.totalAsientos}</td>
                     <td><span class="etiqueta ${r.activo ? 'activo' : 'inactivo'}">${r.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td class="acciones-linea">
-                        <a class="boton chico" href="${ctx}/organizador/zonas?recinto=${r.id}">Zonas y asientos</a>
-                        <a class="boton amarillo chico" href="${ctx}/organizador/recintos?accion=editar&id=${r.id}">Editar</a>
-                        <form method="post" action="${ctx}/organizador/recintos" class="linea">
-                            <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                            <input type="hidden" name="accion" value="estado">
-                            <input type="hidden" name="id" value="${r.id}">
-                            <button type="submit" class="boton chico ${r.activo ? 'rojo' : 'verde'}">${r.activo ? 'Desactivar' : 'Activar'}</button>
-                        </form>
+                    <td>
+                        <div class="acciones-linea">
+                            <a class="boton chico" href="${ctx}/organizador/zonas?recinto=${r.id}">Zonas y asientos</a>
+                            <a class="boton amarillo chico" href="${ctx}/organizador/recintos?accion=editar&id=${r.id}">Editar</a>
+                            <form method="post" action="${ctx}/organizador/recintos" class="linea">
+                                <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                <input type="hidden" name="accion" value="estado">
+                                <input type="hidden" name="id" value="${r.id}">
+                                <button type="submit" class="boton chico ${r.activo ? 'rojo' : 'verde'}">${r.activo ? 'Desactivar' : 'Activar'}</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>

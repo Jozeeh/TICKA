@@ -46,17 +46,19 @@
                 <tr>
                     <td><c:out value="${cat.nombre}" /></td>
                     <td class="numero">${cat.totalEventos}</td>
-                    <td class="acciones-linea">
-                        <a class="boton amarillo chico" href="${ctx}/organizador/categorias?accion=editar&id=${cat.id}">Editar</a>
-                        <c:if test="${cat.totalEventos == 0}">
-                            <form method="post" action="${ctx}/organizador/categorias" class="linea"
-                                  onsubmit="return confirm('¿Eliminar esta categoría?');">
-                                <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                                <input type="hidden" name="accion" value="eliminar">
-                                <input type="hidden" name="id" value="${cat.id}">
-                                <button type="submit" class="boton rojo chico">Eliminar</button>
-                            </form>
-                        </c:if>
+                    <td>
+                        <div class="acciones-linea">
+                            <a class="boton amarillo chico" href="${ctx}/organizador/categorias?accion=editar&id=${cat.id}">Editar</a>
+                            <c:if test="${cat.totalEventos == 0}">
+                                <form method="post" action="${ctx}/organizador/categorias" class="linea"
+                                      onsubmit="return confirm('¿Eliminar esta categoría?');">
+                                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                                    <input type="hidden" name="accion" value="eliminar">
+                                    <input type="hidden" name="id" value="${cat.id}">
+                                    <button type="submit" class="boton rojo chico">Eliminar</button>
+                                </form>
+                            </c:if>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>

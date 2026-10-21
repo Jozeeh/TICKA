@@ -1,37 +1,45 @@
-<%-- Barra de navegación común: los enlaces dependen del rol en sesión. --%>
+<%-- Barra superior común (marca, enlaces públicos y sesión) y menú lateral con
+     las opciones del rol. El menú lateral solo aparece con sesión iniciada y
+     fuera de la página de inicio (la cartelera pública). --%>
 <c:set var="u" value="${sessionScope.usuarioAutenticado}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <nav class="navbar">
     <a class="marca" href="${ctx}/">TICK<span>A</span></a>
-    <c:choose>
-        <c:when test="${empty u}">
-            <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
-            <a class="enlace" href="${ctx}/#cartelera">Cartelera</a>
-            <div class="usuario"><a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a></div>
-        </c:when>
-        <c:otherwise>
-            <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
-            <a class="enlace ${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
-            <c:if test="${u.administrador}">
-                <a class="enlace ${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
-            </c:if>
-            <c:if test="${u.gestorEventos}">
-                <a class="enlace ${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
-                <a class="enlace ${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos</a>
-                <a class="enlace ${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
-            </c:if>
-            <c:if test="${u.administrador}">
-                <a class="enlace ${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
-                <a class="enlace ${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
-                <a class="enlace ${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/admin/reportes">Reportes</a>
-            </c:if>
-            <div class="usuario">
+    <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
+    <a class="enlace" href="${ctx}/#cartelera">Cartelera</a>
+    <div class="usuario">
+        <c:choose>
+            <c:when test="${empty u}">
+                <a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a>
+            </c:when>
+            <c:otherwise>
+                <c:if test="${paginaActiva == 'inicio'}">
+                    <a class="boton acento chico" href="${ctx}/panel">Ir a mi panel</a>
+                </c:if>
                 <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
                 <form method="post" action="${ctx}/cerrar-sesion">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <button type="submit" class="boton borde chico" style="color:#fff;border-color:#fff">Cerrar sesión</button>
                 </form>
-            </div>
-        </c:otherwise>
-    </c:choose>
+            </c:otherwise>
+        </c:choose>
+    </div>
 </nav>
+<c:if test="${not empty u and paginaActiva != 'inicio'}">
+    <aside class="menu-lateral" aria-label="Menú del rol">
+        <a class="${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
+        <c:if test="${u.gestorEventos}">
+            <p class="seccion">Organizador</p>
+            <a class="${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
+            <a class="${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
+            <a class="${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
+        </c:if>
+        <c:if test="${u.administrador}">
+            <p class="seccion">Administración</p>
+            <a class="${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
+            <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/admin/reportes">Reportes</a>
+            <a class="${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
+            <a class="${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
+        </c:if>
+    </aside>
+</c:if>

@@ -23,6 +23,7 @@
             <c:if test="${evento.estado.conMapa}">
                 <a class="boton" href="${ctx}/organizador/mapa?evento=${evento.id}">Mapa de asientos</a>
             </c:if>
+            <a class="boton gris" href="${ctx}/organizador/eventos?accion=duplicar&id=${evento.id}">Duplicar</a>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
@@ -126,6 +127,16 @@
                     <input type="hidden" name="accion" value="cancelar">
                     <input type="hidden" name="id" value="${evento.id}">
                     <button type="submit" class="boton rojo">Cancelar evento</button>
+                </form>
+            </c:if>
+            <%-- Borrado lógico (RN-10): solo Borrador o Cancelado. --%>
+            <c:if test="${evento.estado == 'BORRADOR' or evento.estado == 'CANCELADO'}">
+                <form method="post" action="${ctx}/organizador/eventos" class="linea"
+                      onsubmit="return confirm('¿Desactivar el evento? Dejará de aparecer en el listado y en los reportes.');">
+                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                    <input type="hidden" name="accion" value="desactivar">
+                    <input type="hidden" name="id" value="${evento.id}">
+                    <button type="submit" class="boton gris">Desactivar</button>
                 </form>
             </c:if>
             <c:if test="${evento.estado == 'FINALIZADO' or evento.estado == 'CANCELADO'}">

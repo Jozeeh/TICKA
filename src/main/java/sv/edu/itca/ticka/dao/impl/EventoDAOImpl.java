@@ -80,6 +80,10 @@ public class EventoDAOImpl implements EventoDAO {
             sb.append("AND e.id_recinto = ? ");
             parametros.add(f.getIdRecinto());
         }
+        if (f.getIdCategoria() != null) {
+            sb.append("AND e.id_categoria = ? ");
+            parametros.add(f.getIdCategoria());
+        }
         if (f.getDesde() != null) {
             sb.append("AND e.fecha_inicio >= ? ");
             parametros.add(f.getDesde().atStartOfDay());
@@ -213,6 +217,31 @@ public class EventoDAOImpl implements EventoDAO {
     @Override
     public void quitarAfiche(long idEvento) {
         guardarAfiche(idEvento, null, null);
+    }
+
+    @Override
+    public void copiarAfiche(long idOrigen, long idDestino) {
+        String sql = "UPDATE evento d JOIN evento o ON o.id = ? "
+                + "SET d.afiche = o.afiche, d.afiche_tipo = o.afiche_tipo WHERE d.id = ?";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, idOrigen);
+            ps.setLong(2, idDestino);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo copiar el afiche", ex);
+        }
+    }
+
+    @Override
+    public boolean desactivar(long idEvento) {
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement("UPDATE evento SET activo = 0 WHERE id = ? AND activo = 1")) {
+            ps.setLong(1, idEvento);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo desactivar el evento", ex);
+        }
     }
 
     @Override

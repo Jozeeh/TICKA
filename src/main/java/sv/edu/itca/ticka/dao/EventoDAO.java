@@ -49,6 +49,12 @@ public interface EventoDAO {
 
     void quitarAfiche(long idEvento);
 
+    /** Copia el afiche de un evento a otro (duplicar evento, RF-09). */
+    void copiarAfiche(long idOrigen, long idDestino);
+
+    /** Borrado lógico (RF-01, RN-10): el evento deja de aparecer en listados y reportes. */
+    boolean desactivar(long idEvento);
+
     /** Imagen adjunta del evento, si tiene. */
     Optional<Afiche> obtenerAfiche(long idEvento);
 

@@ -35,10 +35,11 @@ import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
 /**
- * Eventos del Organizador (RF-01 a RF-07, RN-05, RN-06, RN-09).
+ * Eventos del Organizador (RF-01 a RF-09, RN-05, RN-06, RN-09, RN-10).
  *
- * GET:  listar (filtros y paginación), nuevo, editar, ver (detalle con precios).
- * POST: guardar, precios, publicar, avanzar (siguiente estado), cancelar.
+ * GET:  listar (filtros y paginación), nuevo, editar, duplicar, ver (detalle con precios).
+ * POST: guardar (con precios y afiche), publicar, avanzar (siguiente estado),
+ *       cancelar y desactivar (borrado lógico).
  * Las reglas de negocio están en EventoServicio; el servlet solo lee el
  * formulario, delega y decide a qué vista ir.
  */
@@ -87,6 +88,14 @@ public class EventoServlet extends HttpServlet {
                         mostrarFormulario(req, resp, editar);
                     }
                     break;
+                case "duplicar":
+                    Evento origen = buscar(req);
+                    if (origen == null) {
+                        volverAlListado(req, resp, "El evento no existe.");
+                    } else {
+                        mostrarDuplicado(req, resp, origen);
+                    }
+                    break;
                 case "ver":
                     Evento ver = buscar(req);
                     if (ver == null) {
@@ -132,6 +141,7 @@ public class EventoServlet extends HttpServlet {
             }
         }
         f.setIdRecinto(Parametros.enteroLargo(req.getParameter("recinto")));
+        f.setIdCategoria(Parametros.enteroLargo(req.getParameter("categoria")));
         f.setDesde(Parametros.fecha(req.getParameter("desde")));
         f.setHasta(Parametros.fecha(req.getParameter("hasta")));
         Integer pagina = Parametros.entero(req.getParameter("pagina"));
@@ -157,15 +167,43 @@ public class EventoServlet extends HttpServlet {
         req.setAttribute("categorias", categoriaDAO.listar());
     }
 
+    /**
+     * Duplicar evento (RF-09): abre el formulario de un evento nuevo con los
+     * datos, precios y afiche del original. Las fechas quedan vacías para
+     * que el organizador elija otro horario (RN-05).
+     */
+    private void mostrarDuplicado(HttpServletRequest req, HttpServletResponse resp, Evento origen)
+            throws ServletException, IOException {
+        Evento copia = new Evento();
+        copia.setNombre(origen.getNombre() + " (copia)");
+        copia.setTipo(origen.getTipo());
+        copia.setDescripcion(origen.getDescripcion());
+        copia.setParticipantes(origen.getParticipantes());
+        copia.setIdCategoria(origen.getIdCategoria());
+        copia.setIdRecinto(origen.getIdRecinto());
+        copia.setConAfiche(origen.isConAfiche());
+        req.setAttribute("origen", origen.getId());
+        mostrarFormulario(req, resp, copia);
+    }
+
+    /** Id del evento que se está duplicando (campo oculto "origen"), o null. */
+    private static Long origen(HttpServletRequest req) {
+        Object atributo = req.getAttribute("origen");
+        return atributo instanceof Long ? (Long) atributo : Parametros.enteroLargo(req.getParameter("origen"));
+    }
+
     private void mostrarFormulario(HttpServletRequest req, HttpServletResponse resp, Evento e)
             throws ServletException, IOException {
+        Long origen = e.getId() == null ? origen(req) : null;
+        req.setAttribute("origen", origen);
         req.setAttribute("evento", e);
         cargarCatalogos(req);
         // Para nuevos eventos solo se ofrecen recintos activos.
         List<Recinto> recintos = e.getId() == null ? recintoDAO.listarActivos() : recintoDAO.listar();
         req.setAttribute("recintos", recintos);
         // Zonas de cada recinto con su precio: la vista muestra las del recinto elegido.
-        long idEvento = e.getId() == null ? 0 : e.getId();
+        // Al duplicar, los precios se toman del evento original.
+        long idEvento = e.getId() != null ? e.getId() : origen != null ? origen : 0;
         Map<Long, List<PrecioZona>> preciosPorRecinto = new LinkedHashMap<>();
         for (Recinto r : recintos) {
             List<PrecioZona> precios = asientoEventoDAO.listarPrecios(idEvento, r.getId());
@@ -213,6 +251,11 @@ public class EventoServlet extends HttpServlet {
                     int anulados = eventoServicio.cancelar(requerido(id));
                     Sesion.exito(req, "Evento cancelado. Boletos anulados (reembolso simulado): " + anulados + ".");
                     break;
+                case "desactivar":
+                    eventoServicio.desactivar(requerido(id));
+                    Sesion.exito(req, "Evento desactivado: ya no aparece en el listado.");
+                    resp.sendRedirect(req.getContextPath() + "/organizador/eventos");
+                    return;
                 default:
                     resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
                     return;
@@ -253,12 +296,17 @@ public class EventoServlet extends HttpServlet {
                 boolean esNuevo = e.getId() == null;
                 long id = eventoServicio.guardar(e, Sesion.usuario(req).getId());
                 eventoServicio.guardarPrecios(id, e.getIdRecinto(), precios);
+                Long origen = esNuevo ? Parametros.enteroLargo(req.getParameter("origen")) : null;
                 if (afiche != null) {
                     eventoDAO.guardarAfiche(id, afiche, tipoAfiche);
                 } else if (quitarAfiche) {
                     eventoDAO.quitarAfiche(id);
+                } else if (origen != null) {
+                    eventoDAO.copiarAfiche(origen, id);
                 }
-                Sesion.exito(req, esNuevo
+                Sesion.exito(req, origen != null
+                        ? "Evento duplicado en Borrador con sus precios. Revise los datos y publíquelo."
+                        : esNuevo
                         ? "Evento registrado en Borrador con sus precios. Cuando esté listo, publíquelo."
                         : "Evento actualizado.");
                 resp.sendRedirect(req.getContextPath() + "/organizador/eventos?accion=ver&id=" + id);
@@ -273,6 +321,11 @@ public class EventoServlet extends HttpServlet {
                 e.setEstado(actual.getEstado());
                 e.setConAfiche(actual.isConAfiche());
             });
+        } else {
+            Long origen = origen(req);
+            if (origen != null) {
+                eventoDAO.buscarPorId(origen).ifPresent(o -> e.setConAfiche(o.isConAfiche()));
+            }
         }
         req.setAttribute("error", error);
         mostrarFormulario(req, resp, e);

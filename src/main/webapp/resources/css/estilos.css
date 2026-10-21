@@ -494,3 +494,66 @@ dl.datos dd { margin: 0; }
 .form-zona { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: flex-end; margin-bottom: 14px; }
 .form-zona .grupo-campo { margin: 0; flex: 1 1 180px; }
 .form-zona .grupo-campo.corto { flex: 0 0 120px; }
+
+/* ---------- Menú lateral (opciones del rol, separado de la barra superior) ---------- */
+.navbar { position: sticky; top: 0; z-index: 30; min-height: 56px; }
+.menu-lateral {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    width: 230px;
+    padding: 18px 12px;
+    overflow-y: auto;
+    background: var(--tarjeta);
+    border-right: 1px solid var(--borde);
+    z-index: 20;
+}
+.menu-lateral a {
+    display: block;
+    padding: 9px 12px;
+    margin-bottom: 2px;
+    border-radius: 6px;
+    color: var(--texto);
+    text-decoration: none;
+    font-size: .94rem;
+    border-left: 3px solid transparent;
+}
+.menu-lateral a:hover { background: var(--fondo); }
+.menu-lateral a.activo {
+    background: #e8eef6;
+    color: var(--primario);
+    font-weight: 700;
+    border-left-color: var(--acento);
+}
+.menu-lateral .seccion {
+    margin: 18px 12px 6px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+/* El contenido y el pie se desplazan para no quedar debajo del menú. */
+.menu-lateral ~ .contenedor { max-width: none; margin-left: 230px; margin-right: 0; padding: 0 32px; }
+.menu-lateral ~ .pie { margin-left: 230px; }
+
+@media (max-width: 860px) {
+    /* En pantallas angostas el menú pasa a una franja horizontal debajo de la barra. */
+    .navbar { position: static; }
+    .menu-lateral {
+        position: static;
+        width: auto;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 8px 12px;
+        border-right: 0;
+        border-bottom: 1px solid var(--borde);
+    }
+    .menu-lateral a { white-space: nowrap; margin: 0; border-left: 0; border-bottom: 3px solid transparent; border-radius: 0; }
+    .menu-lateral a.activo { border-bottom-color: var(--acento); }
+    .menu-lateral .seccion { display: none; }
+    .menu-lateral ~ .contenedor { margin-left: auto; margin-right: auto; padding: 0 16px; }
+    .menu-lateral ~ .pie { margin-left: 0; }
+}

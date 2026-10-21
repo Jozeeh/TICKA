@@ -30,13 +30,13 @@
             </a>
             <a class="tarjeta modulo" href="${ctx}/admin/reportes" style="text-decoration:none">
                 <h3>Reportes</h3>
-                <p>Ventas, asistencia, ocupación e incidencias con exportación a CSV.</p>
+                <p>Ventas, asistencia, ocupación e incidencias con filtros y exportación a PDF y CSV.</p>
             </a>
         </c:if>
         <c:if test="${u.gestorEventos}">
             <a class="tarjeta modulo" href="${ctx}/organizador/eventos" style="text-decoration:none">
                 <h3>Eventos</h3>
-                <p>Crear eventos, fijar precios por zona, publicar, cambiar estado y ver el mapa de asientos.</p>
+                <p>Crear, duplicar y publicar eventos, fijar precios por zona, cambiar su estado y ver el mapa de asientos.</p>
             </a>
             <a class="tarjeta modulo" href="${ctx}/organizador/recintos" style="text-decoration:none">
                 <h3>Recintos, zonas y asientos</h3>

@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="titulo" value="${empty evento.id ? 'Nuevo evento' : 'Editar evento'}" />
+<c:set var="titulo" value="${not empty evento.id ? 'Editar evento' : not empty origen ? 'Duplicar evento' : 'Nuevo evento'}" />
+<%-- Al duplicar (RF-09), la vista previa del afiche es la del evento original. --%>
+<c:set var="idAfiche" value="${empty evento.id ? origen : evento.id}" />
 <c:set var="paginaActiva" value="eventos" />
 <%-- Después de publicar, el recinto queda fijo porque ya existe el mapa de asientos. --%>
 <c:set var="recintoFijo" value="${not empty evento.id and evento.estado != 'BORRADOR'}" />
@@ -22,6 +24,11 @@
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="id" value="${evento.id}">
+            <c:if test="${not empty origen}">
+                <input type="hidden" name="origen" value="${origen}">
+                <div class="alerta aviso">Se copiaron los datos, los precios y el afiche del evento original.
+                    Elija las nuevas fechas y guarde: la copia queda en <strong>Borrador</strong>.</div>
+            </c:if>
             <div class="rejilla-campos">
                 <div class="grupo-campo completo">
                     <label for="nombre">Nombre del evento</label>
@@ -124,13 +131,13 @@
                     <label for="afiche">Afiche (opcional)</label>
                     <div class="campo-afiche">
                         <img id="vistaAfiche" class="vista-afiche" alt="Vista previa del afiche"
-                             src="${evento.conAfiche ? ctx += '/afiche?evento=' += evento.id : ctx += '/resources/img/sin-imagen.png'}">
+                             src="${evento.conAfiche ? ctx += '/afiche?evento=' += idAfiche : ctx += '/resources/img/sin-imagen.png'}">
                         <div>
                             <input type="file" id="afiche" name="afiche" accept="image/png,image/jpeg,image/webp,image/gif">
                             <span class="ayuda">JPG, PNG, WEBP o GIF de hasta 2 MB. Si no adjunta ninguno, se usa la imagen por defecto.</span>
                             <c:if test="${evento.conAfiche}">
                                 <label class="casilla" style="margin-top:8px">
-                                    <input type="checkbox" name="quitarAfiche" value="si"> Quitar el afiche actual
+                                    <input type="checkbox" name="quitarAfiche" value="si"> ${empty evento.id ? 'No copiar el afiche' : 'Quitar el afiche actual'}
                                 </label>
                             </c:if>
                         </div>

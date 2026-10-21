@@ -5,14 +5,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.ReporteDAO;
 import sv.edu.itca.ticka.modelo.EstadoEvento;
 import sv.edu.itca.ticka.modelo.Evento;
+import sv.edu.itca.ticka.modelo.FiltroReporte;
 import sv.edu.itca.ticka.modelo.Indicadores;
 import sv.edu.itca.ticka.modelo.Reporte;
 import sv.edu.itca.ticka.modelo.TipoEvento;
@@ -24,22 +26,48 @@ public class ReporteDAOImpl implements ReporteDAO {
 
     private static final String ESTADOS_ACTIVOS = "('Publicado', 'Agotado', 'En curso')";
 
-    /** Filtro común sobre el evento "ev": 6 parámetros (ver asignarFiltro). */
-    private static final String FILTRO_EVENTO = "ev.activo = 1 "
-            + "AND (? IS NULL OR ev.fecha_inicio >= ?) "
-            + "AND (? IS NULL OR ev.fecha_inicio < ?) "
-            + "AND (? IS NULL OR ev.id = ?) ";
+    /**
+     * Filtro común sobre el evento "ev" (RF-48): fechas, evento, tipo y
+     * categoría. Agrega los parámetros a la lista en el mismo orden del SQL.
+     */
+    private static String filtroEvento(FiltroReporte f, List<Object> parametros) {
+        StringBuilder sb = new StringBuilder("ev.activo = 1 ");
+        if (f.getDesde() != null) {
+            sb.append("AND ev.fecha_inicio >= ? ");
+            parametros.add(f.getDesde().atStartOfDay());
+        }
+        if (f.getHasta() != null) {
+            sb.append("AND ev.fecha_inicio < ? ");
+            parametros.add(f.getHasta().plusDays(1).atStartOfDay());
+        }
+        if (f.getIdEvento() != null) {
+            sb.append("AND ev.id = ? ");
+            parametros.add(f.getIdEvento());
+        }
+        if (f.getTipoEvento() != null) {
+            sb.append("AND ev.tipo = ? ");
+            parametros.add(f.getTipoEvento().getBd());
+        }
+        if (f.getIdCategoria() != null) {
+            sb.append("AND ev.id_categoria = ? ");
+            parametros.add(f.getIdCategoria());
+        }
+        return sb.toString();
+    }
 
-    private static void asignarFiltro(PreparedStatement ps, LocalDate desde, LocalDate hasta, Long idEvento)
-            throws SQLException {
-        LocalDateTime inicio = desde == null ? null : desde.atStartOfDay();
-        LocalDateTime fin = hasta == null ? null : hasta.plusDays(1).atStartOfDay();
-        ps.setObject(1, inicio);
-        ps.setObject(2, inicio);
-        ps.setObject(3, fin);
-        ps.setObject(4, fin);
-        ps.setObject(5, idEvento);
-        ps.setObject(6, idEvento);
+    /** Condición de zona sobre la columna indicada, si el filtro la trae. */
+    private static String filtroZona(String columna, FiltroReporte f, List<Object> parametros) {
+        if (f.getIdZona() == null) {
+            return "";
+        }
+        parametros.add(f.getIdZona());
+        return "AND " + columna + " = ? ";
+    }
+
+    private static void asignar(PreparedStatement ps, List<Object> parametros) throws SQLException {
+        for (int i = 0; i < parametros.size(); i++) {
+            ps.setObject(i + 1, parametros.get(i));
+        }
     }
 
     @Override
@@ -133,25 +161,28 @@ public class ReporteDAOImpl implements ReporteDAO {
     }
 
     @Override
-    public Reporte ventas(LocalDate desde, LocalDate hasta, Long idEvento) {
+    public Reporte ventas(FiltroReporte f) {
+        List<Object> p = new ArrayList<>();
         String sql = "SELECT ev.nombre, ev.fecha_inicio, z.nombre AS zona, v.canal, "
+                + "COALESCE(u.nombre, 'Portal web') AS vendedor, "
                 + "COUNT(*) AS boletos, SUM(en.precio) AS total "
                 + "FROM entrada en "
                 + "JOIN venta v ON v.id = en.id_venta "
+                + "LEFT JOIN usuario u ON u.id = v.id_usuario_vendedor "
                 + "JOIN evento_asiento ea ON ea.id = en.id_evento_asiento "
                 + "JOIN asiento a ON a.id = ea.id_asiento "
                 + "JOIN zona z ON z.id = a.id_zona "
                 + "JOIN evento ev ON ev.id = ea.id_evento "
-                + "WHERE en.estado <> 'Anulada' AND " + FILTRO_EVENTO
-                + "GROUP BY ev.id, ev.nombre, ev.fecha_inicio, z.id, z.nombre, v.canal "
-                + "ORDER BY ev.fecha_inicio, ev.nombre, z.id, v.canal";
-        Reporte r = new Reporte("Ventas por evento, zona y canal",
-                "Evento", "Fecha", "Zona", "Canal", "Boletos", "Ingresos").numericas(4, 5);
+                + "WHERE en.estado <> 'Anulada' AND " + filtroEvento(f, p) + filtroZona("z.id", f, p)
+                + "GROUP BY ev.id, ev.nombre, ev.fecha_inicio, z.id, z.nombre, v.canal, vendedor "
+                + "ORDER BY ev.fecha_inicio, ev.nombre, z.id, v.canal, vendedor";
+        Reporte r = new Reporte("Ventas por evento, zona, canal y vendedor",
+                "Evento", "Fecha", "Zona", "Canal", "Vendedor", "Boletos", "Ingresos").numericas(5, 6);
         int boletos = 0;
         BigDecimal total = BigDecimal.ZERO;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
-            asignarFiltro(ps, desde, hasta, idEvento);
+            asignar(ps, p);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int b = rs.getInt("boletos");
@@ -160,25 +191,41 @@ public class ReporteDAOImpl implements ReporteDAO {
                     total = total.add(t);
                     r.agregarFila(rs.getString("nombre"),
                             Formatos.fecha(rs.getObject("fecha_inicio", LocalDateTime.class)),
-                            rs.getString("zona"), rs.getString("canal"), b, Formatos.dinero(t));
+                            rs.getString("zona"), rs.getString("canal"), rs.getString("vendedor"),
+                            b, Formatos.dinero(t));
                 }
             }
         } catch (SQLException ex) {
             throw new DAOException("No se pudo generar el reporte de ventas", ex);
         }
-        r.setTotales("Total", "", "", "", boletos, Formatos.dinero(total));
+        r.setTotales("Total", "", "", "", "", boletos, Formatos.dinero(total));
         return r;
     }
 
     @Override
-    public Reporte asistencia(LocalDate desde, LocalDate hasta, Long idEvento) {
+    public Reporte asistencia(FiltroReporte f) {
+        List<Object> p = new ArrayList<>();
+        // Con filtro de zona, solo se cuentan los boletos y accesos de asientos de esa zona.
+        boolean porZona = f.getIdZona() != null;
+        String asientoZona = porZona
+                ? "JOIN asiento a ON a.id = ea.id_asiento AND a.id_zona = ? " : "";
+        String accesoZona = porZona
+                ? "JOIN entrada en ON en.id = ac.id_entrada JOIN evento_asiento ea ON ea.id = en.id_evento_asiento "
+                + "JOIN asiento a ON a.id = ea.id_asiento AND a.id_zona = ? " : "";
+        if (porZona) {
+            // Un parámetro por cada subconsulta (vendidos, ingresados y rechazados).
+            p.add(f.getIdZona());
+            p.add(f.getIdZona());
+            p.add(f.getIdZona());
+        }
         String sql = "SELECT * FROM (SELECT ev.nombre, ev.fecha_inicio, ev.estado, "
                 + "(SELECT COUNT(*) FROM entrada en JOIN evento_asiento ea ON ea.id = en.id_evento_asiento "
-                + " WHERE ea.id_evento = ev.id AND en.estado <> 'Anulada') AS vendidos, "
-                + "(SELECT COUNT(DISTINCT ac.id_entrada) FROM acceso ac WHERE ac.id_evento = ev.id "
-                + " AND ac.resultado = 'Valido' AND ac.anulado = 0) AS ingresados, "
-                + "(SELECT COUNT(*) FROM acceso ac WHERE ac.id_evento = ev.id AND ac.resultado = 'Rechazado') AS rechazados "
-                + "FROM evento ev WHERE " + FILTRO_EVENTO + ") t "
+                + asientoZona + "WHERE ea.id_evento = ev.id AND en.estado <> 'Anulada') AS vendidos, "
+                + "(SELECT COUNT(DISTINCT ac.id_entrada) FROM acceso ac " + accesoZona + "WHERE ac.id_evento = ev.id "
+                + "AND ac.resultado = 'Valido' AND ac.anulado = 0) AS ingresados, "
+                + "(SELECT COUNT(*) FROM acceso ac " + accesoZona
+                + "WHERE ac.id_evento = ev.id AND ac.resultado = 'Rechazado') AS rechazados "
+                + "FROM evento ev WHERE " + filtroEvento(f, p) + ") t "
                 + "WHERE vendidos > 0 OR ingresados > 0 ORDER BY fecha_inicio";
         Reporte r = new Reporte("Asistencia: boletos vendidos frente a ingresos en puerta",
                 "Evento", "Fecha", "Estado", "Vendidos", "Ingresaron", "Ausentes", "% asistencia", "Rechazos en puerta")
@@ -188,7 +235,7 @@ public class ReporteDAOImpl implements ReporteDAO {
         int totalRechazos = 0;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
-            asignarFiltro(ps, desde, hasta, idEvento);
+            asignar(ps, p);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int vendidos = rs.getInt("vendidos");
@@ -212,11 +259,12 @@ public class ReporteDAOImpl implements ReporteDAO {
     }
 
     @Override
-    public Reporte ocupacion(LocalDate desde, LocalDate hasta, Long idEvento) {
+    public Reporte ocupacion(FiltroReporte f) {
+        List<Object> p = new ArrayList<>();
         String sql = "SELECT ev.nombre, ev.fecha_inicio, ev.estado, o.zona, o.total_asientos, o.vendidos, "
                 + "o.reservados, o.disponibles, o.bloqueados "
                 + "FROM v_ocupacion_evento_zona o JOIN evento ev ON ev.id = o.id_evento "
-                + "WHERE ev.estado <> 'Cancelado' AND " + FILTRO_EVENTO
+                + "WHERE ev.estado <> 'Cancelado' AND " + filtroEvento(f, p) + filtroZona("o.id_zona", f, p)
                 + "ORDER BY ev.fecha_inicio, ev.nombre, o.id_zona";
         Reporte r = new Reporte("Ocupación de asientos por evento y zona",
                 "Evento", "Fecha", "Estado", "Zona", "Total", "Vendidos", "Reservados", "Disponibles",
@@ -225,7 +273,7 @@ public class ReporteDAOImpl implements ReporteDAO {
         int vendidos = 0;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
-            asignarFiltro(ps, desde, hasta, idEvento);
+            asignar(ps, p);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int t = rs.getInt("total_asientos");
@@ -246,17 +294,18 @@ public class ReporteDAOImpl implements ReporteDAO {
     }
 
     @Override
-    public Reporte incidencias(LocalDate desde, LocalDate hasta, Long idEvento) {
+    public Reporte incidencias(FiltroReporte f) {
+        List<Object> p = new ArrayList<>();
         String sql = "SELECT i.fecha_hora, ev.nombre, i.tipo, i.gravedad, i.estado, i.puerta, i.descripcion "
                 + "FROM incidencia i JOIN evento ev ON ev.id = i.id_evento "
-                + "WHERE " + FILTRO_EVENTO
+                + "WHERE " + filtroEvento(f, p)
                 + "ORDER BY i.fecha_hora DESC";
         Reporte r = new Reporte("Incidencias registradas en los eventos",
                 "Fecha y hora", "Evento", "Tipo", "Gravedad", "Estado", "Puerta", "Descripción");
         int cantidad = 0;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
-            asignarFiltro(ps, desde, hasta, idEvento);
+            asignar(ps, p);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     cantidad++;
@@ -270,5 +319,22 @@ public class ReporteDAOImpl implements ReporteDAO {
         }
         r.setTotales("Total: " + cantidad, "", "", "", "", "", "");
         return r;
+    }
+
+    @Override
+    public Map<Long, String> zonasParaFiltro() {
+        String sql = "SELECT z.id, r.nombre AS recinto, z.nombre FROM zona z "
+                + "JOIN recinto r ON r.id = z.id_recinto ORDER BY r.nombre, z.id";
+        Map<Long, String> zonas = new LinkedHashMap<>();
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                zonas.put(rs.getLong("id"), rs.getString("recinto") + " · " + rs.getString("nombre"));
+            }
+            return zonas;
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo listar las zonas", ex);
+        }
     }
 }

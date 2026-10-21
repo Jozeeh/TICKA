@@ -21,6 +21,7 @@ import sv.edu.itca.ticka.persistencia.ConexionBD;
  * - Publicar: genera la disponibilidad de asientos en una transacción (RF-07).
  * - Cambiar estado y cancelar (RF-02, RN-09).
  * - Bloquear asientos (RF-08) y recalcular "Agotado" (RN-11).
+ * - Desactivar (borrado lógico, RN-10).
  *
  * Las operaciones de varias sentencias usan una sola Connection con
  * commit/rollback: o se aplica todo o no se aplica nada.
@@ -200,6 +201,21 @@ public class EventoServicio {
         } catch (SQLException ex) {
             throw new DAOException("No se pudo cancelar el evento", ex);
         }
+    }
+
+    /**
+     * Desactiva el evento (RF-01, RN-10). Solo se permite en Borrador o
+     * Cancelado: un evento a la venta debe cancelarse primero, y uno
+     * finalizado se conserva para los reportes.
+     */
+    public void desactivar(long idEvento) {
+        Evento e = eventoDAO.buscarPorId(idEvento)
+                .orElseThrow(() -> new ServicioException("El evento no existe."));
+        if (e.getEstado() != EstadoEvento.BORRADOR && e.getEstado() != EstadoEvento.CANCELADO) {
+            throw new ServicioException("Solo se pueden desactivar eventos en Borrador o Cancelados. "
+                    + "Un evento a la venta debe cancelarse primero.");
+        }
+        eventoDAO.desactivar(idEvento);
     }
 
     /**

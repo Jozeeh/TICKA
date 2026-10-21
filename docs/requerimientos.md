@@ -336,7 +336,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 
 **Flujo:** Navegador → Filtros (UTF-8, CSRF, sesión y rol) → Servlet → Servicio (reglas) → DAO → MySQL → JSP/JSTL (o JSF/PrimeFaces en una etapa posterior).
 
-**Tecnologías:** JSP + JSTL y Servlets en la etapa base; JSF + PrimeFaces + AJAX para tablas dinámicas, mapa de asientos con refresco, programa y dashboard; ZXing para QR; JasperReports o Apache POI/iText para reportes.
+**Tecnologías:** JSP + JSTL y Servlets en la etapa base; JSF + PrimeFaces + AJAX para tablas dinámicas, mapa de asientos con refresco, programa y dashboard; ZXing para QR; OpenPDF (derivado libre de iText) para los reportes en PDF y CSV con BOM para Excel.
 
 ---
 
@@ -407,4 +407,4 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 - [ ] Decidir cuántos minutos dura la reserva temporal y cuántos asientos se permiten por compra.
 - [ ] Decidir si entra la venta en mostrador (RF-24).
 - [ ] Decidir si habrá re-entrada (RF-31).
-- [ ] Elegir librería de reportes (JasperReports vs. Apache POI/iText).
+- [x] Librería de reportes: OpenPDF para PDF y CSV para Excel (RF-47).

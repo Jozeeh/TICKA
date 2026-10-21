@@ -11,6 +11,7 @@ public class FiltroEvento {
     private TipoEvento tipo;
     private EstadoEvento estado;
     private Long idRecinto;
+    private Long idCategoria;
     private LocalDate desde;
     private LocalDate hasta;
     private int pagina = 1;
@@ -30,6 +31,9 @@ public class FiltroEvento {
 
     public Long getIdRecinto() { return idRecinto; }
     public void setIdRecinto(Long idRecinto) { this.idRecinto = idRecinto; }
+
+    public Long getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(Long idCategoria) { this.idCategoria = idCategoria; }
 
     public LocalDate getDesde() { return desde; }
     public void setDesde(LocalDate desde) { this.desde = desde; }

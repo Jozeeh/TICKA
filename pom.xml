@@ -36,11 +36,17 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.4.0</version>
         </dependency>
-        <!-- BCrypt para guardar contraseñas con hash y salt (RF-40). -->
+        <!-- BCrypt para guardar contraseñas con hash y salt (RF-39). -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+        <!-- OpenPDF para exportar los reportes a PDF (RF-47). No depende de javax/jakarta. -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.43</version>
         </dependency>
         <!-- JUnit 4 para las pruebas de las reglas de negocio. -->
         <dependency>

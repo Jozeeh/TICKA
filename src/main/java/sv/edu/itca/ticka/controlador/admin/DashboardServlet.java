@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.ReporteDAO;
 import sv.edu.itca.ticka.dao.impl.ReporteDAOImpl;
+import sv.edu.itca.ticka.modelo.FiltroReporte;
 import sv.edu.itca.ticka.modelo.Indicadores;
 
 /**
@@ -34,7 +35,7 @@ public class DashboardServlet extends HttpServlet {
         try {
             req.setAttribute("indicadores", reporteDAO.indicadores());
             req.setAttribute("proximos", reporteDAO.proximosEventos(6));
-            req.setAttribute("ocupacion", reporteDAO.ocupacion(null, null, null));
+            req.setAttribute("ocupacion", reporteDAO.ocupacion(new FiltroReporte()));
         } catch (DAOException ex) {
             log("Error de persistencia", ex);
             req.setAttribute("error", "No se pudo calcular los indicadores. Verifique la conexión con MySQL.");

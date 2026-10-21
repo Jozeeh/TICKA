@@ -21,7 +21,7 @@ La base de datos está completa para los 4 roles, y los datos de prueba incluyen
 
 ## Tecnologías
 
-Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · JUnit 4.
+Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · OpenPDF (reportes en PDF) · JUnit 4.
 
 ## Puesta en marcha
 
@@ -80,9 +80,10 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
-| Eventos: listado con búsqueda, filtros y paginación | `/organizador/eventos` | RF-01, RF-03 |
+| Eventos: listado con búsqueda, filtros (tipo, estado, recinto, categoría y fechas) y paginación | `/organizador/eventos` | RF-01, RF-03 |
 | Nuevo / editar evento (participantes, fechas, recinto con los **precios de sus zonas en el mismo formulario** y afiche adjunto opcional: JPG, PNG, WEBP o GIF de hasta 2 MB, guardado en MySQL) | `?accion=nuevo`, `?accion=editar&id=` | RF-01, RF-06, RN-05, RN-06 |
-| Detalle: precios por zona (consulta), ocupación, publicar, cambiar estado, cancelar | `?accion=ver&id=` | RF-02, RF-05, RF-07, RN-09 |
+| Detalle: precios por zona (consulta), ocupación, publicar, cambiar estado, cancelar y desactivar (borrado lógico, solo en Borrador o Cancelado) | `?accion=ver&id=` | RF-01, RF-02, RF-05, RF-07, RN-09, RN-10 |
+| Duplicar evento: abre un evento nuevo con los datos, precios y afiche del original; solo se eligen las fechas | `?accion=duplicar&id=` | RF-09 |
 | Mapa de asientos con bloqueo y desbloqueo | `/organizador/mapa?evento=` | RF-08, RN-01, RN-11 |
 | Recintos | `/organizador/recintos` | RF-10 |
 | Zonas: un solo formulario "Guardar zona" con nombre, descripción y distribución de asientos; inhabilitación de asientos sueltos con un clic | `/organizador/zonas?recinto=` | RF-11, RF-12, RN-14 |
@@ -95,9 +96,11 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Dashboard de indicadores | `/admin/dashboard` | RF-42 |
 | Usuarios del personal: crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40 |
 | Clientes: consulta y activación | `/admin/clientes` | RF-37 |
-| Reportes de ventas, asistencia, ocupación e incidencias, con exportación CSV | `/admin/reportes` | RF-43 a RF-48 |
+| Reportes de ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; exportación a PDF y CSV | `/admin/reportes` | RF-43 a RF-48 |
 
 ### Común
+
+Las opciones de cada rol están en un **menú lateral**; la barra superior solo tiene la marca, los enlaces públicos y la sesión. En pantallas angostas el menú pasa a una franja horizontal.
 
 Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo de 15 minutos tras 5 intentos fallidos (RF-40), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos en tarjetas (el afiche se sirve en `/afiche?evento=ID`; sin afiche se usa una imagen por defecto).
 
@@ -125,7 +128,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 mvn test
 ```
 
-Son 31 pruebas JUnit, sin base de datos:
+Son 33 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
@@ -136,6 +139,7 @@ Son 31 pruebas JUnit, sin base de datos:
 | `ValidadorEventoTest` | Fechas del evento y regla de traslape de horarios |
 | `GeneradorAsientosTest` | Cálculo de filas y límites; flujo de estados del evento |
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |
+| `ExportadorPdfTest` | El reporte en PDF se genera con datos y también vacío |
 | `ValidadorImagenTest` | Afiche: tipo real por firma de bytes, archivo falso y límite de 2 MB |
 
 ## Matriz de pruebas manuales
@@ -164,6 +168,10 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 | 16 | Adjuntar un archivo de texto renombrado como `.png` | "El afiche debe ser una imagen JPG, PNG, WEBP o GIF" | Verificado |
 | 17 | Afiche de más de 2 MB | Mensaje de tamaño máximo; el evento no se modifica | Verificado |
 | 18 | Editar sin adjuntar / marcar "Quitar el afiche actual" | Conserva el afiche / vuelve a la imagen por defecto | Verificado |
+| 19 | Duplicar un evento y guardarlo con otras fechas | Nuevo evento en Borrador con los mismos precios por zona | Verificado |
+| 20 | Desactivar un evento publicado / uno en Borrador | Rechazado (debe cancelarse antes) / desaparece del listado | Verificado |
+| 21 | Reporte de ventas filtrado por tipo y exportado a PDF | PDF con la tabla, los totales y los filtros aplicados | Verificado |
+| 22 | Reporte de ocupación o asistencia filtrado por zona | Solo cuenta los asientos de esa zona | Verificado |
 
 ## Control de credenciales
 
