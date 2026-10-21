@@ -6,11 +6,10 @@
 --
 -- Qué carga:
 --   * 2 recintos (teatro y estadio) con 6 zonas y 468 asientos generados.
---   * 8 eventos con artistas y equipos reales pero datos ficticios:
---     5 publicados (Maná, Ricardo Arjona, El Fantasma de la Ópera, la final
---     Alianza vs. FAS y La Selecta vs. Costa Rica), 1 en borrador (Shakira,
---     para publicar en vivo), 1 finalizado con asistencia (La Traviata) y
---     1 cancelado (final de baloncesto).
+--   * 7 eventos de prueba: 5 publicados (Ricardo Arjona, Maná, Teatro
+--     Musical, Final Alianza vs. FAS y El Salvador vs. Costa Rica),
+--     1 finalizado con asistencia (Orquesta Salvadoreña) y 1 cancelado
+--     (Final de Baloncesto).
 --   * 8 clientes, 27 ventas con sus boletos, accesos en puerta e incidencias.
 --
 -- Las fechas son relativas a hoy (CURDATE), así la demo siempre tiene
@@ -90,71 +89,63 @@ ORDER BY g.id_zona, f.n, c.n;
 UPDATE asiento SET activo = 0 WHERE id_zona = 2 AND fila = 'D' AND numero = 10;
 
 -- ---------------------------------------------------------------------
--- Eventos (categorías del script 01: 1 Rock, 2 Pop, 4 Ópera, 5 Fútbol,
--- 6 Básquetbol, 7 Teatro). Artistas y equipos reales, pero los eventos,
--- fechas, precios y ventas son ficticios: solo sirven para la demostración.
+-- Eventos (categorías del script 01: 1 Rock, 2 Pop, 3 Música clásica,
+-- 5 Fútbol, 6 Básquetbol, 7 Teatro). Son datos de prueba ficticios.
 -- ---------------------------------------------------------------------
 INSERT INTO evento (id, nombre, tipo, descripcion, participantes, id_categoria, id_recinto,
                     apertura_puertas, fecha_inicio, fecha_fin, estado) VALUES
-    (1, 'Ricardo Arjona: Noche Acústica', 'Concierto',
-        'Un recorrido íntimo por sus grandes éxitos en formato acústico, con banda reducida.',
+    (1, 'Ricardo Arjona', 'Concierto',
+        'Concierto acústico con sus grandes éxitos.',
         'Ricardo Arjona', 2, 1,
         TIMESTAMP(CURDATE() + INTERVAL 21 DAY, '18:30:00'),
         TIMESTAMP(CURDATE() + INTERVAL 21 DAY, '20:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 21 DAY, '23:00:00'), 'Publicado'),
-    (2, 'Gran Final Apertura 2026', 'Partido',
-        'Partido de vuelta de la gran final del torneo Apertura de la Primera División.',
-        'Alianza FC vs. CD FAS', 5, 2,
+    (2, 'Final Alianza vs. FAS', 'Partido',
+        'Gran final del torneo de fútbol.',
+        'Alianza vs. FAS', 5, 2,
         TIMESTAMP(CURDATE() + INTERVAL 35 DAY, '13:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 35 DAY, '15:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 35 DAY, '17:30:00'), 'Publicado'),
-    (3, 'La Traviata', 'Opera',
-        'Ópera en tres actos de Giuseppe Verdi, con puesta en escena clásica.',
-        'Orquesta Sinfónica de El Salvador y Coro Nacional', 4, 1,
+    (3, 'Orquesta Salvadoreña', 'Concierto',
+        'Concierto de música clásica.',
+        'Orquesta Sinfónica', 3, 1,
         TIMESTAMP(CURDATE() - INTERVAL 10 DAY, '18:00:00'),
         TIMESTAMP(CURDATE() - INTERVAL 10 DAY, '19:00:00'),
         TIMESTAMP(CURDATE() - INTERVAL 10 DAY, '22:00:00'), 'Finalizado'),
-    (4, 'Shakira en San Salvador', 'Concierto',
-        'Show completo con sus éxitos de siempre y su producción más reciente.',
-        'Shakira', 2, 2,
-        TIMESTAMP(CURDATE() + INTERVAL 60 DAY, '15:00:00'),
-        TIMESTAMP(CURDATE() + INTERVAL 60 DAY, '19:00:00'),
-        TIMESTAMP(CURDATE() + INTERVAL 60 DAY, '22:30:00'), 'Borrador'),
-    (5, 'Final Liga Superior de Baloncesto', 'Partido',
+    (4, 'Final de Baloncesto', 'Partido',
         'Final cancelada por mantenimiento del recinto.',
-        'Santa Tecla BC vs. Brujos de Izalco', 6, 2,
+        'Santa Tecla vs. Izalco', 6, 2,
         TIMESTAMP(CURDATE() - INTERVAL 30 DAY, '17:00:00'),
         TIMESTAMP(CURDATE() - INTERVAL 30 DAY, '18:00:00'),
         TIMESTAMP(CURDATE() - INTERVAL 30 DAY, '20:00:00'), 'Cancelado'),
-    (6, 'Maná: Gira Centroamérica 2026', 'Concierto',
-        'La banda mexicana regresa a El Salvador con un concierto de más de dos horas.',
+    (5, 'Maná', 'Concierto',
+        'Concierto de rock en español.',
         'Maná', 1, 2,
         TIMESTAMP(CURDATE() + INTERVAL 50 DAY, '16:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 50 DAY, '19:30:00'),
         TIMESTAMP(CURDATE() + INTERVAL 50 DAY, '22:30:00'), 'Publicado'),
-    (7, 'El Fantasma de la Ópera', 'Teatro',
-        'Musical clásico de Andrew Lloyd Webber en versión en español.',
-        'Compañía Nacional de Teatro Musical', 7, 1,
+    (6, 'Teatro Musical', 'Teatro',
+        'Obra de teatro musical en español.',
+        'Compañía de Teatro', 7, 1,
         TIMESTAMP(CURDATE() + INTERVAL 45 DAY, '18:15:00'),
         TIMESTAMP(CURDATE() + INTERVAL 45 DAY, '19:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 45 DAY, '21:45:00'), 'Publicado'),
-    (8, 'La Selecta vs. Costa Rica', 'Partido',
-        'Partido amistoso de preparación de la Selección Nacional.',
+    (7, 'El Salvador vs. Costa Rica', 'Partido',
+        'Partido amistoso de selecciones.',
         'El Salvador vs. Costa Rica', 5, 2,
         TIMESTAMP(CURDATE() + INTERVAL 14 DAY, '17:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 14 DAY, '19:00:00'),
         TIMESTAMP(CURDATE() + INTERVAL 14 DAY, '21:00:00'), 'Publicado');
 
--- Precios por zona (el evento 4 queda sin precios a propósito: la demo
--- muestra que no se puede publicar hasta completarlos).
+-- Precios por zona.
 INSERT INTO precio_zona (id_evento, id_zona, precio) VALUES
     (1, 1, 65.00), (1, 2, 40.00), (1, 3, 110.00),
     (2, 4, 10.00), (2, 5, 18.00), (2, 6, 45.00),
     (3, 1, 40.00), (3, 2, 25.00), (3, 3, 75.00),
-    (5, 4,  8.00), (5, 5, 12.00), (5, 6, 30.00),
-    (6, 4, 45.00), (6, 5, 75.00), (6, 6, 150.00),
-    (7, 1, 40.00), (7, 2, 25.00), (7, 3, 70.00),
-    (8, 4, 15.00), (8, 5, 25.00), (8, 6, 50.00);
+    (4, 4,  8.00), (4, 5, 12.00), (4, 6, 30.00),
+    (5, 4, 45.00), (5, 5, 75.00), (5, 6, 150.00),
+    (6, 1, 40.00), (6, 2, 25.00), (6, 3, 70.00),
+    (7, 4, 15.00), (7, 5, 25.00), (7, 6, 50.00);
 
 -- Disponibilidad de asientos de los eventos ya publicados (lo mismo que hace
 -- la aplicación al publicar).
@@ -176,31 +167,31 @@ INSERT INTO venta (id, id_cliente, canal, id_usuario_vendedor, fecha, total, for
     (4,  4, 'Mostrador', 1,    NOW() - INTERVAL 3 DAY, 0, 'Efectivo',      'Pagada', NULL),
     (5,  5, 'Web',       NULL, NOW() - INTERVAL 2 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (6,  6, 'Web',       NULL, NOW() - INTERVAL 1 DAY, 0, 'Tarjeta',       'Pagada', NULL),
-    -- Evento 2: Gran Final Apertura
+    -- Evento 2: Final Alianza vs. FAS
     (7,  1, 'Web',       NULL, NOW() - INTERVAL 4 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (8,  7, 'Web',       NULL, NOW() - INTERVAL 3 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (9,  8, 'Mostrador', 1,    NOW() - INTERVAL 2 DAY, 0, 'Efectivo',      'Pagada', NULL),
     (10, 2, 'Web',       NULL, NOW() - INTERVAL 1 DAY, 0, 'Transferencia', 'Pagada', NULL),
-    -- Evento 3: La Traviata (finalizado)
+    -- Evento 3: Orquesta Salvadoreña (finalizado)
     (11, 3, 'Web',       NULL, NOW() - INTERVAL 25 DAY, 0, 'Tarjeta',      'Pagada', NULL),
     (12, 4, 'Web',       NULL, NOW() - INTERVAL 24 DAY, 0, 'Tarjeta',      'Pagada', NULL),
     (13, 5, 'Web',       NULL, NOW() - INTERVAL 22 DAY, 0, 'Transferencia','Pagada', NULL),
     (14, 6, 'Mostrador', 1,    NOW() - INTERVAL 20 DAY, 0, 'Efectivo',     'Pagada', NULL),
     (15, 7, 'Web',       NULL, NOW() - INTERVAL 18 DAY, 0, 'Tarjeta',      'Pagada', NULL),
     (16, 8, 'Web',       NULL, NOW() - INTERVAL 15 DAY, 0, 'Tarjeta',      'Pagada', NULL),
-    -- Evento 5: Final de baloncesto (cancelado: ventas anuladas)
+    -- Evento 4: Final de Baloncesto (cancelado: ventas anuladas)
     (17, 1, 'Web',       NULL, NOW() - INTERVAL 40 DAY, 0, 'Tarjeta',      'Anulada', 'Evento cancelado'),
     (18, 3, 'Web',       NULL, NOW() - INTERVAL 38 DAY, 0, 'Tarjeta',      'Anulada', 'Evento cancelado'),
-    -- Evento 6: Maná
+    -- Evento 5: Maná
     (19, 2, 'Web',       NULL, NOW() - INTERVAL 9 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (20, 5, 'Web',       NULL, NOW() - INTERVAL 8 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (21, 7, 'Mostrador', 1,    NOW() - INTERVAL 6 DAY, 0, 'Efectivo',      'Pagada', NULL),
     (22, 4, 'Web',       NULL, NOW() - INTERVAL 3 DAY, 0, 'Transferencia', 'Pagada', NULL),
     (23, 6, 'Web',       NULL, NOW() - INTERVAL 1 DAY, 0, 'Tarjeta',       'Pagada', NULL),
-    -- Evento 7: El Fantasma de la Ópera
+    -- Evento 6: Teatro Musical
     (24, 3, 'Web',       NULL, NOW() - INTERVAL 5 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (25, 8, 'Web',       NULL, NOW() - INTERVAL 2 DAY, 0, 'Tarjeta',       'Pagada', NULL),
-    -- Evento 8: La Selecta vs. Costa Rica
+    -- Evento 7: El Salvador vs. Costa Rica
     (26, 1, 'Web',       NULL, NOW() - INTERVAL 2 DAY, 0, 'Tarjeta',       'Pagada', NULL),
     (27, 5, 'Mostrador', 1,    NOW() - INTERVAL 1 DAY, 0, 'Efectivo',      'Pagada', NULL);
 
@@ -217,11 +208,11 @@ INSERT INTO aux_venta VALUES
     (10, 2, 4, 'C', 10, 15),
     (11, 3, 1, 'A', 1, 6),  (12, 3, 1, 'B', 1, 6),  (13, 3, 1, 'C', 1, 6),
     (14, 3, 2, 'A', 1, 5),  (15, 3, 3, 'A', 1, 4),  (16, 3, 1, 'D', 1, 6),
-    (17, 5, 4, 'A', 1, 4),  (18, 5, 6, 'A', 1, 2),
-    (19, 6, 6, 'A', 1, 4),  (20, 6, 5, 'A', 1, 6),  (21, 6, 4, 'B', 1, 8),
-    (22, 6, 6, 'B', 1, 2),  (23, 6, 4, 'D', 5, 10),
-    (24, 7, 1, 'A', 3, 6),  (25, 7, 3, 'A', 1, 2),
-    (26, 8, 4, 'A', 1, 8),  (27, 8, 5, 'C', 1, 4);
+    (17, 4, 4, 'A', 1, 4),  (18, 4, 6, 'A', 1, 2),
+    (19, 5, 6, 'A', 1, 4),  (20, 5, 5, 'A', 1, 6),  (21, 5, 4, 'B', 1, 8),
+    (22, 5, 6, 'B', 1, 2),  (23, 5, 4, 'D', 5, 10),
+    (24, 6, 1, 'A', 3, 6),  (25, 6, 3, 'A', 1, 2),
+    (26, 7, 4, 'A', 1, 8),  (27, 7, 5, 'C', 1, 4);
 
 -- Un boleto por asiento, con código único (contenido del QR).
 INSERT INTO entrada (id_venta, id_evento_asiento, precio, codigo, estado)
@@ -252,13 +243,13 @@ JOIN (SELECT id_venta, SUM(precio) AS total FROM entrada GROUP BY id_venta) t
   ON t.id_venta = v.id
 SET v.total = t.total;
 
--- Asientos bloqueados por producción: Arjona (Platea H-11 y H-12) y
--- Maná (Tribuna VIP C-1 a C-4, consola de sonido).
+-- Asientos bloqueados por producción: Ricardo Arjona (Platea H-11 y H-12)
+-- y Maná (Tribuna VIP C-1 a C-4, consola de sonido).
 UPDATE evento_asiento ea
 JOIN asiento a ON a.id = ea.id_asiento
 SET ea.estado = 'Bloqueado'
 WHERE (ea.id_evento = 1 AND a.id_zona = 1 AND a.fila = 'H' AND a.numero IN (11, 12))
-   OR (ea.id_evento = 6 AND a.id_zona = 6 AND a.fila = 'C' AND a.numero BETWEEN 1 AND 4);
+   OR (ea.id_evento = 5 AND a.id_zona = 6 AND a.fila = 'C' AND a.numero BETWEEN 1 AND 4);
 
 -- Evento 1: dos asientos reservados por un cliente que aún no paga.
 UPDATE evento_asiento ea

@@ -30,7 +30,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Escribir mal la contraseña: aparece "Le quedan N intentos" (bloqueo de 15 min al quinto intento, RF-40).
    - Entrar bien y marcar "Recordar mi usuario" (cookie, RF-41).
    - Explicar que la contraseña está con **BCrypt** y que todos los formularios llevan **token CSRF**.
-2. **Dashboard** (`/admin/dashboard`): boletos vendidos, ingresos, ocupación de eventos activos, asistencia del evento finalizado (La Traviata: 79 %) e incidencias abiertas.
+2. **Dashboard** (`/admin/dashboard`): boletos vendidos, ingresos, ocupación de eventos activos, asistencia del evento finalizado (Orquesta Salvadoreña: 79 %) e incidencias abiertas.
 3. **Usuarios:**
    - Crear un usuario con contraseña débil para mostrar la validación; luego crearlo bien.
    - Intentar desactivar la propia cuenta: el sistema lo impide (siempre queda un administrador activo).
@@ -50,18 +50,18 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Hacer clic en un asiento para inhabilitarlo (RN-14: no se borra).
 2. **Eventos:**
    - Listado con filtros por tipo, estado, recinto, categoría y fechas, y búsqueda por nombre o participantes.
-   - Abrir **Shakira en San Salvador** (Borrador) y pulsar **Publicar** sin precios: aparece "Faltan precios en 3 zonas".
-   - Pulsar **Editar datos**: al elegir el recinto aparecen sus zonas y el precio de cada una se escribe en el mismo formulario. Guardar y **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
+   - Pulsar **Nuevo evento** (por ejemplo, un concierto en el Estadio Cuscatlán en una fecha libre): al elegir el recinto aparecen sus zonas y el precio de cada una se escribe en el mismo formulario. Al guardar queda en **Borrador**.
+   - Pulsar **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
    - Pulsar **Duplicar** en un evento (RF-09): se abre el formulario con sus datos, precios y afiche; solo se eligen fechas nuevas y queda en Borrador. En el detalle de esa copia, **Desactivar** la quita del listado (borrado lógico, RN-10).
    - **Editar datos** y adjuntar un afiche (imagen de hasta 2 MB) con su vista previa; volver al **Inicio** para verlo en la tarjeta de la cartelera. Los eventos sin afiche muestran la imagen por defecto.
-3. **Mapa de asientos** de *Maná: Gira Centroamérica 2026* (o *Ricardo Arjona: Noche Acústica*, que también tiene asientos reservados):
+3. **Mapa de asientos** de *Maná* (o *Ricardo Arjona*, que también tiene asientos reservados):
    - Colores por estado: vendido, reservado, bloqueado y disponible.
    - Bloquear un asiento disponible (cortesía).
    - Intentar bloquear uno vendido: el sistema lo rechaza.
-4. **Choque de horario (RN-05):** crear un evento en el Teatro Presidente el mismo día y hora que *Ricardo Arjona: Noche Acústica*. Se rechaza: "El recinto ya tiene otro evento en ese horario".
+4. **Choque de horario (RN-05):** crear un evento en el Teatro Presidente el mismo día y hora que *Ricardo Arjona*. Se rechaza: "El recinto ya tiene otro evento en ese horario".
 5. **Estados y cancelación:**
    - En un evento publicado, mostrar *Marcar como En curso*.
-   - Cancelar *Gran Final Apertura 2026* (Alianza vs. FAS): se anulan sus 22 boletos (reembolso simulado) y se liberan los asientos (RN-09).
+   - Cancelar *Final Alianza vs. FAS*: se anulan sus 22 boletos (reembolso simulado) y se liberan los asientos (RN-09).
    - Volver al **Dashboard** y a **Reportes** como Administrador para ver que los números cambiaron.
 
 ## 4. Cierre (1 min)
