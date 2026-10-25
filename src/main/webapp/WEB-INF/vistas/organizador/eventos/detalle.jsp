@@ -23,7 +23,6 @@
             <c:if test="${evento.estado.conMapa}">
                 <a class="boton" href="${ctx}/organizador/mapa?evento=${evento.id}">Mapa de asientos</a>
             </c:if>
-            <a class="boton gris" href="${ctx}/organizador/eventos?accion=duplicar&id=${evento.id}">Duplicar</a>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
@@ -104,7 +103,7 @@
         <div class="acciones-linea">
             <c:if test="${evento.estado == 'BORRADOR'}">
                 <form method="post" action="${ctx}/organizador/eventos" class="linea"
-                      onsubmit="return confirm('¿Publicar el evento? Se generará el mapa de asientos y quedará a la venta.');">
+                      data-confirmar="¿Publicar el evento?" data-detalle="Se generará el mapa de asientos y quedará a la venta." data-boton="Sí, publicar">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="accion" value="publicar">
                     <input type="hidden" name="id" value="${evento.id}">
@@ -113,7 +112,7 @@
             </c:if>
             <c:if test="${not empty siguienteEstado}">
                 <form method="post" action="${ctx}/organizador/eventos" class="linea"
-                      onsubmit="return confirm('¿Cambiar el estado a ${siguienteEstado.bd}?');">
+                      data-confirmar="¿Cambiar el estado a ${siguienteEstado.bd}?" data-boton="Sí, cambiar">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="accion" value="avanzar">
                     <input type="hidden" name="id" value="${evento.id}">
@@ -122,7 +121,7 @@
             </c:if>
             <c:if test="${evento.estado.cancelable}">
                 <form method="post" action="${ctx}/organizador/eventos" class="linea"
-                      onsubmit="return confirm('¿Cancelar el evento? Se anularán todos sus boletos (reembolso simulado). Esta acción no se puede deshacer.');">
+                      data-confirmar="¿Cancelar el evento?" data-detalle="Se anularán todos sus boletos (reembolso simulado). Esta acción no se puede deshacer." data-boton="Sí, cancelar evento" data-peligro="si">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="accion" value="cancelar">
                     <input type="hidden" name="id" value="${evento.id}">
@@ -132,7 +131,7 @@
             <%-- Borrado lógico (RN-10): solo Borrador o Cancelado. --%>
             <c:if test="${evento.estado == 'BORRADOR' or evento.estado == 'CANCELADO'}">
                 <form method="post" action="${ctx}/organizador/eventos" class="linea"
-                      onsubmit="return confirm('¿Desactivar el evento? Dejará de aparecer en el listado y en los reportes.');">
+                      data-confirmar="¿Desactivar el evento?" data-detalle="Dejará de aparecer en el listado y en los reportes." data-boton="Sí, desactivar" data-peligro="si">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="accion" value="desactivar">
                     <input type="hidden" name="id" value="${evento.id}">

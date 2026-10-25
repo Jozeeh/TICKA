@@ -101,6 +101,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 ### Común
 
 Las opciones de cada rol están en un **menú lateral**; la barra superior solo tiene la marca, los enlaces públicos y la sesión. En pantallas angostas el menú pasa a una franja horizontal.
+Las confirmaciones (publicar, cancelar, desactivar, eliminar) usan **SweetAlert2** (copia local en `resources/js`, sin depender de internet) en lugar de los cuadros del navegador.
 
 Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo de 15 minutos tras 5 intentos fallidos (RF-40), expiración de la sesión a los 20 minutos de inactividad, páginas de error 403/404/500 y página de inicio pública con la cartelera de eventos en tarjetas (el afiche se sirve en `/afiche?evento=ID`; sin afiche se usa una imagen por defecto).
 

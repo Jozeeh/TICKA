@@ -51,7 +51,7 @@
                             <a class="boton amarillo chico" href="${ctx}/organizador/categorias?accion=editar&id=${cat.id}">Editar</a>
                             <c:if test="${cat.totalEventos == 0}">
                                 <form method="post" action="${ctx}/organizador/categorias" class="linea"
-                                      onsubmit="return confirm('¿Eliminar esta categoría?');">
+                                      data-confirmar="¿Eliminar esta categoría?" data-boton="Sí, eliminar" data-peligro="si">
                                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                     <input type="hidden" name="accion" value="eliminar">
                                     <input type="hidden" name="id" value="${cat.id}">

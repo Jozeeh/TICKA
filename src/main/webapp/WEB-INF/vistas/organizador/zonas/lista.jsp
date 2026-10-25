@@ -65,7 +65,7 @@
                 </div>
                 <c:if test="${z.totalAsientos == 0}">
                     <form method="post" action="${ctx}/organizador/zonas" class="linea"
-                          onsubmit="return confirm('¿Eliminar esta zona?');">
+                          data-confirmar="¿Eliminar esta zona?" data-boton="Sí, eliminar" data-peligro="si">
                         <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                         <input type="hidden" name="accion" value="eliminar">
                         <input type="hidden" name="recinto" value="${recinto.id}">

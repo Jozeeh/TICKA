@@ -181,7 +181,7 @@
             return;
         }
         if (archivo.size > 2 * 1024 * 1024) {
-            alert('El afiche no puede pesar más de 2 MB.');
+            avisar('Afiche demasiado grande', 'El afiche no puede pesar más de 2 MB.');
             this.value = '';
             return;
         }

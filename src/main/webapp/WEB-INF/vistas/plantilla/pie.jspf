@@ -1,1 +1,4 @@
 <footer class="pie">TICKA · Sistema de Eventos en Vivo · Equipo 11 · ITCA-FEPADE</footer>
+<%-- SweetAlert2 (copia local, MIT) para las confirmaciones de los formularios con data-confirmar. --%>
+<script src="${pageContext.request.contextPath}/resources/js/sweetalert2.all.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/confirmaciones.js?v=1"></script>
