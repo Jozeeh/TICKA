@@ -22,6 +22,13 @@ public interface ReporteDAO {
     /** Eventos que ya tienen mapa (para el filtro de los reportes). */
     List<Evento> eventosConMapa();
 
+    /**
+     * Reporte general: sin evento en el filtro, un resumen por evento; con
+     * evento, toda su información (asientos, ventas, zonas, asistencia e
+     * incidencias). El filtro de zona no aplica.
+     */
+    Reporte general(FiltroReporte filtro);
+
     Reporte ventas(FiltroReporte filtro);
 
     Reporte asistencia(FiltroReporte filtro);

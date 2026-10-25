@@ -11,12 +11,15 @@
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
 <main class="contenedor">
     <h1>Reportes</h1>
-    <p class="subtitulo">Filtre por fechas, evento, tipo, categoría o zona y exporte a PDF o a CSV para abrirlo en Excel.</p>
+    <p class="subtitulo">Filtre por fechas, evento, tipo, categoría o zona. El PDF se abre en una pestaña nueva y el CSV se descarga para abrirlo en Excel.</p>
+    <c:if test="${tipo == 'general'}">
+        <p class="ayuda">Sin evento elegido se muestra un resumen de todos los eventos; elija un evento para ver toda su información.</p>
+    </c:if>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <nav class="pestanas">
-        <c:forEach var="p" items="ventas,asistencia,ocupacion,incidencias">
-            <c:url var="enlace" value="/admin/reportes">
+        <c:forEach var="p" items="general,ventas,asistencia,ocupacion,incidencias">
+            <c:url var="enlace" value="/reportes">
                 <c:param name="tipo" value="${p}" />
                 <c:param name="desde" value="${filtro.desde}" />
                 <c:param name="hasta" value="${filtro.hasta}" />
@@ -27,6 +30,7 @@
             </c:url>
             <a class="${tipo == p ? 'activa' : ''}" href="${enlace}">
                 <c:choose>
+                    <c:when test="${p == 'general'}">General</c:when>
                     <c:when test="${p == 'ventas'}">Ventas</c:when>
                     <c:when test="${p == 'asistencia'}">Asistencia</c:when>
                     <c:when test="${p == 'ocupacion'}">Ocupación</c:when>
@@ -37,7 +41,7 @@
     </nav>
 
     <%-- Filtros (RF-48) --%>
-    <form method="get" action="${ctx}/admin/reportes" class="tarjeta filtros">
+    <form method="get" action="${ctx}/reportes" class="tarjeta filtros">
         <input type="hidden" name="tipo" value="${tipo}">
         <div class="grupo-campo">
             <label for="desde">Desde</label>
@@ -76,7 +80,7 @@
                 </c:forEach>
             </select>
         </div>
-        <c:if test="${tipo != 'incidencias'}">
+        <c:if test="${tipo != 'incidencias' and tipo != 'general'}">
             <div class="grupo-campo" style="min-width:220px">
                 <label for="zona">Zona</label>
                 <select id="zona" name="zona">
@@ -89,9 +93,10 @@
         </c:if>
         <div class="acciones-linea">
             <button type="submit" class="boton">Aplicar filtros</button>
-            <button type="submit" name="formato" value="pdf" class="boton rojo">Exportar PDF</button>
+            <%-- El PDF se abre en una pestaña nueva; el CSV se descarga. --%>
+            <button type="submit" name="formato" value="pdf" formtarget="_blank" class="boton rojo">Exportar PDF</button>
             <button type="submit" name="formato" value="csv" class="boton verde">Exportar CSV</button>
-            <a class="boton gris" href="${ctx}/admin/reportes?tipo=${tipo}">Limpiar</a>
+            <a class="boton gris" href="${ctx}/reportes?tipo=${tipo}">Limpiar</a>
         </div>
     </form>
 

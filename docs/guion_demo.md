@@ -39,7 +39,9 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 5. **Reportes:**
    - Pestañas de ventas (por zona y canal Web/Mostrador), asistencia (vendidos frente a ingresados, ausentes y rechazos en puerta), ocupación e incidencias.
    - La pestaña de ventas incluye el **vendedor** (las ventas de mostrador muestran quién las registró).
-   - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**; luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
+   - Pestaña **General** (RF-49): sin evento muestra el resumen de todos; al elegir *Maná* aparece toda su información (asientos vendidos y sin vender, ingresos por canal, zonas, asistencia e incidencias).
+   - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**: se abre en una pestaña nueva. Luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
+   - Con la cuenta del Organizador, abrir **Reportes** en su menú lateral: también los consulta, pero `/admin/dashboard` responde 403.
 6. **Autorización:** en la ventana del Organizador, abrir `/ticka/admin/dashboard`: responde **403 Acceso denegado**.
 
 ## 3. Organizador (6 a 7 min)
@@ -67,7 +69,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 ## 4. Cierre (1 min)
 
 - **Arquitectura MVC en capas:** Servlet → Servicio (reglas y transacciones) → DAO (JDBC) → MySQL, con vistas JSP/JSTL.
-- **Pruebas:** 33 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
+- **Pruebas:** 34 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
 - **Siguiente entrega:** rol Cliente (compra eligiendo asientos en el mismo mapa) y rol Control de acceso (validación del QR en puerta). La base de datos ya los soporta.
 
 ## Preguntas frecuentes

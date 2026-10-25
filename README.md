@@ -96,7 +96,7 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Dashboard de indicadores | `/admin/dashboard` | RF-42 |
 | Usuarios del personal: crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40 |
 | Clientes: consulta y activación | `/admin/clientes` | RF-37 |
-| Reportes de ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; exportación a PDF y CSV | `/admin/reportes` | RF-43 a RF-48 |
+| Reportes (también para el Organizador): general por evento, ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; PDF en pestaña nueva y descarga CSV | `/reportes` | RF-43 a RF-49 |
 
 ### Común
 
@@ -108,7 +108,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 ## Seguridad
 
 - Contraseñas con **BCrypt** (hash con salt). Nunca se guardan ni se muestran en texto plano.
-- **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` admite Organizador y Administrador; cualquier otro rol recibe 403.
+- **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` y `/reportes` admiten Organizador y Administrador; cualquier otro rol recibe 403.
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
 - Consultas parametrizadas (sin concatenar datos del usuario) y salida escapada con `c:out` (XSS).
 - Afiches adjuntos validados por su contenido real (firma de JPG, PNG, WEBP o GIF) y con un máximo de 2 MB, no por la extensión del archivo.
@@ -129,14 +129,14 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 mvn test
 ```
 
-Son 33 pruebas JUnit, sin base de datos:
+Son 34 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
 | `ValidadorUsuarioTest` | Formato de usuario y política de contraseñas |
 | `SeguridadClaveTest` | Hash BCrypt y verificación |
 | `AutenticacionServicioTest` | Inicio de sesión, cuenta desactivada y bloqueo al quinto intento (DAO en memoria) |
-| `AutenticacionFilterTest` | Matriz de permisos por rol |
+| `AutenticacionFilterTest` | Matriz de permisos por rol (incluye `/reportes` para el Organizador) |
 | `ValidadorEventoTest` | Fechas del evento y regla de traslape de horarios |
 | `GeneradorAsientosTest` | Cálculo de filas y límites; flujo de estados del evento |
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |

@@ -15,7 +15,7 @@
             <h1>Dashboard</h1>
             <p class="subtitulo">Resumen general de ventas, ocupación y asistencia.</p>
         </div>
-        <a class="boton" href="${ctx}/admin/reportes">Ver reportes</a>
+        <a class="boton" href="${ctx}/reportes">Ver reportes</a>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 

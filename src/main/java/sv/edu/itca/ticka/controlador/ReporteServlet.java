@@ -1,4 +1,4 @@
-package sv.edu.itca.ticka.controlador.admin;
+package sv.edu.itca.ticka.controlador;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,15 +31,16 @@ import sv.edu.itca.ticka.util.Formatos;
 import sv.edu.itca.ticka.util.Parametros;
 
 /**
- * Reportes del Administrador (RF-43 a RF-48): ventas, asistencia, ocupación
- * e incidencias, con filtros por fechas, evento, tipo, categoría y zona.
- * Con formato=csv o formato=pdf el mismo reporte se descarga como archivo.
+ * Reportes (RF-43 a RF-49) para el Administrador y el Organizador: general
+ * por evento, ventas, asistencia, ocupación e incidencias, con filtros por
+ * fechas, evento, tipo, categoría y zona. Con formato=pdf el reporte se abre
+ * en el navegador (pestaña nueva) y con formato=csv se descarga.
  */
-@WebServlet("/admin/reportes")
+@WebServlet("/reportes")
 public class ReporteServlet extends HttpServlet {
 
-    private static final String VISTA = "/WEB-INF/vistas/admin/reportes.jsp";
-    private static final Set<String> TIPOS = Set.of("ventas", "asistencia", "ocupacion", "incidencias");
+    private static final String VISTA = "/WEB-INF/vistas/reportes/reportes.jsp";
+    private static final Set<String> TIPOS = Set.of("general", "ventas", "asistencia", "ocupacion", "incidencias");
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private ReporteDAO reporteDAO;
@@ -56,7 +57,7 @@ public class ReporteServlet extends HttpServlet {
             throws ServletException, IOException {
         String tipo = req.getParameter("tipo");
         if (tipo == null || !TIPOS.contains(tipo)) {
-            tipo = "ventas";
+            tipo = "general";
         }
         FiltroReporte f = leerFiltro(req);
         if (f.getDesde() != null && f.getHasta() != null && f.getHasta().isBefore(f.getDesde())) {
@@ -68,7 +69,7 @@ public class ReporteServlet extends HttpServlet {
             Reporte reporte = generar(tipo, f);
             String formato = req.getParameter("formato");
             if ("csv".equals(formato) || "pdf".equals(formato)) {
-                descargar(resp, tipo, formato, reporte, describir(f));
+                descargar(resp, tipo, formato, reporte, describir(tipo, f));
                 return;
             }
             req.setAttribute("reporte", reporte);
@@ -99,6 +100,8 @@ public class ReporteServlet extends HttpServlet {
 
     private Reporte generar(String tipo, FiltroReporte f) {
         switch (tipo) {
+            case "general":
+                return reporteDAO.general(f);
             case "asistencia":
                 return reporteDAO.asistencia(f);
             case "ocupacion":
@@ -111,7 +114,7 @@ public class ReporteServlet extends HttpServlet {
     }
 
     /** Texto con los filtros aplicados, para el encabezado del PDF. */
-    private String describir(FiltroReporte f) {
+    private String describir(String tipo, FiltroReporte f) {
         List<String> partes = new ArrayList<>();
         if (f.getDesde() != null) {
             partes.add("desde " + f.getDesde().format(FECHA));
@@ -134,7 +137,7 @@ public class ReporteServlet extends HttpServlet {
                     .map(Categoria::getNombre).findFirst()
                     .ifPresent(n -> partes.add("categoría " + n));
         }
-        if (f.getIdZona() != null) {
+        if (f.getIdZona() != null && !"general".equals(tipo) && !"incidencias".equals(tipo)) {
             Map<Long, String> zonas = reporteDAO.zonasParaFiltro();
             if (zonas.containsKey(f.getIdZona())) {
                 partes.add("zona " + zonas.get(f.getIdZona()));
@@ -154,7 +157,9 @@ public class ReporteServlet extends HttpServlet {
             resp.setContentType("text/csv; charset=UTF-8");
             contenido = ExportadorCsv.generar(reporte).getBytes(StandardCharsets.UTF_8);
         }
-        resp.setHeader("Content-Disposition", "attachment; filename=\"" + archivo + "\"");
+        // El PDF se muestra en el navegador (inline); el CSV se descarga (attachment).
+        String disposicion = "pdf".equals(formato) ? "inline" : "attachment";
+        resp.setHeader("Content-Disposition", disposicion + "; filename=\"" + archivo + "\"");
         resp.setContentLength(contenido.length);
         resp.getOutputStream().write(contenido);
     }

@@ -33,11 +33,14 @@
             <a class="${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
             <a class="${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
             <a class="${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
+            <c:if test="${not u.administrador}">
+                <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/reportes">Reportes</a>
+            </c:if>
         </c:if>
         <c:if test="${u.administrador}">
             <p class="seccion">Administración</p>
             <a class="${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
-            <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/admin/reportes">Reportes</a>
+            <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/reportes">Reportes</a>
             <a class="${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
             <a class="${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
         </c:if>

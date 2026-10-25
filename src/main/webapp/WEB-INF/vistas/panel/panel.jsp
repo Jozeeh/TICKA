@@ -28,10 +28,6 @@
                 <h3>Clientes</h3>
                 <p>Consultar clientes registrados y sus compras; activar o desactivar cuentas.</p>
             </a>
-            <a class="tarjeta modulo" href="${ctx}/admin/reportes" style="text-decoration:none">
-                <h3>Reportes</h3>
-                <p>Ventas, asistencia, ocupación e incidencias con filtros y exportación a PDF y CSV.</p>
-            </a>
         </c:if>
         <c:if test="${u.gestorEventos}">
             <a class="tarjeta modulo" href="${ctx}/organizador/eventos" style="text-decoration:none">
@@ -45,6 +41,10 @@
             <a class="tarjeta modulo" href="${ctx}/organizador/categorias" style="text-decoration:none">
                 <h3>Categorías</h3>
                 <p>Catálogo para clasificar los eventos de la cartelera.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/reportes" style="text-decoration:none">
+                <h3>Reportes</h3>
+                <p>General por evento, ventas, asistencia, ocupación e incidencias con filtros y exportación a PDF y CSV.</p>
             </a>
         </c:if>
         <c:if test="${u.rol == 'CLIENTE' or u.rol == 'CONTROL_ACCESO'}">

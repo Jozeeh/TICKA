@@ -68,7 +68,7 @@ El sistema tiene **4 roles**; cada integrante es responsable de **un rol** y de 
 
 | Integrante | Rol | Módulos a cargo | Qué hace en el sistema |
 |---|---|---|---|
-| 1 | **Organizador** (productor) | **M1** Eventos y cartelera · **M2** Recintos y asientos | Crea y publica eventos con su descripción y participantes, fija precios por zona, define recintos con sus asientos y evita choques de horario en el recinto. |
+| 1 | **Organizador** (productor) | **M1** Eventos y cartelera · **M2** Recintos y asientos | Crea y publica eventos con su descripción y participantes, fija precios por zona, define recintos con sus asientos y evita choques de horario en el recinto. También consulta los reportes (M7). |
 | 2 | **Cliente** (usuario final) | **M3** Portal del cliente: cartelera, asientos, compra y mis boletos | Se registra, explora eventos, elige asientos en el mapa, los reserva y compra, recibe código/QR, consulta su historial y anula sus compras. |
 | 3 | **Control de acceso** (puerta y seguridad) | **M4** Control de acceso · **M5** Incidencias | Valida boletos en puerta, impide reingresos fraudulentos, lleva la ocupación en vivo y registra incidentes. |
 | 4 | **Administrador** | **M6** Usuarios y seguridad · **M7** Dashboard y reportes | Gestiona usuarios y roles y la seguridad; consulta dashboard y reportes de todo el sistema. |
@@ -85,7 +85,7 @@ El sistema tiene **4 roles**; cada integrante es responsable de **un rol** y de 
 | M4 Control de acceso | 👁 | ✖ | ✔ | ✔ |
 | M5 Incidencias | 👁 | ✖ | ✔ | ✔ |
 | M6 Usuarios y seguridad | ✖ | perfil propio | ✖ | ✔ |
-| M7 Dashboard y reportes | ✖ | ✖ | ✖ | ✔ |
+| M7 Dashboard y reportes | 👁 (reportes, sin dashboard) | ✖ | ✖ | ✔ |
 
 ### 2.3 Flujo entre roles
 
@@ -174,7 +174,7 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-40 | Bloqueo temporal tras N intentos fallidos de login. | M |
 | RF-41 | Cookie "recordar usuario" opcional y expiración de sesión por inactividad. | B |
 
-### M7 — Dashboard y reportes *(Administrador)*
+### M7 — Dashboard y reportes *(Administrador; el Organizador consulta los reportes RF-43 a RF-49)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
 | RF-42 | Dashboard: eventos activos, boletos vendidos, ingresos, ocupación por zona, asistencia. | M |
@@ -182,8 +182,9 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-44 | Reporte de asistencia: vendidos vs. ingresados y porcentaje de ausentismo. | A |
 | RF-45 | Reporte de ocupación de asientos por zona y evento. | M |
 | RF-46 | Reporte de incidencias por evento, tipo y gravedad. | M |
-| RF-47 | Exportar reportes a PDF y Excel/CSV. | M |
+| RF-47 | Exportar reportes a PDF (se abre en una pestaña nueva del navegador) y Excel/CSV (descarga). | M |
 | RF-48 | Filtros por rango de fechas, evento, tipo, categoría y zona. | M |
+| RF-49 | Reporte general por evento: sin evento elegido, resumen de todos (asientos, vendidos, sin vender, ocupación, ingresos, asistencia e incidencias); con un evento, toda su información (datos del evento, asientos por estado, ventas e ingresos por canal, zonas con precio y vendidos, asistencia e incidencias). | M |
 
 ---
 
@@ -351,7 +352,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 | Persistencia JDBC/DAO | Todas las entidades; transacciones en compra, reserva y anulación (RNF-05) | Todos |
 | JSF, PrimeFaces, AJAX | Listados con filtro, mapa de asientos con refresco, ocupación en vivo, dashboard (RF-03, RF-16, RF-28, RF-42) | Todos |
 | Seguridad | Hash, filtros de rol, CSRF, control de propiedad (RF-38, RF-39, RF-40, RNF-04) | Administrador |
-| Reportería | Ventas, asistencia, ocupación, incidencias (RF-43 a RF-48) | Administrador |
+| Reportería | General por evento, ventas, asistencia, ocupación, incidencias (RF-43 a RF-49) | Administrador / Organizador |
 
 ---
 

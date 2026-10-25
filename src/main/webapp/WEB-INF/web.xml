@@ -45,6 +45,7 @@
         <url-pattern>/panel</url-pattern>
         <url-pattern>/organizador/*</url-pattern>
         <url-pattern>/admin/*</url-pattern>
+        <url-pattern>/reportes</url-pattern>
     </filter-mapping>
 
     <!-- Todas las JSP y fragmentos .jspf se leen en UTF-8 (tildes y ñ). -->
