@@ -13,7 +13,7 @@
     <div class="cabecera-pagina">
         <div>
             <h1>Clientes</h1>
-            <p class="subtitulo">Cuentas creadas por autorregistro en el portal. Aquí solo se consultan y se activan o desactivan.</p>
+            <p class="subtitulo">Cuentas creadas por autorregistro en el portal. Aquí se consultan con sus compras y se activan o desactivan.<c:if test="${not empty paginacion}"> ${paginacion.total} clientes encontrados.</c:if></p>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
@@ -50,12 +50,15 @@
                     <td class="numero">${cl.totalGastadoTexto}</td>
                     <td><span class="etiqueta ${cl.activo ? 'activo' : 'inactivo'}">${cl.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td>
+                        <div class="acciones-linea">
+                        <a class="boton chico" href="${ctx}/admin/clientes?accion=ver&id=${cl.id}">Ver</a>
                         <form method="post" action="${ctx}/admin/clientes" class="linea">
                             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                             <input type="hidden" name="usuario" value="${cl.idUsuario}">
                             <input type="hidden" name="activar" value="${cl.activo ? 'no' : 'si'}">
                             <button type="submit" class="boton chico ${cl.activo ? 'rojo' : 'verde'}">${cl.activo ? 'Desactivar' : 'Activar'}</button>
                         </form>
+                        </div>
                     </td>
                 </tr>
             </c:forEach>
@@ -64,6 +67,19 @@
             </c:if>
             </tbody>
         </table>
+        <%-- Paginación (RF-55): conserva la búsqueda --%>
+        <c:if test="${paginacion.paginas > 1}">
+            <div class="paginacion">
+                <c:forEach var="p" begin="1" end="${paginacion.paginas}">
+                    <c:url var="enlace" value="/admin/clientes">
+                        <c:param name="texto" value="${texto}" />
+                        <c:param name="pagina" value="${p}" />
+                    </c:url>
+                    <a class="boton chico ${p == paginacion.pagina ? '' : 'borde'}" href="${enlace}">${p}</a>
+                </c:forEach>
+                <span>Página ${paginacion.pagina} de ${paginacion.paginas}</span>
+            </div>
+        </c:if>
     </section>
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>

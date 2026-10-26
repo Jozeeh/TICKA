@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.UsuarioDAO;
 import sv.edu.itca.ticka.dao.impl.UsuarioDAOImpl;
+import sv.edu.itca.ticka.modelo.Paginacion;
 import sv.edu.itca.ticka.modelo.Rol;
 import sv.edu.itca.ticka.modelo.Usuario;
 import sv.edu.itca.ticka.servicio.ServicioException;
@@ -57,7 +58,24 @@ public class UsuarioServlet extends HttpServlet {
                 }
                 mostrarFormulario(req, resp, u);
             } else {
-                req.setAttribute("usuarios", usuarioDAO.listarPersonal());
+                // Búsqueda, filtro por rol y paginación (RF-55).
+                String texto = Parametros.texto(req.getParameter("texto"));
+                Rol rol = null;
+                String valorRol = Parametros.texto(req.getParameter("rol"));
+                if (valorRol != null) {
+                    try {
+                        rol = Rol.valueOf(valorRol);
+                    } catch (IllegalArgumentException ex) {
+                        rol = null;
+                    }
+                }
+                Paginacion pag = new Paginacion(Parametros.entero(req.getParameter("pagina")),
+                        usuarioDAO.contarPersonal(texto, rol));
+                req.setAttribute("usuarios", usuarioDAO.listarPersonal(texto, rol, pag.getDesplazamiento(), pag.getTamano()));
+                req.setAttribute("paginacion", pag);
+                req.setAttribute("texto", texto);
+                req.setAttribute("rolFiltro", rol);
+                req.setAttribute("roles", Rol.rolesPersonal());
                 req.getRequestDispatcher(VISTA_LISTA).forward(req, resp);
             }
         } catch (DAOException ex) {

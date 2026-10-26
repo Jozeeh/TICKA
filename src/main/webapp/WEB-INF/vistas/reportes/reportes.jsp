@@ -100,6 +100,14 @@
         </div>
     </form>
 
+    <c:if test="${not empty reporte.indicadores}">
+        <section class="indicadores compactos">
+            <c:forEach var="k" items="${reporte.indicadores}">
+                <div class="indicador"><div class="valor"><c:out value="${k[1]}" /></div><div class="nombre"><c:out value="${k[0]}" /></div></div>
+            </c:forEach>
+        </section>
+    </c:if>
+
     <c:if test="${not empty reporte}">
         <section class="tarjeta tabla-contenedor">
             <h2 style="margin-top:0"><c:out value="${reporte.titulo}" /></h2>

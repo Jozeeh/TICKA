@@ -30,17 +30,17 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Escribir mal la contraseña: aparece "Le quedan N intentos" (bloqueo de 15 min al quinto intento, RF-40).
    - Entrar bien y marcar "Recordar mi usuario" (cookie, RF-41).
    - Explicar que la contraseña está con **BCrypt** y que todos los formularios llevan **token CSRF**.
-2. **Dashboard** (`/admin/dashboard`): boletos vendidos, ingresos, ocupación de eventos activos, asistencia del evento finalizado (Orquesta Salvadoreña: 79 %) e incidencias abiertas.
+2. **Dashboard** (`/admin/dashboard`): boletos vendidos, ingresos, ocupación de eventos activos, asistencia del evento finalizado (Orquesta Salvadoreña: 79 %) e incidencias abiertas. Debajo, los **gráficos** (RF-53): ingresos por mes, por canal, eventos con más ingresos y ocupación de los próximos eventos.
 3. **Usuarios:**
    - Crear un usuario con contraseña débil para mostrar la validación; luego crearlo bien.
    - Intentar desactivar la propia cuenta: el sistema lo impide (siempre queda un administrador activo).
    - Si hay una cuenta bloqueada, mostrar el botón **Desbloquear**.
-4. **Clientes:** buscar un cliente, ver sus compras y total, y desactivar y volver a activar su cuenta.
+4. **Clientes:** buscar un cliente (los listados de Usuarios y Clientes tienen búsqueda y paginación; Usuarios además filtra por rol, RF-55) y pulsar **Ver** en *Ana López*: aparecen sus datos y cada compra con sus boletos (RF-54); desactivar y volver a activar su cuenta.
 5. **Reportes:**
    - Pestañas de ventas (por zona y canal Web/Mostrador), asistencia (vendidos frente a ingresados, ausentes y rechazos en puerta), ocupación e incidencias.
    - La pestaña de ventas incluye el **vendedor** (las ventas de mostrador muestran quién las registró).
    - Pestaña **General** (RF-49): sin evento muestra el resumen de todos; al elegir *Maná* aparece toda su información (asientos vendidos y sin vender, ingresos por canal, zonas, asistencia e incidencias).
-   - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**: se abre en una pestaña nueva. Luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
+   - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**: se abre en una pestaña nueva con formato formal (datos del informe, resumen, detalle y "Página X de Y"). Luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
    - Con la cuenta del Organizador, abrir **Reportes** en su menú lateral: también los consulta, pero `/admin/dashboard` responde 403.
 6. **Autorización:** en la ventana del Organizador, abrir `/ticka/admin/dashboard`: responde **403 Acceso denegado**.
 
@@ -50,18 +50,20 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Mostrar la cuadrícula por zona.
    - Agregar una zona nueva con su distribución (fila A a la C, 8 asientos por fila) en un solo paso. Luego cambiar la distribución (por ejemplo, hasta la fila D) y pulsar **Guardar zona**: crea los que faltan e inactiva, sin borrar, los que quedan fuera.
    - Hacer clic en un asiento para inhabilitarlo (RN-14: no se borra).
-2. **Eventos:**
+2. **Calendario** (`/organizador/calendario`, RF-50): navegar al mes siguiente, filtrar por recinto y marcar **Solo mis eventos** (RF-52; los eventos de los datos de prueba no tienen creador, así que aparecen los que se creen durante la demo).
+   - Explicar la **finalización automática** (RF-51): cada minuto una tarea pasa a *En curso* o *Finalizado* los eventos según su horario y libera las reservas vencidas.
+3. **Eventos:**
    - Listado con filtros por tipo, estado, recinto, categoría y fechas, y búsqueda por nombre o participantes.
    - Pulsar **Nuevo evento** (por ejemplo, un concierto en el Estadio Cuscatlán en una fecha libre): al elegir el recinto aparecen sus zonas y el precio de cada una se escribe en el mismo formulario. Al guardar queda en **Borrador**.
    - Pulsar **Publicar**: "320 asientos habilitados para la venta" (transacción, RF-07).
    - Pulsar **Duplicar** en un evento (RF-09): se abre el formulario con sus datos, precios y afiche; solo se eligen fechas nuevas y queda en Borrador. En el detalle de esa copia, **Desactivar** la quita del listado (borrado lógico, RN-10).
    - **Editar datos** y adjuntar un afiche (imagen de hasta 2 MB) con su vista previa; volver al **Inicio** para verlo en la tarjeta de la cartelera. Los eventos sin afiche muestran la imagen por defecto.
-3. **Mapa de asientos** de *Maná* (o *Ricardo Arjona*, que también tiene asientos reservados):
+4. **Mapa de asientos** de *Maná* (o *Ricardo Arjona*, que también tiene asientos reservados):
    - Colores por estado: vendido, reservado, bloqueado y disponible.
    - Bloquear un asiento disponible (cortesía).
    - Intentar bloquear uno vendido: el sistema lo rechaza.
-4. **Choque de horario (RN-05):** crear un evento en el Teatro Presidente el mismo día y hora que *Ricardo Arjona*. Se rechaza: "El recinto ya tiene otro evento en ese horario".
-5. **Estados y cancelación:**
+5. **Choque de horario (RN-05):** crear un evento en el Teatro Presidente el mismo día y hora que *Ricardo Arjona*. Se rechaza: "El recinto ya tiene otro evento en ese horario".
+6. **Estados y cancelación:**
    - En un evento publicado, mostrar *Marcar como En curso*.
    - Cancelar *Final Alianza vs. FAS*: se anulan sus 22 boletos (reembolso simulado) y se liberan los asientos (RN-09).
    - Volver al **Dashboard** y a **Reportes** como Administrador para ver que los números cambiaron.
@@ -69,7 +71,7 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
 ## 4. Cierre (1 min)
 
 - **Arquitectura MVC en capas:** Servlet → Servicio (reglas y transacciones) → DAO (JDBC) → MySQL, con vistas JSP/JSTL.
-- **Pruebas:** 34 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
+- **Pruebas:** 37 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
 - **Siguiente entrega:** rol Cliente (compra eligiendo asientos en el mismo mapa) y rol Control de acceso (validación del QR en puerta). La base de datos ya los soporta.
 
 ## Preguntas frecuentes

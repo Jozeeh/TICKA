@@ -25,10 +25,12 @@ import sv.edu.itca.ticka.modelo.Evento;
 import sv.edu.itca.ticka.modelo.FiltroReporte;
 import sv.edu.itca.ticka.modelo.Reporte;
 import sv.edu.itca.ticka.modelo.TipoEvento;
+import sv.edu.itca.ticka.modelo.Usuario;
 import sv.edu.itca.ticka.util.ExportadorCsv;
 import sv.edu.itca.ticka.util.ExportadorPdf;
 import sv.edu.itca.ticka.util.Formatos;
 import sv.edu.itca.ticka.util.Parametros;
+import sv.edu.itca.ticka.util.Sesion;
 
 /**
  * Reportes (RF-43 a RF-49) para el Administrador y el Organizador: general
@@ -69,7 +71,7 @@ public class ReporteServlet extends HttpServlet {
             Reporte reporte = generar(tipo, f);
             String formato = req.getParameter("formato");
             if ("csv".equals(formato) || "pdf".equals(formato)) {
-                descargar(resp, tipo, formato, reporte, describir(tipo, f));
+                descargar(req, resp, tipo, formato, reporte, describir(tipo, f));
                 return;
             }
             req.setAttribute("reporte", reporte);
@@ -143,16 +145,20 @@ public class ReporteServlet extends HttpServlet {
                 partes.add("zona " + zonas.get(f.getIdZona()));
             }
         }
-        return partes.isEmpty() ? "ninguno" : String.join(", ", partes);
+        return partes.isEmpty() ? "Ninguno" : String.join(", ", partes);
     }
 
-    private void descargar(HttpServletResponse resp, String tipo, String formato, Reporte reporte, String filtros)
+    private void descargar(HttpServletRequest req, HttpServletResponse resp, String tipo, String formato,
+            Reporte reporte, String filtros)
             throws IOException {
         String archivo = "ticka_" + tipo + "_" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE) + "." + formato;
         byte[] contenido;
         if ("pdf".equals(formato)) {
             resp.setContentType("application/pdf");
-            contenido = ExportadorPdf.generar(reporte, filtros, Formatos.fechaHora(LocalDateTime.now()));
+            Usuario usuario = Sesion.usuario(req);
+            contenido = ExportadorPdf.generar(reporte, "RPT-" + tipo.toUpperCase(), filtros,
+                    Formatos.fechaHora(LocalDateTime.now()),
+                    usuario == null ? null : usuario.getNombre() + " (" + usuario.getRol().getNombre() + ")");
         } else {
             resp.setContentType("text/csv; charset=UTF-8");
             contenido = ExportadorCsv.generar(reporte).getBytes(StandardCharsets.UTF_8);

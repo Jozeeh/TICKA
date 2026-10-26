@@ -18,6 +18,12 @@ public class Reporte {
     private final Set<Integer> numericas = new HashSet<>();
     private final List<List<String>> filas = new ArrayList<>();
     private List<String> totales;
+    /** Cifras de resumen (nombre, valor) que se muestran antes de la tabla. */
+    private final List<String[]> indicadores = new ArrayList<>();
+    /** true si la primera columna es una sección (el PDF agrupa las filas por ella). */
+    private boolean agrupado;
+    /** Nota aclaratoria para la sección "Información adicional" del PDF. */
+    private String nota;
 
     public Reporte(String titulo, String... columnas) {
         this.titulo = titulo;
@@ -47,6 +53,11 @@ public class Reporte {
         }
     }
 
+    public Reporte indicador(String nombre, Object valor) {
+        indicadores.add(new String[]{nombre, valor == null ? "" : String.valueOf(valor)});
+        return this;
+    }
+
     public boolean esNumerica(int indice) {
         return numericas.contains(indice);
     }
@@ -56,4 +67,9 @@ public class Reporte {
     public Set<Integer> getNumericas() { return numericas; }
     public List<List<String>> getFilas() { return filas; }
     public List<String> getTotales() { return totales; }
+    public List<String[]> getIndicadores() { return indicadores; }
+    public boolean isAgrupado() { return agrupado; }
+    public void setAgrupado(boolean agrupado) { this.agrupado = agrupado; }
+    public String getNota() { return nota; }
+    public void setNota(String nota) { this.nota = nota; }
 }

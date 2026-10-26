@@ -3,6 +3,7 @@ package sv.edu.itca.ticka.dao;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import sv.edu.itca.ticka.modelo.Rol;
 import sv.edu.itca.ticka.modelo.Usuario;
 
 /**
@@ -14,8 +15,13 @@ public interface UsuarioDAO {
 
     Optional<Usuario> buscarPorId(long id);
 
-    /** Personal interno: todos los usuarios cuyo rol no es Cliente. */
-    List<Usuario> listarPersonal();
+    /**
+     * Página del personal interno (rol distinto de Cliente). texto busca en
+     * nombre y usuario; rol filtra por un rol. Ambos son opcionales (null).
+     */
+    List<Usuario> listarPersonal(String texto, Rol rol, int desplazamiento, int limite);
+
+    int contarPersonal(String texto, Rol rol);
 
     /** true si existe al menos un Administrador activo. */
     boolean existeAdministradorActivo();

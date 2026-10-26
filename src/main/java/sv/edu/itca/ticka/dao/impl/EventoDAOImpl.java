@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -83,6 +84,10 @@ public class EventoDAOImpl implements EventoDAO {
         if (f.getIdCategoria() != null) {
             sb.append("AND e.id_categoria = ? ");
             parametros.add(f.getIdCategoria());
+        }
+        if (f.getIdCreador() != null) {
+            sb.append("AND e.creado_por = ? ");
+            parametros.add(f.getIdCreador());
         }
         if (f.getDesde() != null) {
             sb.append("AND e.fecha_inicio >= ? ");
@@ -217,6 +222,63 @@ public class EventoDAOImpl implements EventoDAO {
     @Override
     public void quitarAfiche(long idEvento) {
         guardarAfiche(idEvento, null, null);
+    }
+
+    @Override
+    public List<Evento> listarCalendario(LocalDate desde, LocalDate hasta, Long idRecinto, Long idCreador) {
+        String sql = SQL_SELECT + "WHERE e.activo = 1 AND e.fecha_inicio >= ? AND e.fecha_inicio < ? "
+                + "AND (? IS NULL OR e.id_recinto = ?) AND (? IS NULL OR e.creado_por = ?) "
+                + "ORDER BY e.fecha_inicio";
+        List<Evento> lista = new ArrayList<>();
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setObject(1, desde.atStartOfDay());
+            ps.setObject(2, hasta.atStartOfDay());
+            ps.setObject(3, idRecinto);
+            ps.setObject(4, idRecinto);
+            ps.setObject(5, idCreador);
+            ps.setObject(6, idCreador);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapear(rs));
+                }
+            }
+            return lista;
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo cargar el calendario", ex);
+        }
+    }
+
+    @Override
+    public int[] actualizarEstadosPorHorario() {
+        String sqlFinalizar = "UPDATE evento SET estado = 'Finalizado' "
+                + "WHERE activo = 1 AND estado IN ('Publicado', 'Agotado', 'En curso') AND fecha_fin <= NOW()";
+        String sqlEnCurso = "UPDATE evento SET estado = 'En curso' "
+                + "WHERE activo = 1 AND estado IN ('Publicado', 'Agotado') AND fecha_inicio <= NOW() AND fecha_fin > NOW()";
+        String sqlReservas = "UPDATE evento_asiento SET estado = 'Disponible', reservado_hasta = NULL, "
+                + "id_cliente_reserva = NULL WHERE estado = 'Reservado' AND reservado_hasta < NOW()";
+        // Si se liberó algún asiento de un evento agotado, vuelve a Publicado (RN-11).
+        String sqlReabrir = "UPDATE evento e SET e.estado = 'Publicado' WHERE e.estado = 'Agotado' "
+                + "AND EXISTS (SELECT 1 FROM evento_asiento ea WHERE ea.id_evento = e.id AND ea.estado = 'Disponible')";
+        try (Connection cn = ConexionBD.obtenerConexion()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psFin = cn.prepareStatement(sqlFinalizar);
+                    PreparedStatement psCurso = cn.prepareStatement(sqlEnCurso);
+                    PreparedStatement psReservas = cn.prepareStatement(sqlReservas);
+                    PreparedStatement psReabrir = cn.prepareStatement(sqlReabrir)) {
+                int finalizados = psFin.executeUpdate();
+                int enCurso = psCurso.executeUpdate();
+                int liberadas = psReservas.executeUpdate();
+                psReabrir.executeUpdate();
+                cn.commit();
+                return new int[]{enCurso, finalizados, liberadas};
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo actualizar los estados por horario", ex);
+        }
     }
 
     @Override

@@ -29,6 +29,16 @@
         <div class="indicador"><div class="valor">${indicadores.clientesActivos}</div><div class="nombre">Clientes activos</div></div>
     </section>
 
+    <%-- Gráficos (RF-53) con Chart.js (copia local). Las series llegan en JSON desde el servlet. --%>
+    <c:if test="${not empty graficoMeses}">
+        <section class="graficos">
+            <div class="tarjeta"><h2>Ingresos por mes</h2><div class="lienzo"><canvas id="gMeses"></canvas></div></div>
+            <div class="tarjeta"><h2>Ingresos por canal</h2><div class="lienzo"><canvas id="gCanal"></canvas></div></div>
+            <div class="tarjeta"><h2>Eventos con más ingresos</h2><div class="lienzo"><canvas id="gTop"></canvas></div></div>
+            <div class="tarjeta"><h2>Ocupación de los próximos eventos</h2><div class="lienzo"><canvas id="gOcupacion"></canvas></div></div>
+        </section>
+    </c:if>
+
     <section class="tarjeta tabla-contenedor">
         <h2 style="margin-top:0">Próximos eventos</h2>
         <table class="tabla">
@@ -79,5 +89,53 @@
     </c:if>
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>
+<c:if test="${not empty graficoMeses}">
+<script src="${ctx}/resources/js/chart.umd.min.js"></script>
+<script>
+    (function () {
+        if (typeof Chart === 'undefined') {
+            return;
+        }
+        var AZUL = '#1f3a5f', NARANJA = '#e4572e', VERDE = '#2e8b57', AZUL_CLARO = '#2f6fb3';
+        var dinero = function (v) { return '$' + Number(v).toLocaleString('en-US', {minimumFractionDigits: 0}); };
+        Chart.defaults.font.family = '"Segoe UI", Arial, sans-serif';
+        Chart.defaults.plugins.legend.display = false;
+        Chart.defaults.maintainAspectRatio = false;
+        Chart.defaults.animation = false;
+
+        var meses = ${graficoMeses};
+        new Chart(document.getElementById('gMeses'), {
+            type: 'bar',
+            data: {labels: meses.etiquetas, datasets: [{data: meses.valores, backgroundColor: AZUL, borderRadius: 4}]},
+            options: {scales: {y: {beginAtZero: true, ticks: {callback: dinero}}},
+                plugins: {tooltip: {callbacks: {label: function (c) { return dinero(c.raw); }}}}}
+        });
+
+        var canal = ${graficoCanal};
+        new Chart(document.getElementById('gCanal'), {
+            type: 'doughnut',
+            data: {labels: canal.etiquetas, datasets: [{data: canal.valores, backgroundColor: [AZUL, NARANJA, VERDE]}]},
+            options: {plugins: {legend: {display: true, position: 'bottom'},
+                tooltip: {callbacks: {label: function (c) { return c.label + ': ' + dinero(c.raw); }}}}}
+        });
+
+        var top = ${graficoTop};
+        new Chart(document.getElementById('gTop'), {
+            type: 'bar',
+            data: {labels: top.etiquetas, datasets: [{data: top.valores, backgroundColor: VERDE, borderRadius: 4}]},
+            options: {indexAxis: 'y', scales: {x: {beginAtZero: true, ticks: {callback: dinero}}},
+                plugins: {tooltip: {callbacks: {label: function (c) { return dinero(c.raw); }}}}}
+        });
+
+        var ocupacion = ${graficoOcupacion};
+        new Chart(document.getElementById('gOcupacion'), {
+            type: 'bar',
+            data: {labels: ocupacion.etiquetas, datasets: [{data: ocupacion.valores, backgroundColor: AZUL_CLARO, borderRadius: 4}]},
+            options: {indexAxis: 'y', scales: {x: {beginAtZero: true, max: 100, ticks: {callback: function (v) { return v + '%'; }}}},
+                plugins: {tooltip: {callbacks: {label: function (c) { return c.raw + '% vendido'; }}}}}
+        });
+    })();
+</script>
+</c:if>
 </body>
 </html>

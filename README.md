@@ -88,14 +88,17 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Recintos | `/organizador/recintos` | RF-10 |
 | Zonas: un solo formulario "Guardar zona" con nombre, descripción y distribución de asientos; inhabilitación de asientos sueltos con un clic | `/organizador/zonas?recinto=` | RF-11, RF-12, RN-14 |
 | Categorías | `/organizador/categorias` | RF-04 |
+| Calendario mensual de eventos (filtro por recinto y "mis eventos") | `/organizador/calendario` | RF-50, RF-52 |
+| "Solo mis eventos" en el listado de eventos | `/organizador/eventos?mios=si` | RF-52 |
+| Finalización automática de eventos y liberación de reservas vencidas (tarea cada minuto) | `AplicacionListener` + `TareaEstadosEventos` | RF-51 |
 
 ### Administrador (`/admin/*`)
 
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
-| Dashboard de indicadores | `/admin/dashboard` | RF-42 |
-| Usuarios del personal: crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40 |
-| Clientes: consulta y activación | `/admin/clientes` | RF-37 |
+| Dashboard de indicadores con gráficos (Chart.js, copia local) | `/admin/dashboard` | RF-42, RF-53 |
+| Usuarios del personal: búsqueda, filtro por rol y paginación; crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40, RF-55 |
+| Clientes: búsqueda y paginación, activación y **detalle** con todas sus compras y boletos | `/admin/clientes`, `?accion=ver&id=` | RF-37, RF-54, RF-55 |
 | Reportes (también para el Organizador): general por evento, ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; PDF en pestaña nueva y descarga CSV | `/reportes` | RF-43 a RF-49 |
 
 ### Común
@@ -129,7 +132,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 mvn test
 ```
 
-Son 34 pruebas JUnit, sin base de datos:
+Son 37 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
@@ -140,7 +143,8 @@ Son 34 pruebas JUnit, sin base de datos:
 | `ValidadorEventoTest` | Fechas del evento y regla de traslape de horarios |
 | `GeneradorAsientosTest` | Cálculo de filas y límites; flujo de estados del evento |
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |
-| `ExportadorPdfTest` | El reporte en PDF se genera con datos y también vacío |
+| `ExportadorPdfTest` | PDF formal con datos y resumen, agrupado por secciones y vacío |
+| `JsonTest` | Series de los gráficos y escape de comillas y etiquetas HTML |
 | `ValidadorImagenTest` | Afiche: tipo real por firma de bytes, archivo falso y límite de 2 MB |
 
 ## Matriz de pruebas manuales

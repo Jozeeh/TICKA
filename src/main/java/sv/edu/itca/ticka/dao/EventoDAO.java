@@ -1,6 +1,7 @@
 package sv.edu.itca.ticka.dao;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,19 @@ public interface EventoDAO {
     void guardarAfiche(long idEvento, byte[] contenido, String tipo);
 
     void quitarAfiche(long idEvento);
+
+    /**
+     * Calendario (RF-50): eventos activos que empiezan en [desde, hasta),
+     * ordenados por fecha. idRecinto e idCreador son opcionales (null = todos).
+     */
+    List<Evento> listarCalendario(LocalDate desde, LocalDate hasta, Long idRecinto, Long idCreador);
+
+    /**
+     * Finalización automática (RF-51): pasa a En curso los eventos publicados
+     * o agotados que ya empezaron, a Finalizado los que ya terminaron y libera
+     * las reservas vencidas (RN-02). Devuelve {enCurso, finalizados, reservasLiberadas}.
+     */
+    int[] actualizarEstadosPorHorario();
 
     /** Copia el afiche de un evento a otro (duplicar evento, RF-09). */
     void copiarAfiche(long idOrigen, long idDestino);

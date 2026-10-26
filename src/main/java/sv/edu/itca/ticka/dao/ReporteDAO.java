@@ -1,5 +1,6 @@
 package sv.edu.itca.ticka.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import sv.edu.itca.ticka.modelo.Evento;
@@ -37,6 +38,15 @@ public interface ReporteDAO {
 
     /** El filtro de zona no aplica: las incidencias no tienen zona. */
     Reporte incidencias(FiltroReporte filtro);
+
+    /** Gráfico del dashboard (RF-53): ingresos de los últimos N meses, incluidos los meses en cero. */
+    Map<String, BigDecimal> ingresosPorMes(int meses);
+
+    /** Gráfico del dashboard (RF-53): ingresos por canal (Web / Mostrador). */
+    Map<String, BigDecimal> ingresosPorCanal();
+
+    /** Gráfico del dashboard (RF-53): eventos con más ingresos. */
+    Map<String, BigDecimal> topEventosPorIngresos(int limite);
 
     /** Zonas de todos los recintos ("Recinto · Zona") para el filtro de zona. */
     Map<Long, String> zonasParaFiltro();

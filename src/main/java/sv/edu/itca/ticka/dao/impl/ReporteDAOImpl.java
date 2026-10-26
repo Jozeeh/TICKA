@@ -1,14 +1,18 @@
 package sv.edu.itca.ticka.dao.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.ReporteDAO;
@@ -53,6 +57,11 @@ public class ReporteDAOImpl implements ReporteDAO {
             parametros.add(f.getIdCategoria());
         }
         return sb.toString();
+    }
+
+    /** Monto promedio por boleto (cero si no hay boletos). */
+    private static BigDecimal promedio(BigDecimal total, int boletos) {
+        return boletos == 0 ? BigDecimal.ZERO : total.divide(BigDecimal.valueOf(boletos), 2, RoundingMode.HALF_UP);
     }
 
     /** Condición de zona sobre la columna indicada, si el filtro la trae. */
@@ -199,6 +208,11 @@ public class ReporteDAOImpl implements ReporteDAO {
             throw new DAOException("No se pudo generar el reporte de ventas", ex);
         }
         r.setTotales("Total", "", "", "", "", boletos, Formatos.dinero(total));
+        r.indicador("Boletos vendidos", boletos)
+                .indicador("Ingresos", Formatos.dinero(total))
+                .indicador("Precio promedio", Formatos.dinero(promedio(total, boletos)));
+        r.setNota("Se cuentan solo los boletos vigentes (no anulados). El vendedor aparece en las ventas de "
+                + "Mostrador; las compras del portal se muestran como \"Portal web\".");
         return r;
     }
 
@@ -255,6 +269,12 @@ public class ReporteDAOImpl implements ReporteDAO {
         }
         r.setTotales("Total", "", "", totalVendidos, totalIngresados, Math.max(0, totalVendidos - totalIngresados),
                 Formatos.porcentaje(totalIngresados, totalVendidos) + "%", totalRechazos);
+        r.indicador("Boletos vendidos", totalVendidos)
+                .indicador("Ingresaron", totalIngresados)
+                .indicador("Asistencia", Formatos.porcentaje(totalIngresados, totalVendidos) + "%")
+                .indicador("Rechazos en puerta", totalRechazos);
+        r.setNota("Ingresaron = boletos con un acceso válido en puerta (cada boleto se cuenta una vez). "
+                + "Los eventos que aún no empiezan aparecen con 0 ingresos.");
         return r;
     }
 
@@ -290,6 +310,11 @@ public class ReporteDAOImpl implements ReporteDAO {
             throw new DAOException("No se pudo generar el reporte de ocupación", ex);
         }
         r.setTotales("Total", "", "", "", total, vendidos, "", "", "", Formatos.porcentaje(vendidos, total) + "%");
+        r.indicador("Asientos", total)
+                .indicador("Vendidos", vendidos)
+                .indicador("Sin vender", total - vendidos)
+                .indicador("Ocupación", Formatos.porcentaje(vendidos, total) + "%");
+        r.setNota("Se excluyen los eventos cancelados. Sin vender = disponibles + reservados + bloqueados.");
         return r;
     }
 
@@ -303,12 +328,20 @@ public class ReporteDAOImpl implements ReporteDAO {
         Reporte r = new Reporte("Incidencias registradas en los eventos",
                 "Fecha y hora", "Evento", "Tipo", "Gravedad", "Estado", "Puerta", "Descripción");
         int cantidad = 0;
+        int abiertas = 0;
+        int altas = 0;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
             asignar(ps, p);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     cantidad++;
+                    if (!"Cerrada".equals(rs.getString("estado"))) {
+                        abiertas++;
+                    }
+                    if ("Alta".equals(rs.getString("gravedad"))) {
+                        altas++;
+                    }
                     r.agregarFila(Formatos.fechaHora(rs.getObject("fecha_hora", LocalDateTime.class)),
                             rs.getString("nombre"), rs.getString("tipo"), rs.getString("gravedad"),
                             rs.getString("estado"), rs.getString("puerta"), rs.getString("descripcion"));
@@ -318,6 +351,11 @@ public class ReporteDAOImpl implements ReporteDAO {
             throw new DAOException("No se pudo generar el reporte de incidencias", ex);
         }
         r.setTotales("Total: " + cantidad, "", "", "", "", "", "");
+        r.indicador("Incidencias", cantidad)
+                .indicador("Sin cerrar", abiertas)
+                .indicador("Cerradas", cantidad - abiertas)
+                .indicador("Gravedad alta", altas);
+        r.setNota("\"Sin cerrar\" incluye las incidencias abiertas y las que están en atención.");
         return r;
     }
 
@@ -348,6 +386,7 @@ public class ReporteDAOImpl implements ReporteDAO {
         int ingresados = 0;
         int vendidosIniciados = 0;
         int incidencias = 0;
+        int eventos = 0;
         BigDecimal ingresos = BigDecimal.ZERO;
         try (Connection cn = ConexionBD.obtenerConexion();
                 PreparedStatement ps = cn.prepareStatement(sql)) {
@@ -362,6 +401,7 @@ public class ReporteDAOImpl implements ReporteDAO {
                     // La asistencia solo se calcula en eventos que ya empezaron.
                     EstadoEvento estado = EstadoEvento.desdeBd(rs.getString("estado"));
                     boolean yaInicio = estado == EstadoEvento.EN_CURSO || estado == EstadoEvento.FINALIZADO;
+                    eventos++;
                     asientos += a;
                     vendidos += v;
                     incidencias += inc;
@@ -383,6 +423,12 @@ public class ReporteDAOImpl implements ReporteDAO {
         r.setTotales("Total", "", "", "", asientos, vendidos, asientos - vendidos,
                 Formatos.porcentaje(vendidos, asientos) + "%", Formatos.dinero(ingresos), ingresados,
                 Formatos.porcentaje(ingresados, vendidosIniciados) + "%", incidencias);
+        r.indicador("Eventos", eventos)
+                .indicador("Boletos vendidos", vendidos)
+                .indicador("Ingresos", Formatos.dinero(ingresos))
+                .indicador("Ocupación", Formatos.porcentaje(vendidos, asientos) + "%");
+        r.setNota("Incluye todos los eventos publicados, en curso, finalizados y cancelados (no los borradores). "
+                + "La asistencia se calcula solo en los eventos que ya empezaron. Elija un evento para ver su detalle.");
         return r;
     }
 
@@ -431,6 +477,7 @@ public class ReporteDAOImpl implements ReporteDAO {
                         return r;
                     }
                     r = new Reporte("Reporte general: " + rs.getString("nombre"), "Sección", "Dato", "Valor");
+                    r.setAgrupado(true);
                     TipoEvento tipo = TipoEvento.desdeBd(rs.getString("tipo"));
                     r.agregarFila("Evento", "Nombre", rs.getString("nombre"));
                     r.agregarFila("Evento", "Tipo", tipo == null ? "" : tipo.getEtiqueta());
@@ -450,6 +497,7 @@ public class ReporteDAOImpl implements ReporteDAO {
 
             int total;
             int vendidos;
+            BigDecimal ingresosEvento;
             try (PreparedStatement ps = cn.prepareStatement(sqlAsientos)) {
                 ps.setLong(1, idEvento);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -472,13 +520,13 @@ public class ReporteDAOImpl implements ReporteDAO {
                     rs.next();
                     int boletos = rs.getInt("boletos");
                     BigDecimal ingresos = rs.getBigDecimal("ingresos");
+                    ingresosEvento = ingresos;
                     r.agregarFila("Ventas", "Número de ventas", rs.getInt("ventas"));
                     r.agregarFila("Ventas", "Boletos vendidos", boletos);
                     r.agregarFila("Ventas", "Ingresos totales", Formatos.dinero(ingresos));
                     r.agregarFila("Ventas", "Ingresos por canal Web", Formatos.dinero(rs.getBigDecimal("web")));
                     r.agregarFila("Ventas", "Ingresos por Mostrador", Formatos.dinero(rs.getBigDecimal("mostrador")));
-                    r.agregarFila("Ventas", "Precio promedio por boleto", boletos == 0 ? Formatos.dinero(BigDecimal.ZERO)
-                            : Formatos.dinero(ingresos.divide(BigDecimal.valueOf(boletos), 2, java.math.RoundingMode.HALF_UP)));
+                    r.agregarFila("Ventas", "Precio promedio por boleto", Formatos.dinero(promedio(ingresos, boletos)));
                 }
             }
             try (PreparedStatement ps = cn.prepareStatement(sqlAnulados)) {
@@ -527,9 +575,82 @@ public class ReporteDAOImpl implements ReporteDAO {
                     r.agregarFila("Incidencias", "De gravedad alta", rs.getInt("altas"));
                 }
             }
+            r.indicador("Vendidos", vendidos)
+                    .indicador("Sin vender", total - vendidos)
+                    .indicador("Ingresos", Formatos.dinero(ingresosEvento))
+                    .indicador("Ocupación", Formatos.porcentaje(vendidos, total) + "%");
+            r.setNota("Ingresos = suma de los boletos vigentes. Sin vender = disponibles + reservados + bloqueados. "
+                    + "La asistencia se calcula cuando el evento ya empezó.");
             return r;
         } catch (SQLException ex) {
             throw new DAOException("No se pudo generar el reporte general del evento", ex);
+        }
+    }
+
+    @Override
+    public Map<String, BigDecimal> ingresosPorMes(int meses) {
+        // Se parte de los últimos N meses en cero, así el gráfico muestra también los meses sin ventas.
+        Map<String, BigDecimal> serie = new LinkedHashMap<>();
+        YearMonth actual = YearMonth.now();
+        for (int i = meses - 1; i >= 0; i--) {
+            serie.put(etiquetaMes(actual.minusMonths(i)), BigDecimal.ZERO);
+        }
+        String sql = "SELECT YEAR(v.fecha) AS anio, MONTH(v.fecha) AS mes, SUM(en.precio) AS total "
+                + "FROM entrada en JOIN venta v ON v.id = en.id_venta "
+                + "WHERE en.estado <> 'Anulada' AND v.fecha >= ? "
+                + "GROUP BY YEAR(v.fecha), MONTH(v.fecha)";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setObject(1, actual.minusMonths(meses - 1L).atDay(1).atStartOfDay());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String clave = etiquetaMes(YearMonth.of(rs.getInt("anio"), rs.getInt("mes")));
+                    if (serie.containsKey(clave)) {
+                        serie.put(clave, rs.getBigDecimal("total"));
+                    }
+                }
+            }
+            return serie;
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo calcular los ingresos por mes", ex);
+        }
+    }
+
+    private static String etiquetaMes(YearMonth m) {
+        String nombre = m.getMonth().getDisplayName(TextStyle.SHORT, new Locale("es", "SV"))
+                .replace(".", "");
+        return nombre + " " + m.getYear();
+    }
+
+    @Override
+    public Map<String, BigDecimal> ingresosPorCanal() {
+        String sql = "SELECT v.canal, SUM(en.precio) AS total FROM entrada en JOIN venta v ON v.id = en.id_venta "
+                + "JOIN evento_asiento ea ON ea.id = en.id_evento_asiento JOIN evento ev ON ev.id = ea.id_evento "
+                + "WHERE en.estado <> 'Anulada' AND ev.activo = 1 GROUP BY v.canal ORDER BY v.canal DESC";
+        return serieDinero(sql, "No se pudo calcular los ingresos por canal");
+    }
+
+    @Override
+    public Map<String, BigDecimal> topEventosPorIngresos(int limite) {
+        String sql = "SELECT ev.nombre, SUM(en.precio) AS total FROM entrada en "
+                + "JOIN evento_asiento ea ON ea.id = en.id_evento_asiento JOIN evento ev ON ev.id = ea.id_evento "
+                + "WHERE en.estado <> 'Anulada' AND ev.activo = 1 "
+                + "GROUP BY ev.id, ev.nombre ORDER BY total DESC LIMIT " + Math.max(1, limite);
+        return serieDinero(sql, "No se pudo calcular los eventos con más ingresos");
+    }
+
+    /** Ejecuta una consulta de dos columnas (etiqueta, monto) y la devuelve en orden. */
+    private static Map<String, BigDecimal> serieDinero(String sql, String mensajeError) {
+        Map<String, BigDecimal> serie = new LinkedHashMap<>();
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                serie.put(rs.getString(1), rs.getBigDecimal(2));
+            }
+            return serie;
+        } catch (SQLException ex) {
+            throw new DAOException(mensajeError, ex);
         }
     }
 

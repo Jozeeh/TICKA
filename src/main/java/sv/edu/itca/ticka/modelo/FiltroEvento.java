@@ -12,6 +12,8 @@ public class FiltroEvento {
     private EstadoEvento estado;
     private Long idRecinto;
     private Long idCategoria;
+    /** "Mis eventos" (RF-52): solo los creados por este usuario. */
+    private Long idCreador;
     private LocalDate desde;
     private LocalDate hasta;
     private int pagina = 1;
@@ -34,6 +36,9 @@ public class FiltroEvento {
 
     public Long getIdCategoria() { return idCategoria; }
     public void setIdCategoria(Long idCategoria) { this.idCategoria = idCategoria; }
+
+    public Long getIdCreador() { return idCreador; }
+    public void setIdCreador(Long idCreador) { this.idCreador = idCreador; }
 
     public LocalDate getDesde() { return desde; }
     public void setDesde(LocalDate desde) { this.desde = desde; }

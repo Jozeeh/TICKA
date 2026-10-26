@@ -10,7 +10,7 @@
 | Ruta de contexto (propuesta) | `/ticka` |
 | Descripción corta | Sistema web de gestión de eventos en vivo (conciertos, partidos, ópera y teatro) con venta de boletos por asiento |
 | Sector | Entretenimiento en vivo — boletería (*ticketing*) |
-| Versión del documento | 0.6 (borrador, semana 11/16) |
+| Versión del documento | 0.7 (borrador, semana 12/16) |
 | Fecha | 2026-10-12 |
 
 > **Nota:** nombre, módulos, entidades y prioridades son una propuesta de trabajo. No provienen de la guía; el equipo las decide y ajusta.
@@ -121,6 +121,9 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-07 | Al publicar, generar la disponibilidad de asientos del evento (todos los asientos activos del recinto en estado *Disponible*). | A |
 | RF-08 | Bloquear asientos de un evento (cortesías, producción, visibilidad reducida). | M |
 | RF-09 | Duplicar un evento como plantilla (precios por zona incluidos). | B |
+| RF-50 | Calendario mensual de eventos, con filtro por recinto y por "mis eventos", colores por estado y acceso al detalle de cada evento. | M |
+| RF-51 | Finalización automática: una tarea programada (cada minuto) pasa a *En curso* los eventos que ya empezaron, a *Finalizado* los que ya terminaron y libera las reservas vencidas (RN-02). | M |
+| RF-52 | "Mis eventos": filtrar el listado y el calendario para ver solo los eventos creados por el usuario en sesión. | B |
 
 ### M2 — Recintos y asientos *(Organizador)*
 | ID | Requerimiento | Prior. |
@@ -173,6 +176,8 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-39 | Contraseñas con hash + salt (BCrypt), nunca en texto plano. | A |
 | RF-40 | Bloqueo temporal tras N intentos fallidos de login. | M |
 | RF-41 | Cookie "recordar usuario" opcional y expiración de sesión por inactividad. | B |
+| RF-54 | Detalle de un cliente: datos, resumen y todas sus compras con cada boleto (evento, zona, asiento, precio y estado). Solo consulta. | M |
+| RF-55 | Búsqueda y paginación en los listados de usuarios del personal (por nombre, usuario y rol) y de clientes. | M |
 
 ### M7 — Dashboard y reportes *(Administrador; el Organizador consulta los reportes RF-43 a RF-49)*
 | ID | Requerimiento | Prior. |
@@ -184,6 +189,8 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-46 | Reporte de incidencias por evento, tipo y gravedad. | M |
 | RF-47 | Exportar reportes a PDF (se abre en una pestaña nueva del navegador) y Excel/CSV (descarga). | M |
 | RF-48 | Filtros por rango de fechas, evento, tipo, categoría y zona. | M |
+| RF-53 | Gráficos en el dashboard: ingresos por mes, ingresos por canal, eventos con más ingresos y ocupación de los próximos eventos. | M |
+| RF-56 | Formato formal de los PDF: título, datos del informe (código, fecha, quién lo generó y filtros), resumen con las cifras principales, tabla de detalle (por secciones numeradas en el reporte general de un evento), información adicional y "Página X de Y". | M |
 | RF-49 | Reporte general por evento: sin evento elegido, resumen de todos (asientos, vendidos, sin vender, ocupación, ingresos, asistencia e incidencias); con un evento, toda su información (datos del evento, asientos por estado, ventas e ingresos por canal, zonas con precio y vendidos, asistencia e incidencias). | M |
 
 ---

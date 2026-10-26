@@ -557,3 +557,49 @@ dl.datos dd { margin: 0; }
     .menu-lateral ~ .contenedor { margin-left: auto; margin-right: auto; padding: 0 16px; }
     .menu-lateral ~ .pie { margin-left: 0; }
 }
+
+/* ---------- Calendario de eventos (RF-50) ---------- */
+.calendario-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.calendario-cabecera h2 { margin: 0; }
+.calendario-rejilla { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; }
+.dia-semana { padding: 8px; background: #e8eef6; color: var(--primario); font-weight: 700; font-size: .82rem; text-align: center; text-transform: uppercase; }
+.celda-dia { min-height: 108px; padding: 6px; border-top: 1px solid var(--borde); border-left: 1px solid var(--borde); background: #fff; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.celda-dia:nth-child(7n + 1) { border-left: 0; }
+.celda-dia.fuera { background: #f7f8fa; }
+.celda-dia.fuera .numero-dia { color: #b3bcc7; }
+.celda-dia.hoy { box-shadow: inset 0 0 0 2px var(--acento); }
+.numero-dia { font-weight: 700; font-size: .85rem; color: var(--texto-suave); }
+.evento-cal {
+    display: block; padding: 3px 6px; border-radius: 4px; border-left: 3px solid var(--gris);
+    background: #eceff3; color: var(--texto); text-decoration: none; font-size: .76rem; line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.evento-cal strong { display: block; font-size: .7rem; color: var(--texto-suave); }
+.evento-cal span { font-weight: 600; }
+.evento-cal:hover { filter: brightness(.96); }
+.evento-cal.Publicado { background: #e3f2ea; border-left-color: var(--verde); }
+.evento-cal.Agotado { background: #fde8d7; border-left-color: #d9822b; }
+.evento-cal.Encurso { background: #e2ecfa; border-left-color: var(--azul); }
+.evento-cal.Finalizado { background: #e9e4f5; border-left-color: #6b56a8; }
+.evento-cal.Cancelado { background: #fbe3e1; border-left-color: var(--rojo); text-decoration: line-through; }
+.leyenda-cal { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.leyenda-cal .evento-cal { display: inline-block; font-weight: 600; }
+@media (max-width: 860px) {
+    .calendario-rejilla { grid-template-columns: repeat(7, minmax(44px, 1fr)); overflow-x: auto; }
+    .celda-dia { min-height: 70px; }
+    .evento-cal strong { display: none; }
+}
+
+/* ---------- Gráficos del dashboard (RF-53) ---------- */
+.graficos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 20px; }
+.graficos .tarjeta { margin: 0; }
+.graficos h2 { margin: 0 0 12px; font-size: 1.05rem; }
+.lienzo { position: relative; height: 260px; }
+@media (max-width: 860px) { .graficos { grid-template-columns: 1fr; } }
+
+/* ---------- Indicadores de un reporte y detalle de cliente ---------- */
+.indicadores.compactos .indicador .valor { font-size: 1.4rem; }
+.compra { border: 1px solid var(--borde); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+.compra-cabecera { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 10px 14px; background: #f3f6fa; }
+.compra-cabecera span { color: var(--texto-suave); font-size: .9rem; }
+.compra .tabla { margin: 0; }

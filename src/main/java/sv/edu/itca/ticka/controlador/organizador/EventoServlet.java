@@ -142,6 +142,9 @@ public class EventoServlet extends HttpServlet {
         }
         f.setIdRecinto(Parametros.enteroLargo(req.getParameter("recinto")));
         f.setIdCategoria(Parametros.enteroLargo(req.getParameter("categoria")));
+        if ("si".equals(req.getParameter("mios"))) {
+            f.setIdCreador(Sesion.usuario(req).getId());
+        }
         f.setDesde(Parametros.fecha(req.getParameter("desde")));
         f.setHasta(Parametros.fecha(req.getParameter("hasta")));
         Integer pagina = Parametros.entero(req.getParameter("pagina"));

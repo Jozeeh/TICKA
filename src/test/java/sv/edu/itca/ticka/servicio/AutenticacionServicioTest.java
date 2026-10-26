@@ -86,8 +86,13 @@ public class AutenticacionServicioTest {
         }
 
         @Override
-        public List<Usuario> listarPersonal() {
+        public List<Usuario> listarPersonal(String texto, Rol rol, int desplazamiento, int limite) {
             return new ArrayList<>(datos.values());
+        }
+
+        @Override
+        public int contarPersonal(String texto, Rol rol) {
+            return datos.size();
         }
 
         @Override

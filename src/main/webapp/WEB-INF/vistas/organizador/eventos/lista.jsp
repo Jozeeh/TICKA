@@ -15,7 +15,10 @@
             <h1>Eventos</h1>
             <p class="subtitulo">Conciertos, partidos, ópera y teatro. ${total} eventos encontrados.</p>
         </div>
-        <a class="boton verde" href="${ctx}/organizador/eventos?accion=nuevo">Nuevo evento</a>
+        <div class="acciones-linea">
+            <a class="boton borde" href="${ctx}/organizador/calendario">Ver calendario</a>
+            <a class="boton verde" href="${ctx}/organizador/eventos?accion=nuevo">Nuevo evento</a>
+        </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
@@ -70,6 +73,9 @@
             <label for="hasta">Hasta</label>
             <input type="date" id="hasta" name="hasta" value="${filtro.hasta}">
         </div>
+        <label class="casilla" style="align-self:center">
+            <input type="checkbox" name="mios" value="si" ${not empty filtro.idCreador ? 'checked' : ''}> Solo mis eventos
+        </label>
         <button type="submit" class="boton">Filtrar</button>
         <a class="boton gris" href="${ctx}/organizador/eventos">Limpiar</a>
     </form>
@@ -126,6 +132,7 @@
                         <c:param name="estado" value="${filtro.estado}" />
                         <c:param name="recinto" value="${filtro.idRecinto}" />
                         <c:param name="categoria" value="${filtro.idCategoria}" />
+                        <c:param name="mios" value="${not empty filtro.idCreador ? 'si' : ''}" />
                         <c:param name="desde" value="${filtro.desde}" />
                         <c:param name="hasta" value="${filtro.hasta}" />
                         <c:param name="pagina" value="${p}" />

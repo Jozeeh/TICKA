@@ -62,19 +62,50 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
     }
 
+    /** Filtro del personal (4 parámetros, ver asignarFiltroPersonal). */
+    private static final String SQL_FILTRO_PERSONAL = "WHERE r.nombre <> 'Cliente' "
+            + "AND (? IS NULL OR CONCAT_WS(' ', u.nombre, u.username) LIKE ?) "
+            + "AND (? IS NULL OR r.nombre = ?) ";
+
+    private static void asignarFiltroPersonal(PreparedStatement ps, String texto, Rol rol) throws SQLException {
+        ps.setString(1, texto);
+        ps.setString(2, texto == null ? null : "%" + texto + "%");
+        String nombreRol = rol == null ? null : rol.getNombre();
+        ps.setString(3, nombreRol);
+        ps.setString(4, nombreRol);
+    }
+
     @Override
-    public List<Usuario> listarPersonal() {
-        String sql = SQL_SELECT + "WHERE r.nombre <> 'Cliente' ORDER BY u.activo DESC, r.nombre, u.nombre";
+    public List<Usuario> listarPersonal(String texto, Rol rol, int desplazamiento, int limite) {
+        String sql = SQL_SELECT + SQL_FILTRO_PERSONAL + "ORDER BY u.activo DESC, r.nombre, u.nombre LIMIT ? OFFSET ?";
         List<Usuario> lista = new ArrayList<>();
         try (Connection cn = ConexionBD.obtenerConexion();
-                PreparedStatement ps = cn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(mapear(rs));
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            asignarFiltroPersonal(ps, texto, rol);
+            ps.setInt(5, limite);
+            ps.setInt(6, desplazamiento);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapear(rs));
+                }
             }
             return lista;
         } catch (SQLException ex) {
             throw new DAOException("No se pudo listar el personal", ex);
+        }
+    }
+
+    @Override
+    public int contarPersonal(String texto, Rol rol) {
+        String sql = "SELECT COUNT(*) FROM usuario u JOIN rol r ON r.id = u.id_rol " + SQL_FILTRO_PERSONAL;
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            asignarFiltroPersonal(ps, texto, rol);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo contar el personal", ex);
         }
     }
 

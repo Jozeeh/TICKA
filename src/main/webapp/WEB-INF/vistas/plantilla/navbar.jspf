@@ -31,6 +31,7 @@
         <c:if test="${u.gestorEventos}">
             <p class="seccion">Organizador</p>
             <a class="${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
+            <a class="${paginaActiva == 'calendario' ? 'activo' : ''}" href="${ctx}/organizador/calendario">Calendario</a>
             <a class="${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
             <a class="${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
             <c:if test="${not u.administrador}">
