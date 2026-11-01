@@ -358,8 +358,9 @@ public class EventoDAOImpl implements EventoDAO {
     }
 
     @Override
-    public List<Evento> listarCartelera(TipoEvento tipo) {
+    public List<Evento> listarCartelera(FiltroEvento f) {
         String condicion = "e.activo = 1 AND e.estado IN ('Publicado', 'Agotado', 'En curso') AND e.fecha_fin >= NOW() ";
+        List<Object> parametros = new ArrayList<>();
         String sqlEventos = "SELECT e.id, e.nombre, e.tipo, e.descripcion, e.participantes, "
                 + "(e.afiche IS NOT NULL) AS con_afiche, e.id_recinto, "
                 + "e.apertura_puertas, e.fecha_inicio, e.fecha_fin, e.estado, c.nombre AS categoria, r.nombre AS recinto, "
@@ -369,7 +370,7 @@ public class EventoDAOImpl implements EventoDAO {
                 + " OR (ea.estado = 'Reservado' AND ea.reservado_hasta < NOW()))) AS disponibles, "
                 + "(SELECT MIN(pz.precio) FROM precio_zona pz WHERE pz.id_evento = e.id) AS precio_min "
                 + "FROM evento e LEFT JOIN categoria c ON c.id = e.id_categoria JOIN recinto r ON r.id = e.id_recinto "
-                + "WHERE " + condicion + "AND (? IS NULL OR e.tipo = ?) ORDER BY e.fecha_inicio";
+                + "WHERE " + condicion + filtroCartelera(f, parametros) + "ORDER BY e.fecha_inicio";
         // Precios por zona de los mismos eventos, del más caro al más barato.
         String sqlPrecios = "SELECT pz.id_evento, z.nombre, pz.precio FROM precio_zona pz "
                 + "JOIN zona z ON z.id = pz.id_zona JOIN evento e ON e.id = pz.id_evento "
@@ -378,9 +379,7 @@ public class EventoDAOImpl implements EventoDAO {
         Map<Long, Evento> eventos = new LinkedHashMap<>();
         try (Connection cn = ConexionBD.obtenerConexion()) {
             try (PreparedStatement ps = cn.prepareStatement(sqlEventos)) {
-                String valorTipo = tipo == null ? null : tipo.getBd();
-                ps.setString(1, valorTipo);
-                ps.setString(2, valorTipo);
+                asignar(ps, parametros);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Evento e = new Evento();
@@ -421,6 +420,40 @@ public class EventoDAOImpl implements EventoDAO {
         } catch (SQLException ex) {
             throw new DAOException("No se pudo cargar la cartelera", ex);
         }
+    }
+
+    /** Filtros opcionales de la cartelera pública (RF-15). */
+    private static String filtroCartelera(FiltroEvento f, List<Object> parametros) {
+        StringBuilder sb = new StringBuilder();
+        if (f == null) {
+            return "";
+        }
+        if (f.getTexto() != null) {
+            sb.append("AND (e.nombre LIKE ? OR e.participantes LIKE ?) ");
+            parametros.add("%" + f.getTexto() + "%");
+            parametros.add("%" + f.getTexto() + "%");
+        }
+        if (f.getTipo() != null) {
+            sb.append("AND e.tipo = ? ");
+            parametros.add(f.getTipo().getBd());
+        }
+        if (f.getIdCategoria() != null) {
+            sb.append("AND e.id_categoria = ? ");
+            parametros.add(f.getIdCategoria());
+        }
+        if (f.getIdRecinto() != null) {
+            sb.append("AND e.id_recinto = ? ");
+            parametros.add(f.getIdRecinto());
+        }
+        if (f.getDesde() != null) {
+            sb.append("AND e.fecha_inicio >= ? ");
+            parametros.add(f.getDesde().atStartOfDay());
+        }
+        if (f.getHasta() != null) {
+            sb.append("AND e.fecha_inicio < ? ");
+            parametros.add(f.getHasta().plusDays(1).atStartOfDay());
+        }
+        return sb.toString();
     }
 
     @Override

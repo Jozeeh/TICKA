@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,6 +15,8 @@ import sv.edu.itca.ticka.dao.ClienteDAO;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.modelo.Cliente;
 import sv.edu.itca.ticka.modelo.CompraCliente;
+import sv.edu.itca.ticka.modelo.EstadoEvento;
+import sv.edu.itca.ticka.modelo.Usuario;
 import sv.edu.itca.ticka.persistencia.ConexionBD;
 
 /** Implementación JDBC de ClienteDAO. */
@@ -105,14 +108,17 @@ public class ClienteDAOImpl implements ClienteDAO {
     @Override
     public List<CompraCliente> compras(long idCliente) {
         String sql = "SELECT v.id, v.fecha, v.canal, v.forma_pago, v.estado AS estado_venta, v.total, "
-                + "v.motivo_anulacion, ev.nombre AS evento, ev.fecha_inicio, z.nombre AS zona, a.fila, a.numero, "
-                + "en.precio, en.estado AS estado_boleto, en.codigo "
+                + "v.motivo_anulacion, ev.id AS id_evento, ev.nombre AS evento, ev.fecha_inicio, ev.apertura_puertas, "
+                + "ev.estado AS estado_evento, r.nombre AS recinto, z.nombre AS zona, a.fila, a.numero, "
+                + "en.id AS id_entrada, en.precio, en.estado AS estado_boleto, en.codigo, "
+                + "(SELECT COUNT(*) FROM entrada u WHERE u.id_venta = v.id AND u.estado = 'Usada') AS usados "
                 + "FROM venta v "
                 + "JOIN entrada en ON en.id_venta = v.id "
                 + "JOIN evento_asiento ea ON ea.id = en.id_evento_asiento "
                 + "JOIN evento ev ON ev.id = ea.id_evento "
                 + "JOIN asiento a ON a.id = ea.id_asiento "
                 + "JOIN zona z ON z.id = a.id_zona "
+                + "JOIN recinto r ON r.id = ev.id_recinto "
                 + "WHERE v.id_cliente = ? "
                 + "ORDER BY v.fecha DESC, v.id DESC, z.id, a.fila, a.numero";
         // Las filas llegan una por boleto; se agrupan por venta conservando el orden.
@@ -133,9 +139,17 @@ public class ClienteDAOImpl implements ClienteDAO {
                         compra.setEstado(rs.getString("estado_venta"));
                         compra.setTotal(rs.getBigDecimal("total"));
                         compra.setMotivoAnulacion(rs.getString("motivo_anulacion"));
+                        compra.setIdEvento(rs.getLong("id_evento"));
+                        compra.setEvento(rs.getString("evento"));
+                        compra.setRecinto(rs.getString("recinto"));
+                        compra.setFechaEvento(rs.getObject("fecha_inicio", LocalDateTime.class));
+                        compra.setAperturaPuertas(rs.getObject("apertura_puertas", LocalDateTime.class));
+                        compra.setEstadoEvento(EstadoEvento.desdeBd(rs.getString("estado_evento")));
+                        compra.setBoletosUsados(rs.getInt("usados"));
                         compras.put(idVenta, compra);
                     }
                     CompraCliente.Boleto b = new CompraCliente.Boleto();
+                    b.setId(rs.getLong("id_entrada"));
                     b.setEvento(rs.getString("evento"));
                     b.setFechaEvento(rs.getObject("fecha_inicio", LocalDateTime.class));
                     b.setZona(rs.getString("zona"));
@@ -150,6 +164,124 @@ public class ClienteDAOImpl implements ClienteDAO {
             return new ArrayList<>(compras.values());
         } catch (SQLException ex) {
             throw new DAOException("No se pudo consultar las compras del cliente", ex);
+        }
+    }
+
+    @Override
+    public Optional<Cliente> buscarPorUsuario(long idUsuario) {
+        return buscarUno(SQL_SELECT + "WHERE c.id_usuario = ?", idUsuario);
+    }
+
+    @Override
+    public Optional<Cliente> buscarPorDocumento(String documento) {
+        return buscarUno(SQL_SELECT + "WHERE c.documento = ?", documento);
+    }
+
+    private Optional<Cliente> buscarUno(String sql, Object parametro) {
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setObject(1, parametro);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(mapear(rs)) : Optional.empty();
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo consultar el cliente", ex);
+        }
+    }
+
+    @Override
+    public boolean existeDocumento(String documento, Long excluirId) {
+        return existe("SELECT 1 FROM cliente WHERE documento = ? AND (? IS NULL OR id <> ?)", documento, excluirId);
+    }
+
+    @Override
+    public boolean existeCorreo(String correo, Long excluirId) {
+        return existe("SELECT 1 FROM cliente WHERE correo = ? AND (? IS NULL OR id <> ?)", correo, excluirId);
+    }
+
+    private boolean existe(String sql, String valor, Long excluirId) {
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, valor);
+            ps.setObject(2, excluirId);
+            ps.setObject(3, excluirId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo verificar los datos del cliente", ex);
+        }
+    }
+
+    @Override
+    public long registrar(Usuario u, Cliente c) {
+        String sqlUsuario = "INSERT INTO usuario (username, password_hash, nombre, id_rol, activo) "
+                + "VALUES (?, ?, ?, (SELECT id FROM rol WHERE nombre = 'Cliente'), 1)";
+        String sqlCliente = "INSERT INTO cliente (id_usuario, nombres, apellidos, documento, correo, telefono) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection cn = ConexionBD.obtenerConexion()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psU = cn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement psC = cn.prepareStatement(sqlCliente, Statement.RETURN_GENERATED_KEYS)) {
+                psU.setString(1, u.getUsername());
+                psU.setString(2, u.getPasswordHash());
+                psU.setString(3, u.getNombre());
+                psU.executeUpdate();
+                long idUsuario;
+                try (ResultSet rs = psU.getGeneratedKeys()) {
+                    rs.next();
+                    idUsuario = rs.getLong(1);
+                }
+                psC.setLong(1, idUsuario);
+                psC.setString(2, c.getNombres());
+                psC.setString(3, c.getApellidos());
+                psC.setString(4, c.getDocumento());
+                psC.setString(5, c.getCorreo());
+                psC.setString(6, c.getTelefono());
+                psC.executeUpdate();
+                long idCliente;
+                try (ResultSet rs = psC.getGeneratedKeys()) {
+                    rs.next();
+                    idCliente = rs.getLong(1);
+                }
+                cn.commit();
+                u.setId(idUsuario);
+                c.setId(idCliente);
+                c.setIdUsuario(idUsuario);
+                return idCliente;
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo registrar la cuenta", ex);
+        }
+    }
+
+    @Override
+    public void actualizarPerfil(Cliente c) {
+        String sqlCliente = "UPDATE cliente SET nombres = ?, apellidos = ?, correo = ?, telefono = ? WHERE id = ?";
+        String sqlUsuario = "UPDATE usuario SET nombre = ? WHERE id = ?";
+        try (Connection cn = ConexionBD.obtenerConexion()) {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psC = cn.prepareStatement(sqlCliente);
+                    PreparedStatement psU = cn.prepareStatement(sqlUsuario)) {
+                psC.setString(1, c.getNombres());
+                psC.setString(2, c.getApellidos());
+                psC.setString(3, c.getCorreo());
+                psC.setString(4, c.getTelefono());
+                psC.setLong(5, c.getId());
+                psC.executeUpdate();
+                psU.setString(1, c.getNombreCompleto());
+                psU.setLong(2, c.getIdUsuario());
+                psU.executeUpdate();
+                cn.commit();
+            } catch (SQLException ex) {
+                cn.rollback();
+                throw ex;
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo actualizar el perfil", ex);
         }
     }
 }

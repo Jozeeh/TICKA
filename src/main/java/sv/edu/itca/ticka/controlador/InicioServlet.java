@@ -11,15 +11,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import sv.edu.itca.ticka.dao.DAOException;
+import sv.edu.itca.ticka.dao.CategoriaDAO;
 import sv.edu.itca.ticka.dao.EventoDAO;
+import sv.edu.itca.ticka.dao.RecintoDAO;
+import sv.edu.itca.ticka.dao.impl.CategoriaDAOImpl;
 import sv.edu.itca.ticka.dao.impl.EventoDAOImpl;
+import sv.edu.itca.ticka.dao.impl.RecintoDAOImpl;
 import sv.edu.itca.ticka.modelo.Evento;
+import sv.edu.itca.ticka.modelo.FiltroEvento;
 import sv.edu.itca.ticka.modelo.TipoEvento;
+import sv.edu.itca.ticka.util.Parametros;
 
 /**
  * Página de inicio pública con la cartelera (RF-15): eventos publicados en
  * tarjetas con fecha, recinto, precios por zona y disponibilidad, filtrables
- * por tipo. El mapeo "" atiende exactamente la raíz de la aplicación (/ticka/).
+ * por tipo, texto, categoría, recinto y fechas. Cada tarjeta lleva al
+ * detalle público del evento (/evento?id=). El mapeo "" atiende exactamente la raíz de la aplicación (/ticka/).
  */
 @WebServlet(urlPatterns = {"", "/inicio"})
 public class InicioServlet extends HttpServlet {
@@ -27,20 +34,33 @@ public class InicioServlet extends HttpServlet {
     private static final String VISTA = "/WEB-INF/vistas/inicio.jsp";
 
     private EventoDAO eventoDAO;
+    private CategoriaDAO categoriaDAO;
+    private RecintoDAO recintoDAO;
 
     @Override
     public void init() {
         eventoDAO = new EventoDAOImpl();
+        categoriaDAO = new CategoriaDAOImpl();
+        recintoDAO = new RecintoDAOImpl();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         TipoEvento tipo = TipoEvento.desdeBd(req.getParameter("tipo"));
+        FiltroEvento filtro = new FiltroEvento();
+        filtro.setTipo(tipo);
+        filtro.setTexto(Parametros.texto(req.getParameter("texto")));
+        filtro.setIdCategoria(Parametros.enteroLargo(req.getParameter("categoria")));
+        filtro.setIdRecinto(Parametros.enteroLargo(req.getParameter("recinto")));
+        filtro.setDesde(Parametros.fecha(req.getParameter("desde")));
+        filtro.setHasta(Parametros.fecha(req.getParameter("hasta")));
         try {
             // Los indicadores de la portada se calculan con toda la cartelera.
-            List<Evento> todos = eventoDAO.listarCartelera(null);
-            List<Evento> eventos = tipo == null ? todos : eventoDAO.listarCartelera(tipo);
+            List<Evento> todos = eventoDAO.listarCartelera(new FiltroEvento());
+            List<Evento> eventos = eventoDAO.listarCartelera(filtro);
+            req.setAttribute("categorias", categoriaDAO.listar());
+            req.setAttribute("recintos", recintoDAO.listarActivos());
             req.setAttribute("eventos", eventos);
             req.setAttribute("totalEventos", todos.size());
             req.setAttribute("totalDisponibles", todos.stream().mapToInt(Evento::getDisponibles).sum());
@@ -54,6 +74,7 @@ public class InicioServlet extends HttpServlet {
         }
         req.setAttribute("tipos", TipoEvento.values());
         req.setAttribute("tipoActivo", tipo);
+        req.setAttribute("filtro", filtro);
         req.getRequestDispatcher(VISTA).forward(req, resp);
     }
 }

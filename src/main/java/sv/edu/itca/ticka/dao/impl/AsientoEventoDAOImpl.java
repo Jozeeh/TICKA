@@ -115,6 +115,37 @@ public class AsientoEventoDAOImpl implements AsientoEventoDAO {
     }
 
     @Override
+    public List<Asiento> listarMapaCliente(long idEvento, long idCliente) {
+        String sql = "SELECT ea.id AS id_ea, a.id, a.id_zona, a.fila, a.numero, "
+                + "CASE WHEN ea.estado = 'Reservado' AND ea.reservado_hasta < NOW() THEN 'Disponible' "
+                + "WHEN ea.estado = 'Reservado' AND ea.id_cliente_reserva = ? THEN 'Seleccionado' "
+                + "ELSE ea.estado END AS estado "
+                + "FROM evento_asiento ea JOIN asiento a ON a.id = ea.id_asiento "
+                + "WHERE ea.id_evento = ? ORDER BY a.id_zona, LENGTH(a.fila), a.fila, a.numero";
+        List<Asiento> lista = new ArrayList<>();
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, idCliente);
+            ps.setLong(2, idEvento);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Asiento a = new Asiento();
+                    a.setIdEventoAsiento(rs.getLong("id_ea"));
+                    a.setId(rs.getLong("id"));
+                    a.setIdZona(rs.getLong("id_zona"));
+                    a.setFila(rs.getString("fila"));
+                    a.setNumero(rs.getInt("numero"));
+                    a.setEstado(rs.getString("estado"));
+                    lista.add(a);
+                }
+            }
+            return lista;
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo cargar el mapa de asientos", ex);
+        }
+    }
+
+    @Override
     public List<OcupacionZona> ocupacionPorEvento(long idEvento) {
         String sql = "SELECT id_evento, zona, total_asientos, vendidos, reservados, disponibles, bloqueados "
                 + "FROM v_ocupacion_evento_zona WHERE id_evento = ? ORDER BY id_zona";

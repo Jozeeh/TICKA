@@ -29,6 +29,21 @@ public class AutenticacionFilterTest {
     }
 
     @Test
+    public void portalDelClienteSoloParaClientes() {
+        assertTrue(AutenticacionFilter.tienePermiso(con(Rol.CLIENTE), "/cliente/boletos"));
+        assertFalse(AutenticacionFilter.tienePermiso(con(Rol.ADMINISTRADOR), "/cliente/boletos"));
+        assertFalse(AutenticacionFilter.tienePermiso(con(Rol.ORGANIZADOR), "/cliente/comprar"));
+    }
+
+    @Test
+    public void puertaParaControlDeAccesoYAdministrador() {
+        assertTrue(AutenticacionFilter.tienePermiso(con(Rol.CONTROL_ACCESO), "/puerta/validar"));
+        assertTrue(AutenticacionFilter.tienePermiso(con(Rol.ADMINISTRADOR), "/puerta/incidencias"));
+        assertFalse(AutenticacionFilter.tienePermiso(con(Rol.CLIENTE), "/puerta/validar"));
+        assertFalse(AutenticacionFilter.tienePermiso(con(Rol.CONTROL_ACCESO), "/organizador/eventos"));
+    }
+
+    @Test
     public void reportesSoloParaOrganizadorYAdministrador() {
         assertTrue(AutenticacionFilter.tienePermiso(con(Rol.ORGANIZADOR), "/reportes"));
         assertTrue(AutenticacionFilter.tienePermiso(con(Rol.ADMINISTRADOR), "/reportes"));

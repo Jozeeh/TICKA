@@ -19,11 +19,15 @@ import sv.edu.itca.ticka.modelo.Usuario;
  *    /admin/*        solo Administrador.
  *    /organizador/*  Organizador y Administrador.
  *    /reportes       Organizador y Administrador (solo consulta).
+ *    /cliente/*      solo Cliente (portal del cliente, M3).
+ *    /puerta/*       Control de acceso y Administrador (M4, M5).
  *    Si el rol no corresponde responde 403 (página de error personalizada).
  */
 public class AutenticacionFilter implements Filter {
 
     public static final String USUARIO_SESION = "usuarioAutenticado";
+    /** Página privada que se pidió sin sesión; AccesoServlet vuelve a ella al entrar. */
+    public static final String DESTINO = "destinoTrasAcceso";
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -34,6 +38,12 @@ public class AutenticacionFilter implements Filter {
         HttpSession sesion = request.getSession(false);
         Usuario usuario = sesion == null ? null : (Usuario) sesion.getAttribute(USUARIO_SESION);
         if (usuario == null) {
+            // Se recuerda la página pedida (solo GET) para volver a ella después de iniciar sesión.
+            if ("GET".equals(request.getMethod())) {
+                String destino = request.getRequestURI()
+                        + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
+                request.getSession(true).setAttribute(DESTINO, destino);
+            }
             response.sendRedirect(request.getContextPath() + "/acceso?estado=sesion");
             return;
         }
@@ -59,6 +69,12 @@ public class AutenticacionFilter implements Filter {
         }
         if (ruta.startsWith("/organizador") || ruta.startsWith("/reportes")) {
             return usuario.isGestorEventos();
+        }
+        if (ruta.startsWith("/cliente")) {
+            return usuario.isCliente();
+        }
+        if (ruta.startsWith("/puerta")) {
+            return usuario.isPersonalPuerta();
         }
         return true;
     }

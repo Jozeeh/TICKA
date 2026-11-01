@@ -1,0 +1,79 @@
+<%-- Mapa de asientos para ELEGIR (RF-16): lo usan la compra del cliente y la
+     venta en mostrador. Requiere: zonas (ZonaMapa), maximo. Cada asiento
+     libre es una casilla name="asiento" con el id de evento_asiento; los que
+     el cliente ya tiene reservados vienen marcados ("Seleccionado"). --%>
+<div class="leyenda">
+    <span><i class="Disponible"></i> Disponible</span>
+    <span><i class="Seleccionado"></i> Su selección</span>
+    <span><i class="Reservado"></i> Reservado por otro cliente</span>
+    <span><i class="Vendido"></i> Vendido</span>
+    <span><i class="Bloqueado"></i> No disponible</span>
+</div>
+<div class="escenario">ESCENARIO / CANCHA</div>
+<c:forEach var="z" items="${zonas}">
+    <div class="zona-mapa">
+        <h3><c:out value="${z.nombre}" /> <span class="ayuda">· ${empty z.precio ? 'sin precio' : z.precioTexto}</span></h3>
+        <div class="filas">
+            <c:forEach var="fila" items="${z.filas}">
+                <div class="fila-asientos">
+                    <span class="letra">${fila.letra}</span>
+                    <c:forEach var="a" items="${fila.asientos}">
+                        <c:choose>
+                            <c:when test="${a.estado == 'Disponible' or a.estado == 'Seleccionado'}">
+                                <label class="asiento-sel" title="<c:out value='${z.nombre}' /> ${a.etiqueta}">
+                                    <input type="checkbox" name="asiento" value="${a.idEventoAsiento}"
+                                           data-precio="${z.precio}" data-etiqueta="<c:out value='${z.nombre}' /> ${a.etiqueta}"
+                                           ${a.estado == 'Seleccionado' ? 'checked' : ''}>
+                                    <span class="asiento Disponible">${a.numero}</span>
+                                </label>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="asiento ${a.estado}" title="${a.etiqueta} · no disponible">${a.numero}</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </div>
+            </c:forEach>
+        </div>
+    </div>
+</c:forEach>
+<c:if test="${empty zonas}">
+    <div class="alerta info">El mapa de asientos todavía no está disponible.</div>
+</c:if>
+
+<%-- Barra fija con la selección: cantidad, total y límite por compra (RF-19). --%>
+<div class="barra-seleccion">
+    <span id="resumenSeleccion">Ningún asiento seleccionado.</span>
+    <button type="submit" class="boton acento" id="botonSeleccion" disabled>${textoBotonSeleccion}</button>
+</div>
+<script>
+    (function () {
+        var maximo = ${maximo};
+        var casillas = document.querySelectorAll('input[name="asiento"]');
+        var resumen = document.getElementById('resumenSeleccion');
+        var boton = document.getElementById('botonSeleccion');
+        function actualizar() {
+            var marcadas = Array.prototype.filter.call(casillas, function (c) { return c.checked; });
+            var total = marcadas.reduce(function (s, c) { return s + parseFloat(c.dataset.precio || 0); }, 0);
+            if (marcadas.length === 0) {
+                resumen.textContent = 'Ningún asiento seleccionado.';
+            } else {
+                resumen.textContent = marcadas.length + (marcadas.length === 1 ? ' asiento' : ' asientos')
+                    + ' · Total $' + total.toFixed(2)
+                    + (marcadas.length > maximo ? ' · Máximo ' + maximo + ' por compra' : '');
+            }
+            boton.disabled = marcadas.length === 0 || marcadas.length > maximo;
+        }
+        casillas.forEach(function (c) {
+            c.addEventListener('change', function () {
+                var marcadas = document.querySelectorAll('input[name="asiento"]:checked').length;
+                if (c.checked && marcadas > maximo) {
+                    c.checked = false;
+                    if (window.avisar) { avisar('Límite de asientos', 'Puede elegir como máximo ' + maximo + ' asientos por compra.'); }
+                }
+                actualizar();
+            });
+        });
+        actualizar();
+    })();
+</script>

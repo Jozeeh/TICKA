@@ -39,11 +39,11 @@ public interface EventoDAO {
     boolean tieneVentas(long idEvento);
 
     /**
-     * Cartelera pública: eventos publicados, agotados o en curso que todavía
-     * no terminan, con precio mínimo, asientos libres y precios por zona.
-     * Si tipo no es null, filtra por tipo de evento.
+     * Cartelera pública (RF-15): eventos publicados, agotados o en curso que
+     * todavía no terminan, con precio mínimo, asientos libres y precios por
+     * zona. Usa del filtro: texto, tipo, categoría, recinto y rango de fechas.
      */
-    List<Evento> listarCartelera(TipoEvento tipo);
+    List<Evento> listarCartelera(FiltroEvento filtro);
 
     /** Guarda (o reemplaza) la imagen adjunta del evento. */
     void guardarAfiche(long idEvento, byte[] contenido, String tipo);

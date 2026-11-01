@@ -97,9 +97,12 @@ public class AccesoServlet extends HttpServlet {
             return;
         }
 
-        // Se descarta la sesión anónima para evitar fijación de sesión.
+        // Se descarta la sesión anónima para evitar fijación de sesión (antes se lee
+        // la página a la que se quería entrar, si la hay).
         HttpSession anterior = req.getSession(false);
+        String destino = null;
         if (anterior != null) {
+            destino = (String) anterior.getAttribute(AutenticacionFilter.DESTINO);
             anterior.invalidate();
         }
         HttpSession sesion = req.getSession(true);
@@ -111,7 +114,10 @@ public class AccesoServlet extends HttpServlet {
         } else {
             agregarCookie(req, resp, "", 0);
         }
-        resp.sendRedirect(req.getContextPath() + "/panel");
+        // Solo se vuelve a rutas internas de la aplicación (evita redirecciones abiertas).
+        boolean destinoValido = destino != null && destino.startsWith(req.getContextPath() + "/")
+                && !destino.startsWith("//");
+        resp.sendRedirect(destinoValido ? destino : req.getContextPath() + "/panel");
     }
 
     /** Cookie "recordar usuario" (RF-41): solo guarda el username, nunca la contraseña. */

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Conversión segura de parámetros de formulario: devuelve null cuando el
@@ -64,5 +66,19 @@ public final class Parametros {
     /** true si el campo se escribió pero no se pudo interpretar. */
     public static boolean invalido(String escrito, Object interpretado) {
         return escrito != null && !escrito.isBlank() && interpretado == null;
+    }
+
+    /** Ids válidos de varias casillas con el mismo nombre (ej. los asientos marcados en el mapa). */
+    public static List<Long> ids(String[] valores) {
+        List<Long> ids = new ArrayList<>();
+        if (valores != null) {
+            for (String v : valores) {
+                Long id = enteroLargo(v);
+                if (id != null) {
+                    ids.add(id);
+                }
+            }
+        }
+        return ids;
     }
 }

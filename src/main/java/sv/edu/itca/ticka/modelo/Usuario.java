@@ -32,6 +32,15 @@ public class Usuario implements Serializable {
         return rol == Rol.ADMINISTRADOR;
     }
 
+    public boolean isCliente() {
+        return rol == Rol.CLIENTE;
+    }
+
+    /** Control de acceso y Administrador validan boletos en puerta e incidencias (M4, M5). */
+    public boolean isPersonalPuerta() {
+        return rol == Rol.CONTROL_ACCESO || rol == Rol.ADMINISTRADOR;
+    }
+
     /** Organizador y Administrador pueden gestionar eventos y recintos. */
     public boolean isGestorEventos() {
         return rol == Rol.ORGANIZADOR || rol == Rol.ADMINISTRADOR;

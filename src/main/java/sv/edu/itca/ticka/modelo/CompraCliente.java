@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import sv.edu.itca.ticka.util.Formatos;
 
-/** Una venta de un cliente con sus boletos, para el detalle del cliente (RF-54). Solo lectura. */
+/** Una venta de un cliente con sus boletos: detalle del cliente (RF-54) y "Mis boletos" (RF-22). */
 public class CompraCliente {
 
     private long id;
@@ -16,10 +16,20 @@ public class CompraCliente {
     private String estado;
     private BigDecimal total = BigDecimal.ZERO;
     private String motivoAnulacion;
+    private long idEvento;
+    private String evento;
+    private String recinto;
+    private LocalDateTime fechaEvento;
+    private LocalDateTime aperturaPuertas;
+    private EstadoEvento estadoEvento;
+    private int boletosUsados;
+    /** Calculado por el servlet con ReglasCompra (RN-12): null si se puede anular. */
+    private String motivoNoAnulable;
     private final List<Boleto> boletos = new ArrayList<>();
 
     /** Boleto de la compra: evento, asiento, precio y estado. */
     public static class Boleto {
+        private long id;
         private String evento;
         private LocalDateTime fechaEvento;
         private String zona;
@@ -37,6 +47,8 @@ public class CompraCliente {
             return codigo == null || codigo.length() <= 11 ? codigo : codigo.substring(0, 11) + "…";
         }
 
+        public long getId() { return id; }
+        public void setId(long id) { this.id = id; }
         public String getEvento() { return evento; }
         public void setEvento(String evento) { this.evento = evento; }
         public LocalDateTime getFechaEvento() { return fechaEvento; }
@@ -56,6 +68,37 @@ public class CompraCliente {
     }
 
     public String getFechaTexto() { return Formatos.fechaHora(fecha); }
+    public String getFechaEventoTexto() { return Formatos.fechaHora(fechaEvento); }
+    public boolean isAnulable() { return motivoNoAnulable == null; }
+
+    public long getIdEvento() { return idEvento; }
+    public void setIdEvento(long idEvento) { this.idEvento = idEvento; }
+    public String getEvento() { return evento; }
+    public void setEvento(String evento) { this.evento = evento; }
+    public String getRecinto() { return recinto; }
+    public void setRecinto(String recinto) { this.recinto = recinto; }
+    public LocalDateTime getFechaEvento() { return fechaEvento; }
+    public void setFechaEvento(LocalDateTime fechaEvento) { this.fechaEvento = fechaEvento; }
+    public LocalDateTime getAperturaPuertas() { return aperturaPuertas; }
+    public void setAperturaPuertas(LocalDateTime aperturaPuertas) { this.aperturaPuertas = aperturaPuertas; }
+    public EstadoEvento getEstadoEvento() { return estadoEvento; }
+    public void setEstadoEvento(EstadoEvento estadoEvento) { this.estadoEvento = estadoEvento; }
+    public int getBoletosUsados() { return boletosUsados; }
+    public void setBoletosUsados(int boletosUsados) { this.boletosUsados = boletosUsados; }
+    public String getMotivoNoAnulable() { return motivoNoAnulable; }
+    public void setMotivoNoAnulable(String motivoNoAnulable) { this.motivoNoAnulable = motivoNoAnulable; }
+
+    /** Datos para ReglasCompra.motivoNoAnulable (RN-12). */
+    public VentaAnulable comoAnulable() {
+        VentaAnulable v = new VentaAnulable();
+        v.setId(id);
+        v.setEstado(estado);
+        v.setIdEvento(idEvento);
+        v.setEstadoEvento(estadoEvento);
+        v.setAperturaPuertas(aperturaPuertas);
+        v.setBoletosUsados(boletosUsados);
+        return v;
+    }
     public String getTotalTexto() { return Formatos.dinero(total); }
 
     public long getId() { return id; }

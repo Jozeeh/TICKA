@@ -27,6 +27,12 @@ public interface AsientoEventoDAO {
     /** Asientos del evento con su estado, ordenados por zona, fila y número. */
     List<Asiento> listarMapa(long idEvento);
 
+    /**
+     * Igual que listarMapa, pero los asientos que este cliente tiene
+     * reservados (y vigentes) salen con estado "Seleccionado" (RF-16).
+     */
+    List<Asiento> listarMapaCliente(long idEvento, long idCliente);
+
     /** Conteo por estado de cada zona (vista v_ocupacion_evento_zona). */
     List<OcupacionZona> ocupacionPorEvento(long idEvento);
 

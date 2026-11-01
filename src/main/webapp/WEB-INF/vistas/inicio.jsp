@@ -56,6 +56,43 @@
             </nav>
         </div>
 
+        <%-- Búsqueda y filtros de la cartelera (RF-15) --%>
+        <form method="get" action="${ctx}/" class="tarjeta filtros">
+            <input type="hidden" name="tipo" value="${tipoActivo.bd}">
+            <div class="grupo-campo" style="min-width:220px">
+                <label for="texto">Buscar</label>
+                <input type="text" id="texto" name="texto" placeholder="Evento o artista" value="<c:out value='${filtro.texto}' />">
+            </div>
+            <div class="grupo-campo">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" name="categoria">
+                    <option value="">Todas</option>
+                    <c:forEach var="cat" items="${categorias}">
+                        <option value="${cat.id}" ${filtro.idCategoria == cat.id ? 'selected' : ''}><c:out value="${cat.nombre}" /></option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="grupo-campo">
+                <label for="recinto">Recinto</label>
+                <select id="recinto" name="recinto">
+                    <option value="">Todos</option>
+                    <c:forEach var="r" items="${recintos}">
+                        <option value="${r.id}" ${filtro.idRecinto == r.id ? 'selected' : ''}><c:out value="${r.nombre}" /></option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="grupo-campo">
+                <label for="desde">Desde</label>
+                <input type="date" id="desde" name="desde" value="${filtro.desde}">
+            </div>
+            <div class="grupo-campo">
+                <label for="hasta">Hasta</label>
+                <input type="date" id="hasta" name="hasta" value="${filtro.hasta}">
+            </div>
+            <button type="submit" class="boton">Buscar</button>
+            <a class="boton gris" href="${ctx}/#cartelera">Limpiar</a>
+        </form>
+
         <div class="cartelera">
             <c:forEach var="ev" items="${eventos}">
                 <article class="tarjeta-evento">
@@ -85,8 +122,7 @@
                         <h3><c:out value="${ev.nombre}" /></h3>
                         <p class="evento-linea"><c:if test="${not empty ev.participantes}"><c:out value="${ev.participantes}" /> | </c:if>${ev.fechaLarga}</p>
                         <p class="evento-suave">${ev.tipo.etiqueta}<c:if test="${not empty ev.categoria}"> · <c:out value="${ev.categoria}" /></c:if> · ${ev.horarioTexto}</p>
-                        <button type="button" class="boton chico" disabled
-                                title="La compra en línea llega con el portal del cliente">Ver boletos</button>
+                        <a class="boton chico" href="${ctx}/evento?id=${ev.id}">Ver boletos</a>
                     </div>
                 </article>
             </c:forEach>

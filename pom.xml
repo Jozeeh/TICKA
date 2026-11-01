@@ -42,6 +42,17 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+        <!-- ZXing para generar el código QR de cada boleto (RF-20, RNF-15). -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version>
+        </dependency>
         <!-- OpenPDF para exportar los reportes a PDF (RF-47). No depende de javax/jakarta. -->
         <dependency>
             <groupId>com.github.librepdf</groupId>

@@ -47,11 +47,39 @@
                 <p>General por evento, ventas, asistencia, ocupación e incidencias con filtros y exportación a PDF y CSV.</p>
             </a>
         </c:if>
-        <c:if test="${u.rol == 'CLIENTE' or u.rol == 'CONTROL_ACCESO'}">
-            <article class="tarjeta modulo">
-                <h3>Módulo en construcción</h3>
-                <p>Las pantallas de este rol forman parte de la siguiente entrega del proyecto.</p>
-            </article>
+        <c:if test="${u.administrador}">
+            <a class="tarjeta modulo" href="${ctx}/admin/mostrador" style="text-decoration:none">
+                <h3>Venta en mostrador</h3>
+                <p>Vender boletos a nombre de un cliente eligiendo sus asientos en el mapa.</p>
+            </a>
+        </c:if>
+        <c:if test="${u.cliente}">
+            <a class="tarjeta modulo" href="${ctx}/#cartelera" style="text-decoration:none">
+                <h3>Cartelera</h3>
+                <p>Buscar eventos, ver precios por zona y elegir sus asientos en el mapa.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/cliente/boletos" style="text-decoration:none">
+                <h3>Mis boletos</h3>
+                <p>Historial de compras, boletos con código QR, comprobante PDF y anulación.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/cliente/perfil" style="text-decoration:none">
+                <h3>Mi perfil</h3>
+                <p>Editar sus datos y cambiar su contraseña.</p>
+            </a>
+        </c:if>
+        <c:if test="${u.personalPuerta}">
+            <a class="tarjeta modulo" href="${ctx}/puerta/validar" style="text-decoration:none">
+                <h3>Validar boletos</h3>
+                <p>Escanear o escribir el código QR; ingreso de un solo uso con el asiento del boleto.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/puerta/ocupacion" style="text-decoration:none">
+                <h3>Ocupación en vivo</h3>
+                <p>Ingresados frente a vendidos por zona, actualizado automáticamente.</p>
+            </a>
+            <a class="tarjeta modulo" href="${ctx}/puerta/incidencias" style="text-decoration:none">
+                <h3>Incidencias</h3>
+                <p>Registrar incidentes y darles seguimiento hasta cerrarlos.</p>
+            </a>
         </c:if>
     </section>
 </main>

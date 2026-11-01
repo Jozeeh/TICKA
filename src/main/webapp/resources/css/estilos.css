@@ -603,3 +603,58 @@ dl.datos dd { margin: 0; }
 .compra-cabecera { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 10px 14px; background: #f3f6fa; }
 .compra-cabecera span { color: var(--texto-suave); font-size: .9rem; }
 .compra .tabla { margin: 0; }
+
+/* =====================================================================
+   Portal del cliente (M3)
+   ===================================================================== */
+.caja-acceso.ancha { width: min(100%, 640px); }
+
+/* Detalle público del evento */
+.detalle-publico { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 28px; margin-bottom: 22px; align-items: start; }
+.afiche-grande { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radio); border: 1px solid var(--borde); background: #eef1f5; }
+@media (max-width: 760px) { .detalle-publico { grid-template-columns: 1fr; } }
+
+/* Selección de asientos (casillas con apariencia de asiento) */
+.asiento-sel { position: relative; display: inline-block; margin: 0; cursor: pointer; }
+.asiento-sel input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.asiento-sel input:checked + .asiento { background: var(--azul); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--azul); }
+.asiento-sel input:focus-visible + .asiento { outline: 3px solid var(--acento); }
+.asiento-sel:hover .asiento { filter: brightness(1.1); }
+.asiento.Seleccionado, .leyenda i.Seleccionado { background: var(--azul); }
+.barra-seleccion {
+    position: sticky; bottom: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: 10px; margin-top: 16px; padding: 12px 16px;
+    background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); box-shadow: 0 -4px 14px rgba(20, 40, 70, .08);
+}
+.barra-seleccion span { font-weight: 600; }
+
+/* Reserva y cuenta regresiva */
+.resumen-compra { border-left: 5px solid var(--acento); }
+.cuenta-regresiva { font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primario); }
+.cuenta-regresiva.urgente { color: var(--rojo); }
+
+/* Mis boletos */
+.compra-cliente-cabecera { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.total-compra { font-size: 1.3rem; font-weight: 800; color: var(--primario); margin-top: 6px; }
+.boletos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.boleto { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px dashed #c3ccd7; border-radius: 10px; background: #fbfcfe; }
+.boleto img { border-radius: 6px; background: #fff; }
+.boleto.Anulada { opacity: .6; }
+.qr-anulado { width: 120px; height: 120px; display: grid; place-items: center; background: #f3f4f6; color: var(--rojo); font-weight: 800; border-radius: 6px; }
+.codigo-boleto { display: block; margin-top: 6px; font-size: .68rem; color: var(--texto-suave); word-break: break-all; }
+.barra.verde > span { background: var(--verde); }
+
+/* =====================================================================
+   Control de acceso (M4, M5)
+   ===================================================================== */
+.puerta-rejilla { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 900px) { .puerta-rejilla { grid-template-columns: 1fr; } }
+.campo-codigo { font-size: 1.25rem !important; letter-spacing: 1px; text-transform: uppercase; }
+.resultado-validacion { border-radius: 14px; padding: 22px; color: #fff; text-align: center; margin-bottom: 20px; }
+.resultado-validacion.valido { background: var(--verde); }
+.resultado-validacion.rechazado { background: var(--rojo); }
+.resultado-validacion .estado { font-size: 2.2rem; font-weight: 900; letter-spacing: 3px; }
+.resultado-validacion .asiento-grande { font-size: 1.6rem; font-weight: 800; margin-top: 6px; }
+.resultado-validacion p { margin: 6px 0 0; opacity: .95; }
+.lector-camara video { width: 100%; max-height: 260px; border-radius: 10px; background: #000; }
+.actualizado { font-size: .8rem; color: var(--texto-suave); }

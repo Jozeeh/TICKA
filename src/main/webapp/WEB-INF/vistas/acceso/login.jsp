@@ -40,6 +40,7 @@
             <button type="submit" class="boton acento">Ingresar</button>
         </form>
         <p class="ayuda" style="text-align:center;margin-top:16px">
+            ¿No tiene cuenta? <a href="${pageContext.request.contextPath}/registro">Crear cuenta de cliente</a> ·
             <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
         </p>
     </section>

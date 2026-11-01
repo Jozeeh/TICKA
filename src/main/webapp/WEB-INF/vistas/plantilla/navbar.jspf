@@ -10,11 +10,12 @@
     <div class="usuario">
         <c:choose>
             <c:when test="${empty u}">
+                <a class="enlace" href="${ctx}/registro">Crear cuenta</a>
                 <a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a>
             </c:when>
             <c:otherwise>
                 <c:if test="${paginaActiva == 'inicio'}">
-                    <a class="boton acento chico" href="${ctx}/panel">Ir a mi panel</a>
+                    <a class="boton acento chico" href="${ctx}${u.cliente ? '/cliente/boletos' : '/panel'}">${u.cliente ? 'Mis boletos' : 'Ir a mi panel'}</a>
                 </c:if>
                 <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
                 <form method="post" action="${ctx}/cerrar-sesion">
@@ -28,6 +29,18 @@
 <c:if test="${not empty u and paginaActiva != 'inicio'}">
     <aside class="menu-lateral" aria-label="Menú del rol">
         <a class="${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
+        <c:if test="${u.cliente}">
+            <p class="seccion">Mi cuenta</p>
+            <a class="${paginaActiva == 'cartelera' ? 'activo' : ''}" href="${ctx}/#cartelera">Cartelera</a>
+            <a class="${paginaActiva == 'boletos' ? 'activo' : ''}" href="${ctx}/cliente/boletos">Mis boletos</a>
+            <a class="${paginaActiva == 'perfil' ? 'activo' : ''}" href="${ctx}/cliente/perfil">Mi perfil</a>
+        </c:if>
+        <c:if test="${u.personalPuerta}">
+            <p class="seccion">Control de acceso</p>
+            <a class="${paginaActiva == 'validar' ? 'activo' : ''}" href="${ctx}/puerta/validar">Validar boletos</a>
+            <a class="${paginaActiva == 'ocupacion' ? 'activo' : ''}" href="${ctx}/puerta/ocupacion">Ocupación en vivo</a>
+            <a class="${paginaActiva == 'incidencias' ? 'activo' : ''}" href="${ctx}/puerta/incidencias">Incidencias</a>
+        </c:if>
         <c:if test="${u.gestorEventos}">
             <p class="seccion">Organizador</p>
             <a class="${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
@@ -42,6 +55,7 @@
             <p class="seccion">Administración</p>
             <a class="${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
             <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/reportes">Reportes</a>
+            <a class="${paginaActiva == 'mostrador' ? 'activo' : ''}" href="${ctx}/admin/mostrador">Venta en mostrador</a>
             <a class="${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
             <a class="${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
         </c:if>
