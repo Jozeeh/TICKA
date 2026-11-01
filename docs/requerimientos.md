@@ -10,7 +10,7 @@
 | Ruta de contexto (propuesta) | `/ticka` |
 | Descripción corta | Sistema web de gestión de eventos en vivo (conciertos, partidos, ópera y teatro) con venta de boletos por asiento |
 | Sector | Entretenimiento en vivo — boletería (*ticketing*) |
-| Versión del documento | 0.7 (borrador, semana 12/16) |
+| Versión del documento | 0.8 (los 4 roles implementados, semana 13/16) |
 | Fecha | 2026-10-12 |
 
 > **Nota:** nombre, módulos, entidades y prioridades son una propuesta de trabajo. No provienen de la guía; el equipo las decide y ajusta.
@@ -412,7 +412,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 
 - [ ] Confirmar nombre definitivo (TICKA) y ruta de contexto.
 - [ ] Asignar cada rol a un integrante y registrarlo en la bitácora.
-- [ ] Decidir cuántos minutos dura la reserva temporal y cuántos asientos se permiten por compra.
-- [ ] Decidir si entra la venta en mostrador (RF-24).
-- [ ] Decidir si habrá re-entrada (RF-31).
+- [x] Reserva temporal de 10 minutos y máximo 6 asientos por compra (configurables en `ticka.properties`).
+- [x] La venta en mostrador sí entra (RF-24), a cargo del Administrador.
+- [x] Re-entrada configurable (RF-31), desactivada por defecto.
 - [x] Librería de reportes: OpenPDF para PDF y CSV para Excel (RF-47).

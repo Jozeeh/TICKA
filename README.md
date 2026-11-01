@@ -14,14 +14,14 @@ Proyecto integrador del módulo **Desarrollo de Aplicaciones Multiplataforma (CO
 |---|---|---|
 | **Administrador** | M6 Usuarios y seguridad · M7 Dashboard y reportes | ✅ Implementado |
 | **Organizador** | M1 Eventos y cartelera · M2 Recintos y asientos | ✅ Implementado |
-| Cliente | M3 Portal del cliente (cartelera, compra, mis boletos) | Pendiente (siguiente entrega) |
-| Control de acceso | M4 Validación en puerta · M5 Incidencias | Pendiente (siguiente entrega) |
+| **Cliente** | M3 Portal del cliente (registro, cartelera, mapa de asientos, compra con QR, mis boletos) | ✅ Implementado |
+| **Control de acceso** | M4 Validación en puerta · M5 Incidencias | ✅ Implementado |
 
 La base de datos está completa para los 4 roles, y los datos de prueba incluyen ventas, accesos e incidencias para que los reportes del Administrador muestren información real.
 
 ## Tecnologías
 
-Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · OpenPDF (reportes en PDF) · JUnit 4.
+Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · OpenPDF (reportes y comprobantes en PDF) · ZXing (códigos QR) · Chart.js y SweetAlert2 (copias locales) · JUnit 4.
 
 ## Puesta en marcha
 
@@ -59,6 +59,22 @@ Abra <http://localhost:8080/ticka/>: la página de inicio muestra la cartelera d
 La primera vez, `/acceso` lleva a **Configuración inicial** para crear el administrador (el repositorio no guarda usuarios ni contraseñas). Desde **Usuarios** el administrador crea después las cuentas del personal, por ejemplo un Organizador.
 
 Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no pueden iniciar sesión**: existen solo para que haya ventas y accesos en los reportes.
+
+Para probar los otros roles:
+- **Cliente:** en la página de inicio, **Crear cuenta** (`/registro`). La cuenta queda con la sesión iniciada.
+- **Control de acceso:** el Administrador la crea desde **Usuarios** con el rol *Control de acceso*.
+
+### 5. Parámetros de negocio (`src/main/resources/ticka.properties`)
+
+| Parámetro | Valor | Requerimiento |
+|---|---|---|
+| `reserva.minutos` | 10 minutos de reserva temporal | RF-18, RN-02 |
+| `compra.maximo` | 6 asientos por compra | RF-19, RN-04 |
+| `anulacion.horas` | 24 horas antes de la apertura de puertas | RF-23, RN-12 |
+| `acceso.reentrada` | `false` (un boleto entra una vez) | RF-31 |
+| `acceso.incidenciaPorRechazo` | `true` (cada rechazo crea una incidencia) | RF-35 |
+
+Este archivo no tiene credenciales y sí se sube a Git. Después de cambiarlo, reinicie la aplicación.
 
 ## Arquitectura
 
@@ -101,6 +117,27 @@ Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no
 | Clientes: búsqueda y paginación, activación y **detalle** con todas sus compras y boletos | `/admin/clientes`, `?accion=ver&id=` | RF-37, RF-54, RF-55 |
 | Reportes (también para el Organizador): general por evento, ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; PDF en pestaña nueva y descarga CSV | `/reportes` | RF-43 a RF-49 |
 
+### Cliente (`/cliente/*`; la cartelera y el detalle del evento son públicos)
+
+| Pantalla | Ruta | Requerimientos |
+|---|---|---|
+| Crear cuenta (sin documento ni correo repetidos) | `/registro` | RF-13, RF-14 |
+| Cartelera con búsqueda y filtros por tipo, categoría, recinto y fechas | `/` | RF-15 |
+| Detalle público del evento: precios y disponibilidad por zona | `/evento?id=` | RF-15 |
+| Mapa de asientos para elegir, reserva temporal con cuenta regresiva y compra con forma de pago | `/cliente/comprar?evento=` | RF-16 a RF-21 |
+| Mis boletos: boletos con QR, comprobante PDF y anulación con motivo | `/cliente/boletos` | RF-20, RF-22, RF-23 |
+| Mi perfil y cambio de contraseña | `/cliente/perfil` | RF-13 |
+
+El Administrador también tiene **Venta en mostrador** (`/admin/mostrador`, RF-24): busca al cliente por documento, elige los asientos en el mismo mapa y registra la venta con canal Mostrador.
+
+### Control de acceso (`/puerta/*`; el Administrador también tiene acceso)
+
+| Pantalla | Ruta | Requerimientos |
+|---|---|---|
+| Validar boletos por código o QR (lector, teclado o cámara) y por documento; bitácora y anulación de ingresos | `/puerta/validar` | RF-25 a RF-31 |
+| Ocupación en vivo por zona (se actualiza sola con AJAX cada 10 s) | `/puerta/ocupacion` | RF-28 |
+| Incidencias: registro, seguimiento y consulta con filtros | `/puerta/incidencias` | RF-32 a RF-35 |
+
 ### Común
 
 Las opciones de cada rol están en un **menú lateral**; la barra superior solo tiene la marca, los enlaces públicos y la sesión. En pantallas angostas el menú pasa a una franja horizontal.
@@ -111,7 +148,9 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 ## Seguridad
 
 - Contraseñas con **BCrypt** (hash con salt). Nunca se guardan ni se muestran en texto plano.
-- **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` y `/reportes` admiten Organizador y Administrador; cualquier otro rol recibe 403.
+- **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` y `/reportes` admiten Organizador y Administrador; `/cliente/*` solo Cliente; `/puerta/*` Control de acceso y Administrador. Cualquier otro rol recibe 403.
+- **Control de propiedad (RN-13):** los boletos, QR y comprobantes se consultan siempre filtrando por el cliente en sesión, así que cambiar un id en la URL no da acceso a boletos ajenos (responde 404).
+- **Códigos de boleto** generados con `SecureRandom` (128 bits), así no se pueden adivinar.
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
 - Consultas parametrizadas (sin concatenar datos del usuario) y salida escapada con `c:out` (XSS).
 - Afiches adjuntos validados por su contenido real (firma de JPG, PNG, WEBP o GIF) y con un máximo de 2 MB, no por la extensión del archivo.
@@ -124,7 +163,9 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 - **Publicar (RF-07):** en una sola transacción se verifica que todas las zonas tengan precio y que no haya choque de horario, se copian los asientos activos del recinto al evento y el evento pasa a *Publicado*.
 - **Choque de horario (RN-05):** un recinto no puede tener dos eventos activos traslapados.
 - **Cancelar (RN-09):** en una transacción se anulan las ventas y los boletos, se liberan los asientos y el evento pasa a *Cancelado*.
-- **Agotado (RN-11):** se recalcula al bloquear o desbloquear asientos.
+- **Agotado (RN-11):** se recalcula al bloquear o desbloquear asientos, al comprar y al anular.
+- **Compra sin colisiones (RNF-05):** reservar y vender usan una actualización condicional (`UPDATE ... WHERE estado = 'Disponible'`); si dos clientes eligen el mismo asiento a la vez, solo uno lo obtiene y el otro ve cuál perdió.
+- **Un solo ingreso (RN-07):** al validar, la fila del boleto se bloquea (`SELECT ... FOR UPDATE`); si dos puertas leen el mismo QR al mismo tiempo, una lo acepta y la otra lo rechaza como "ya utilizado".
 
 ## Pruebas automatizadas
 
@@ -132,7 +173,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 mvn test
 ```
 
-Son 37 pruebas JUnit, sin base de datos:
+Son 54 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
@@ -145,6 +186,10 @@ Son 37 pruebas JUnit, sin base de datos:
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |
 | `ExportadorPdfTest` | PDF formal con datos y resumen, agrupado por secciones y vacío |
 | `JsonTest` | Series de los gráficos y escape de comillas y etiquetas HTML |
+| `ReglasCompraTest` | Venta abierta, máximo por compra y plazo de anulación (RN-03, RN-04, RN-12) |
+| `ValidadorClienteTest` | Datos del registro del cliente |
+| `GeneradorCodigoTest` | Formato y unicidad de los códigos de boleto e imagen QR |
+| `ValidadorAccesoTest` | Rechazos en puerta, horario, re-entrada y transiciones de incidencias |
 | `ValidadorImagenTest` | Afiche: tipo real por firma de bytes, archivo falso y límite de 2 MB |
 
 ## Matriz de pruebas manuales
@@ -177,6 +222,16 @@ Estas pruebas se hicieron en el entorno local con los datos de `02_datos_prueba.
 | 20 | Desactivar un evento publicado / uno en Borrador | Rechazado (debe cancelarse antes) / desaparece del listado | Verificado |
 | 21 | Reporte de ventas filtrado por tipo y exportado a PDF | PDF con la tabla, los totales y los filtros aplicados | Verificado |
 | 22 | Reporte de ocupación o asistencia filtrado por zona | Solo cuenta los asientos de esa zona | Verificado |
+| 23 | Registrarse con un documento ya usado | "Ya existe una cuenta con ese documento" | Verificado |
+| 24 | Dos clientes reservan el mismo asiento al mismo tiempo | Solo uno lo obtiene; el otro ve "Estos asientos ya no están disponibles: Sol General A-1" | Verificado |
+| 25 | Comprar la reserva con forma de pago | Venta Web, un boleto con código y QR por asiento | Verificado |
+| 26 | Pedir el QR o el comprobante de otro cliente cambiando el id | 404 | Verificado |
+| 27 | Anular una compra dentro del plazo | Venta y boletos anulados, asientos liberados | Verificado |
+| 28 | Venta en mostrador | Venta Mostrador con el Administrador como vendedor | Verificado |
+| 29 | Validar en puerta: boleto válido, repetido, falso y de otro evento | VÁLIDO con asiento / "Boleto ya utilizado" / "Código inexistente" / "Boleto de otro evento" | Verificado |
+| 30 | Dos puertas leen el mismo QR a la vez | Uno válido y uno rechazado | Verificado |
+| 31 | Anular un ingreso por error | El boleto vuelve a Emitida | Verificado |
+| 32 | Cerrar una incidencia sin observaciones | "Escriba cómo se resolvió la incidencia antes de cerrarla" | Verificado |
 
 ## Control de credenciales
 

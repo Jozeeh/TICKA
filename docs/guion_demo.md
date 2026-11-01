@@ -1,14 +1,16 @@
 # Guion de la demostración — Avance TICKA
 
-Avance: **base de datos + rol Administrador + rol Organizador**. Duración sugerida: 15 a 18 minutos.
+Proyecto completo: **base de datos y los 4 roles** (Administrador, Organizador, Cliente y Control de acceso). Duración sugerida: 25 a 30 minutos; cada integrante presenta su rol.
 
 ## Preparación (antes de la clase)
 
 1. Ejecutar de nuevo `sql/01_esquema_ticka.sql` y `sql/02_datos_prueba.sql` para tener los datos limpios. Las fechas de los eventos se calculan desde el día en que se ejecuta el script.
 2. Iniciar la aplicación en Tomcat 9 y abrir la página de inicio: deben aparecer los eventos en cartelera (si no aparecen, revisar MySQL y `db.properties`).
-3. Entrar a `/acceso`, crear el administrador en **Configuración inicial** y, desde **Usuarios**, crear una cuenta de Organizador.
-4. Tener abiertas dos ventanas: una normal (Administrador) y otra de incógnito (Organizador).
-5. Tener a mano `docs/diagrama_er.md` (en GitHub se ven los diagramas).
+3. Entrar a `/acceso`, crear el administrador en **Configuración inicial** y, desde **Usuarios**, crear una cuenta de Organizador y una de Control de acceso.
+4. Registrar un cliente desde **Crear cuenta** (o hacerlo en vivo en la sección del Cliente).
+5. Para la puerta: editar un evento publicado para que su apertura de puertas sea antes de la hora de la demo (solo se valida entre la apertura y el fin, RF-30).
+6. Tener abiertas varias ventanas (normal e incógnito) para cambiar de rol rápido.
+7. Tener a mano `docs/diagrama_er.md` (en GitHub se ven los diagramas).
 
 ---
 
@@ -68,11 +70,31 @@ Avance: **base de datos + rol Administrador + rol Organizador**. Duración suger
    - Cancelar *Final Alianza vs. FAS*: se anulan sus 22 boletos (reembolso simulado) y se liberan los asientos (RN-09).
    - Volver al **Dashboard** y a **Reportes** como Administrador para ver que los números cambiaron.
 
-## 4. Cierre (1 min)
+## 4. Cliente (6 a 7 min)
+
+1. En la página de inicio, buscar *Maná* con los filtros de la cartelera (RF-15) y abrir **Ver boletos**: detalle público con precios y disponibilidad por zona.
+2. Pulsar **Elegir asientos**: pide iniciar sesión; usar **Crear cuenta** (RF-13). Intentar registrar el mismo documento otra vez: se rechaza (RF-14). Al crear la cuenta vuelve al evento.
+3. En el mapa (RF-16), marcar 3 asientos: la barra inferior muestra cantidad y total; al pasar de 6 se avisa del máximo (RF-19).
+4. **Reservar asientos**: aparece la reserva con cuenta regresiva de 10 minutos (RF-18). En otra ventana, otro cliente intenta el mismo asiento: "Estos asientos ya no están disponibles" (RNF-05).
+5. Elegir la forma de pago y **Confirmar compra** (RF-17, RF-21): en **Mis boletos** aparece cada boleto con su QR (RF-20) y el **Comprobante PDF** (RF-22).
+6. **Anular compra** con motivo (RF-23): los asientos vuelven a estar libres. Explicar el plazo de 24 horas antes de la apertura (RN-12).
+7. Como Administrador, **Venta en mostrador** (RF-24): buscar al cliente por documento, elegir asientos y vender; aparece en el detalle del cliente y en el reporte de ventas con canal Mostrador.
+
+## 5. Control de acceso (5 a 6 min)
+
+1. Con la cuenta de Control de acceso, abrir **Validar boletos**, elegir el evento y la puerta.
+2. Copiar un código de **Mis boletos** del cliente (o escanear el QR con la cámara del celular) y validar: **VÁLIDO** en verde con zona, fila y asiento (RF-27).
+3. Validar el mismo código otra vez: **RECHAZADO — Boleto ya utilizado** (RN-07). Probar un código falso y uno de otro evento (RF-26).
+4. **Buscar por documento** (RF-25) y dar ingreso a otro boleto del cliente.
+5. En la bitácora, **Anular** un ingreso con motivo (RF-29): el boleto vuelve a quedar disponible.
+6. **Ocupación en vivo** (RF-28): validar un boleto en otra ventana y ver que el porcentaje cambia solo en unos segundos (AJAX).
+7. **Incidencias**: los rechazos ya crearon incidencias "Acceso denegado" (RF-35). Registrar una incidencia médica, pasarla a *En atención* y cerrarla con observaciones (RF-32, RF-33); filtrar por gravedad (RF-34).
+
+## 6. Cierre (1 min)
 
 - **Arquitectura MVC en capas:** Servlet → Servicio (reglas y transacciones) → DAO (JDBC) → MySQL, con vistas JSP/JSTL.
-- **Pruebas:** 37 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
-- **Siguiente entrega:** rol Cliente (compra eligiendo asientos en el mismo mapa) y rol Control de acceso (validación del QR en puerta). La base de datos ya los soporta.
+- **Pruebas:** 54 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
+- **Flujo completo (criterio 8):** el Organizador publica → el Cliente elige asiento y compra → Control de acceso valida → el Administrador ve el reporte.
 
 ## Preguntas frecuentes
 
