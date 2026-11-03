@@ -31,15 +31,15 @@
         </c:if>
 
         <section class="bloque-compra">
-            <h2>Zonas y precios</h2>
+            <h2>Disponibilidad</h2>
             <ul class="lista-precios">
-                <c:forEach var="z" items="${zonas}" varStatus="s">
+                <c:forEach var="z" items="${zonas}">
                     <li>
-                        <span>
-                            <c:out value="${z.nombre}" />
-                            <span class="ayuda">${z.disponibles} disponibles</span>
-                        </span>
-                        <span class="precio-zona">${empty z.precio ? '—' : z.precioTexto}</span>
+                        <div class="fila-entre">
+                            <span><c:out value="${z.nombre}" /></span>
+                            <span class="ayuda">${z.disponibles} de ${z.total}</span>
+                        </div>
+                        <span class="barra" title="${z.disponibles} de ${z.total} disponibles"><span style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></span></span>
                     </li>
                 </c:forEach>
             </ul>
@@ -105,7 +105,7 @@
                         <button type="button" class="sector" data-zona="${z.idZona}" data-nombre="<c:out value='${z.nombre}' />">
                             <span>
                                 <strong><c:out value="${z.nombre}" /></strong>
-                                <span class="barra" title="${z.disponibles} de ${z.total} disponibles"><span style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></span></span>
+                                <span class="ayuda">${empty z.precio ? 'Sin precio' : z.precioTexto}</span>
                             </span>
                             <span class="chevron" aria-hidden="true">›</span>
                         </button>
