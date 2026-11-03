@@ -11,24 +11,34 @@ import org.junit.Test;
 public class GeneradorCodigoTest {
 
     @Test
-    public void formatoTkMas32Hexadecimales() {
-        String codigo = GeneradorCodigo.nuevo();
-        assertTrue(codigo.matches("^TK-[0-9A-F]{32}$"));
-        assertTrue(codigo.length() <= 40);
+    public void formatoCortoTkMasCuatroCaracteres() {
+        for (int i = 0; i < 200; i++) {
+            String codigo = GeneradorCodigo.nuevo();
+            assertTrue(codigo, codigo.matches("^TK-[A-HJ-NP-Z2-9]{4}$"));
+        }
     }
 
     @Test
-    public void milCodigosSinRepetirse() {
+    public void noUsaCaracteresQueSeConfunden() {
+        for (char c : "01IO".toCharArray()) {
+            assertTrue(GeneradorCodigo.ALFABETO.indexOf(c) < 0);
+        }
+        assertEquals(32, GeneradorCodigo.ALFABETO.length());
+    }
+
+    @Test
+    public void sonAleatorios() {
         Set<String> codigos = new HashSet<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             codigos.add(GeneradorCodigo.nuevo());
         }
-        assertEquals(1000, codigos.size());
+        // En 100 códigos de un millón de combinaciones casi nunca hay repetidos.
+        assertTrue(codigos.size() >= 98);
     }
 
     @Test
     public void normalizaLoQueEscribeElPersonal() {
-        assertEquals("TK-ABC", GeneradorCodigo.normalizar("  tk-abc "));
+        assertEquals("TK-AB2C", GeneradorCodigo.normalizar("  tk-ab2c "));
     }
 
     @Test

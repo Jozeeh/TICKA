@@ -44,7 +44,11 @@ public interface VentaDAO {
 
     long insertarVenta(Connection cn, long idCliente, String canal, Long idVendedor, BigDecimal total, String formaPago);
 
-    void insertarEntrada(Connection cn, long idVenta, long idEventoAsiento, BigDecimal precio, String codigo);
+    /**
+     * Emite un boleto. Devuelve false si el código ya existe (choque con el
+     * UNIQUE de entrada.codigo); el servicio entonces prueba con otro código.
+     */
+    boolean insertarEntrada(Connection cn, long idVenta, long idEventoAsiento, BigDecimal precio, String codigo);
 
     /** Asientos que todavía se pueden vender (Disponibles o Reservados), para RN-11. */
     int contarPendientes(Connection cn, long idEvento);

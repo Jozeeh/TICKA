@@ -242,6 +242,11 @@ JOIN evento_asiento ea ON ea.id_evento = av.id_evento AND ea.id_asiento = a.id
 JOIN precio_zona pz    ON pz.id_evento = av.id_evento AND pz.id_zona = av.id_zona
 ORDER BY av.id_venta, a.numero;
 
+-- Códigos cortos TK-XXXX (como los que genera la aplicación). Multiplicar el id
+-- por 9973 (primo) módulo 36^4 da un valor distinto para cada boleto: no se repiten.
+UPDATE entrada
+SET codigo = CONCAT('TK-', LPAD(UPPER(CONV((id * 9973) MOD 1679616, 10, 36)), 4, '0'));
+
 -- Boletos de ventas anuladas quedan anulados.
 UPDATE entrada en
 JOIN venta v ON v.id = en.id_venta

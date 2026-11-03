@@ -157,7 +157,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 - Contraseñas con **BCrypt** (hash con salt). Nunca se guardan ni se muestran en texto plano.
 - **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` y `/reportes` admiten Organizador y Administrador; `/cliente/*` solo Cliente; `/puerta/*` Control de acceso y Administrador. Cualquier otro rol recibe 403.
 - **Control de propiedad (RN-13):** los boletos, QR y comprobantes se consultan siempre filtrando por el cliente en sesión, así que cambiar un id en la URL no da acceso a boletos ajenos (responde 404).
-- **Códigos de boleto** generados con `SecureRandom` (128 bits), así no se pueden adivinar.
+- **Códigos de boleto** cortos (`TK-XXXX`) generados con `SecureRandom`, con un alfabeto sin caracteres que se confunden (sin 0/O ni 1/I). Si sale un código repetido, el `UNIQUE` de `entrada.codigo` lo rechaza y se genera otro.
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
 - Consultas parametrizadas (sin concatenar datos del usuario) y salida escapada con `c:out` (XSS).
 - Afiches adjuntos validados por su contenido real (firma de JPG, PNG, WEBP o GIF) y con un máximo de 2 MB, no por la extensión del archivo.

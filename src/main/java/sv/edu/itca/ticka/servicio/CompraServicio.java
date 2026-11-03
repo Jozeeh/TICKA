@@ -34,6 +34,7 @@ import sv.edu.itca.ticka.util.GeneradorCodigo;
 public class CompraServicio {
 
     public static final Set<String> FORMAS_PAGO = Set.of("Tarjeta", "Transferencia", "Efectivo");
+    private static final int INTENTOS_CODIGO = 20;
 
     private final EventoDAO eventoDAO;
     private final VentaDAO ventaDAO;
@@ -134,7 +135,7 @@ public class CompraServicio {
             validarCantidad(asientos.size());
             long idVenta = ventaDAO.insertarVenta(cn, idCliente, "Web", null, total(asientos), formaPago);
             for (AsientoSeleccionado a : asientos) {
-                ventaDAO.insertarEntrada(cn, idVenta, a.getIdEventoAsiento(), a.getPrecio(), GeneradorCodigo.nuevo());
+                emitirBoleto(cn, idVenta, a);
                 ventaDAO.marcarVendido(cn, a.getIdEventoAsiento());
             }
             actualizarAgotado(cn, evento);
@@ -161,7 +162,7 @@ public class CompraServicio {
             List<AsientoSeleccionado> asientos = ventaDAO.asientosPorIds(cn, idEvento, ids);
             long idVenta = ventaDAO.insertarVenta(cn, idCliente, "Mostrador", idVendedor, total(asientos), formaPago);
             for (AsientoSeleccionado a : asientos) {
-                ventaDAO.insertarEntrada(cn, idVenta, a.getIdEventoAsiento(), a.getPrecio(), GeneradorCodigo.nuevo());
+                emitirBoleto(cn, idVenta, a);
             }
             actualizarAgotado(cn, evento);
             return idVenta;
@@ -188,6 +189,19 @@ public class CompraServicio {
             actualizarAgotado(cn, evento);
             return null;
         }, "No se pudo anular la compra");
+    }
+
+    /**
+     * Emite el boleto con un código TK-XXXX nuevo. Como el código es corto,
+     * si ya existe (el INSERT lo rechaza por el UNIQUE) se genera otro.
+     */
+    private void emitirBoleto(Connection cn, long idVenta, AsientoSeleccionado a) {
+        for (int intento = 0; intento < INTENTOS_CODIGO; intento++) {
+            if (ventaDAO.insertarEntrada(cn, idVenta, a.getIdEventoAsiento(), a.getPrecio(), GeneradorCodigo.nuevo())) {
+                return;
+            }
+        }
+        throw new ServicioException("No se pudo generar un código único para el boleto. Intente de nuevo.");
     }
 
     /** RN-11: Agotado si ya no quedan asientos disponibles ni reservados; si se liberan, vuelve a Publicado. */

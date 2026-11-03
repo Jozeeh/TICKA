@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -173,7 +174,7 @@ public class VentaDAOImpl implements VentaDAO {
     }
 
     @Override
-    public void insertarEntrada(Connection cn, long idVenta, long idEventoAsiento, BigDecimal precio, String codigo) {
+    public boolean insertarEntrada(Connection cn, long idVenta, long idEventoAsiento, BigDecimal precio, String codigo) {
         String sql = "INSERT INTO entrada (id_venta, id_evento_asiento, precio, codigo, estado) VALUES (?, ?, ?, ?, 'Emitida')";
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setLong(1, idVenta);
@@ -181,6 +182,13 @@ public class VentaDAOImpl implements VentaDAO {
             ps.setBigDecimal(3, precio);
             ps.setString(4, codigo);
             ps.executeUpdate();
+            return true;
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            // 1062 = clave duplicada en uq_entrada_codigo: el código ya existe.
+            if (ex.getErrorCode() == 1062 && String.valueOf(ex.getMessage()).contains("uq_entrada_codigo")) {
+                return false;
+            }
+            throw new DAOException("No se pudo emitir el boleto", ex);
         } catch (SQLException ex) {
             throw new DAOException("No se pudo emitir el boleto", ex);
         }
