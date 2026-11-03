@@ -34,8 +34,7 @@
             <h2>Zonas y precios</h2>
             <ul class="lista-precios">
                 <c:forEach var="z" items="${zonas}" varStatus="s">
-                    <li class="zc${s.index % 7}">
-                        <span class="punto-zona"></span>
+                    <li>
                         <span>
                             <c:out value="${z.nombre}" />
                             <span class="ayuda">${z.disponibles} disponibles</span>
@@ -46,13 +45,6 @@
             </ul>
         </section>
 
-        <div class="leyenda compacta">
-            <span><i class="Disponible"></i> Disponible</span>
-            <span><i class="Seleccionado"></i> Su selección</span>
-            <span><i class="Reservado"></i> Reservado</span>
-            <span><i class="Vendido"></i> Vendido</span>
-            <span><i class="Bloqueado"></i> No disponible</span>
-        </div>
     </aside>
 
     <%-- ============ Centro: mapa fijo con los asientos de la zona elegida ============ --%>
@@ -67,7 +59,7 @@
                     <div class="escenario">ESCENARIO / CANCHA</div>
                     <p class="mapa-vacio" id="mapaVacio">Elija una zona a la derecha para ver sus asientos.</p>
                     <c:forEach var="z" items="${zonas}" varStatus="s">
-                        <div class="zona-bloque zc${s.index % 7}" data-zona="${z.idZona}">
+                        <div class="zona-bloque" data-zona="${z.idZona}">
                             <button type="button" class="zona-bloque-titulo" data-zona="${z.idZona}">
                                 <c:out value="${z.nombre}" /> · ${empty z.precio ? 'sin precio' : z.precioTexto}
                             </button>
@@ -110,16 +102,23 @@
             <ul class="lista-sectores">
                 <c:forEach var="z" items="${zonas}" varStatus="s">
                     <li>
-                        <button type="button" class="sector zc${s.index % 7}" data-zona="${z.idZona}" data-nombre="<c:out value='${z.nombre}' />">
+                        <button type="button" class="sector" data-zona="${z.idZona}" data-nombre="<c:out value='${z.nombre}' />">
                             <span>
                                 <strong><c:out value="${z.nombre}" /></strong>
-                                <span class="ayuda">${empty z.precio ? 'Sin precio' : z.precioTexto} · ${z.disponibles} disponibles</span>
+                                <span class="barra" title="${z.disponibles} de ${z.total} disponibles"><span style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></span></span>
                             </span>
                             <span class="chevron" aria-hidden="true">›</span>
                         </button>
                     </li>
                 </c:forEach>
             </ul>
+            <div class="leyenda compacta">
+                <span><i class="Disponible"></i> Disponible</span>
+                <span><i class="Seleccionado"></i> Su selección</span>
+                <span><i class="Reservado"></i> Reservado</span>
+                <span><i class="Vendido"></i> Vendido</span>
+                <span><i class="Bloqueado"></i> No disponible</span>
+            </div>
         </div>
 
         <div class="panel-mitad panel-seleccion">

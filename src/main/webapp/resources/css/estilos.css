@@ -796,8 +796,6 @@ dl.datos dd { margin: 0; }
 /* =====================================================================
    Elegir asientos: evento | mapa con zoom | zonas y asientos
    ===================================================================== */
-.zc0 { --zc: #2f6fb3; } .zc1 { --zc: #e4572e; } .zc2 { --zc: #2e8b57; } .zc3 { --zc: #7b4fb3; }
-.zc4 { --zc: #d9a400; } .zc5 { --zc: #c0392b; } .zc6 { --zc: #1f9aa8; }
 .cuerpo-compra { overflow: hidden; }
 .compra-app {
     display: grid;
@@ -820,9 +818,8 @@ dl.datos dd { margin: 0; }
 .reserva-activa h2 { margin: 0; }
 .fila-entre { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .lista-precios { list-style: none; margin: 0; padding: 0; }
-.lista-precios li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 7px 0; }
+.lista-precios li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 7px 0; }
 .lista-precios .ayuda { display: block; font-size: .78rem; }
-.punto-zona { width: 10px; height: 10px; border-radius: 50%; background: var(--zc); }
 .precio-zona { font-weight: 700; color: var(--primario); }
 .vacio-sel { color: var(--texto-suave); font-size: .9rem; justify-content: flex-start !important; }
 .total-seleccion { margin: 6px 0; font-size: 1.05rem; }
@@ -836,14 +833,14 @@ dl.datos dd { margin: 0; }
 .mapa-zonas { display: inline-flex; flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
 .mapa-zonas .escenario { margin: 0; }
 .zona-bloque {
-    background: #fff; border: 2px solid var(--zc); border-radius: 12px; padding: 10px 14px 14px;
+    background: #fff; border: 2px solid var(--primario); border-radius: 12px; padding: 10px 14px 14px;
     transition: opacity .3s, filter .3s, box-shadow .3s;
 }
 .zona-bloque.oculta { display: none; }
 .mapa-vacio { text-align: center; color: var(--texto-suave); margin: 30px 0; max-width: 360px; }
 .zona-bloque-titulo {
     display: block; width: 100%; margin: 0 0 8px; padding: 4px 8px; border: 0; border-radius: 6px; cursor: pointer;
-    background: var(--zc); color: #fff; font: inherit; font-weight: 700; font-size: .85rem; text-align: left;
+    background: var(--primario); color: #fff; font: inherit; font-weight: 700; font-size: .85rem; text-align: left;
 }
 .etiqueta-mapa {
     position: absolute; left: 14px; bottom: 14px; z-index: 5; background: #fff; border-radius: 999px;
@@ -861,10 +858,13 @@ dl.datos dd { margin: 0; }
 .lista-sectores { list-style: none; margin: 0; padding: 0; }
 .sector {
     width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; text-align: left;
-    padding: 14px 18px; border: 0; border-top: 1px solid var(--borde); border-left: 5px solid var(--zc);
+    padding: 14px 18px; border: 0; border-top: 1px solid var(--borde); border-left: 4px solid transparent;
     background: #fff; font: inherit; cursor: pointer; color: var(--texto);
 }
-.sector .ayuda { display: block; font-size: .82rem; }
+.sector > span:first-child { flex: 1; min-width: 0; }
+.sector .barra { display: block; height: 6px; margin-top: 8px; min-width: 0; }
+.sector.activo { border-left-color: var(--acento); }
+.panel-sectores .leyenda.compacta { margin: 0; padding: 12px 18px 16px; border-top: 1px solid var(--borde); }
 .sector:hover, .sector.activo { background: #f3f6fa; }
 .sector.activo strong { color: var(--primario); }
 .sector .chevron { color: var(--texto-suave); font-size: 1.4rem; }
