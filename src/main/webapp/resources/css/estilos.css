@@ -753,10 +753,9 @@ dl.datos dd { margin: 0; }
 .tarjeta-visual {
     height: 182px; border-radius: 14px; padding: 18px; color: #fff; display: flex; flex-direction: column;
     justify-content: space-between; box-shadow: 0 10px 24px rgba(21, 42, 69, .3);
-    background: radial-gradient(circle at 85% 15%, rgba(228, 87, 46, .85), transparent 45%),
-                linear-gradient(135deg, var(--primario-oscuro), var(--primario) 60%, #2c5282);
+    background: var(--primario);
 }
-.tarjeta-visual .chip { width: 40px; height: 30px; border-radius: 6px; background: linear-gradient(135deg, #f1d38b, #c9a447); }
+.tarjeta-visual .chip { width: 40px; height: 30px; border-radius: 6px; background: #e4b44a; }
 .tv-numero { font-size: 1.15rem; letter-spacing: 2px; font-variant-numeric: tabular-nums; word-break: break-all; }
 .tv-pie { display: flex; justify-content: space-between; gap: 10px; font-size: .85rem; }
 .tv-pie small { display: block; opacity: .7; font-size: .65rem; text-transform: uppercase; }

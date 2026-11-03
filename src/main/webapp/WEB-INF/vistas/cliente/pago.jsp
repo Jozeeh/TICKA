@@ -127,7 +127,7 @@
             </ul>
             <p class="resumen-tiempo">Su reserva vence en <strong id="cuentaRegresiva" data-segundos="${segundosRestantes}">--:--</strong></p>
             <button type="submit" form="formPago" class="boton acento acento-grande" id="botonPagar">Pagar ${total}</button>
-            <p class="nota-segura">🔒 Pago simulado: no se realiza ningún cobro y los datos de la tarjeta no se guardan.</p>
+            <p class="nota-segura">Confirma tu compra</p>
             <a class="ayuda" href="${ctx}/cliente/comprar?evento=${evento.id}">← Volver a los asientos</a>
         </aside>
     </div>
