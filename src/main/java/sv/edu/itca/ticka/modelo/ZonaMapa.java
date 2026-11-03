@@ -20,6 +20,23 @@ public class ZonaMapa {
 
     public String getPrecioTexto() { return Formatos.dinero(precio); }
 
+    /** Asientos que se pueden elegir (disponibles o ya seleccionados por el cliente). */
+    public int getDisponibles() {
+        int n = 0;
+        for (FilaAsientos f : filas) {
+            for (Asiento a : f.getAsientos()) {
+                if ("Disponible".equals(a.getEstado()) || "Seleccionado".equals(a.getEstado())) {
+                    n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    public int getTotal() {
+        return filas.stream().mapToInt(f -> f.getAsientos().size()).sum();
+    }
+
     public Long getIdZona() { return idZona; }
 
     public String getNombre() { return nombre; }
