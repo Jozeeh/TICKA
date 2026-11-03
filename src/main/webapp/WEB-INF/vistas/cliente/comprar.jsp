@@ -55,7 +55,7 @@
         </div>
     </aside>
 
-    <%-- ============ Centro: mapa fijo con todas las zonas ============ --%>
+    <%-- ============ Centro: mapa fijo con los asientos de la zona elegida ============ --%>
     <section class="compra-col compra-mapa">
         <span class="etiqueta-mapa" id="etiquetaMapa">Mapa referencial · elija una zona</span>
         <form method="post" action="${ctx}/cliente/comprar" id="formReserva" class="mapa-lienzo">
@@ -65,6 +65,7 @@
             <div class="mapa-contenido" id="mapaContenido">
                 <div class="mapa-zonas">
                     <div class="escenario">ESCENARIO / CANCHA</div>
+                    <p class="mapa-vacio" id="mapaVacio">Elija una zona a la derecha para ver sus asientos.</p>
                     <c:forEach var="z" items="${zonas}" varStatus="s">
                         <div class="zona-bloque zc${s.index % 7}" data-zona="${z.idZona}">
                             <button type="button" class="zona-bloque-titulo" data-zona="${z.idZona}">
@@ -172,7 +173,7 @@
         function casillas() { return Array.prototype.slice.call(document.querySelectorAll('input[name="asiento"]')); }
         function marcadas() { return casillas().filter(function (c) { return c.checked; }); }
 
-        // Mapa fijo: se escala una sola vez para que todas las zonas quepan en el centro (no se explora).
+        // Mapa fijo: se escala para que la zona elegida quepa en el centro (no se explora).
         function ajustar() {
             contenido.style.transform = 'none';
             var zonas = contenido.querySelector('.mapa-zonas');
@@ -183,15 +184,17 @@
             contenido.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + e + ')';
         }
 
-        // Elegir zona: se resalta en el mapa y las demás quedan en gris.
+        // Elegir zona: en el mapa solo se muestran los asientos de esa zona.
+        // Las demás se ocultan, pero sus casillas marcadas siguen en el formulario.
         function elegirZona(id) {
             document.querySelectorAll('.zona-bloque').forEach(function (b) {
-                b.classList.toggle('enfocada', b.dataset.zona === id);
-                b.classList.toggle('atenuada', b.dataset.zona !== id);
+                b.classList.toggle('oculta', b.dataset.zona !== id);
             });
+            document.getElementById('mapaVacio').hidden = true;
             document.querySelectorAll('.sector').forEach(function (s) { s.classList.toggle('activo', s.dataset.zona === id); });
             var sector = document.querySelector('.sector[data-zona="' + id + '"]');
             etiquetaMapa.textContent = sector ? sector.dataset.nombre : '';
+            ajustar();
         }
 
         function avisarLimite() {
@@ -236,19 +239,13 @@
         document.querySelectorAll('.sector, .zona-bloque-titulo').forEach(function (b) {
             b.addEventListener('click', function () { elegirZona(b.dataset.zona); });
         });
-        // Clic en una zona que está en gris: se elige esa zona.
-        document.querySelectorAll('.zona-bloque').forEach(function (b) {
-            b.addEventListener('click', function (e) {
-                if (b.classList.contains('atenuada')) { e.preventDefault(); elegirZona(b.dataset.zona); }
-            });
-        });
         window.addEventListener('resize', ajustar);
 
-        ajustar();
+        // Al entrar no se muestra ninguna zona, salvo la de una reserva vigente.
+        document.querySelectorAll('.zona-bloque').forEach(function (b) { b.classList.add('oculta'); });
         actualizar();
-        // Con una reserva vigente, se resalta la zona de sus asientos.
         var primera = marcadas()[0];
-        if (primera) { elegirZona(primera.dataset.zona); }
+        if (primera) { elegirZona(primera.dataset.zona); } else { ajustar(); }
 
         // Cuenta regresiva de la reserva (RF-18).
         var reloj = document.getElementById('cuentaRegresiva');
