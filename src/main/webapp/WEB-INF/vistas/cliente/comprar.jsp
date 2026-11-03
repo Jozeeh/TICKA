@@ -24,7 +24,7 @@
         <div class="alerta aviso"><c:out value="${motivoSinVenta}" /></div>
     </c:if>
 
-    <%-- Paso 2: reserva vigente → confirmar el pago (RF-17, RF-21) --%>
+    <%-- Reserva vigente: continuar al pago con tarjeta (RF-17, RF-21) --%>
     <c:if test="${not empty reserva and aLaVenta}">
         <section class="tarjeta resumen-compra">
             <div class="cabecera-pagina" style="margin-bottom:8px">
@@ -42,20 +42,7 @@
                 <tfoot><tr><th>Total</th><th class="numero">${totalReserva}</th></tr></tfoot>
             </table>
             <div class="acciones-linea" style="margin-top:14px">
-                <form method="post" action="${ctx}/cliente/comprar" class="acciones-linea"
-                      data-confirmar="¿Confirmar la compra por ${totalReserva}?"
-                      data-detalle="El pago solo se registra (no se cobra). Recibirá un boleto con código QR por asiento."
-                      data-boton="Sí, comprar">
-                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                    <input type="hidden" name="evento" value="${evento.id}">
-                    <input type="hidden" name="accion" value="comprar">
-                    <label for="formaPago" style="margin:0">Forma de pago</label>
-                    <select id="formaPago" name="formaPago" required style="width:auto">
-                        <option value="">Seleccione...</option>
-                        <c:forEach var="f" items="${formasPago}"><option value="${f}">${f}</option></c:forEach>
-                    </select>
-                    <button type="submit" class="boton verde">Confirmar compra</button>
-                </form>
+                <a class="boton verde" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
                 <form method="post" action="${ctx}/cliente/comprar" class="linea">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="evento" value="${evento.id}">

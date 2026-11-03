@@ -76,7 +76,7 @@ Proyecto completo: **base de datos y los 4 roles** (Administrador, Organizador, 
 2. Pulsar **Elegir asientos**: pide iniciar sesión; usar **Crear cuenta** (RF-13). Intentar registrar el mismo documento otra vez: se rechaza (RF-14). Al crear la cuenta vuelve al evento.
 3. En el mapa (RF-16), marcar 3 asientos: la barra inferior muestra cantidad y total; al pasar de 6 se avisa del máximo (RF-19).
 4. **Reservar asientos**: aparece la reserva con cuenta regresiva de 10 minutos (RF-18). En otra ventana, otro cliente intenta el mismo asiento: "Estos asientos ya no están disponibles" (RNF-05).
-5. Elegir la forma de pago y **Confirmar compra** (RF-17, RF-21): en **Mis boletos** aparece cada boleto con su QR (RF-20) y el **Comprobante PDF** (RF-22).
+5. **Pago con tarjeta** (RF-17, RF-21): datos de facturación ya llenos con su cuenta, tarjeta como única forma de pago y vista previa de la tarjeta; cualquier número sirve (la validación es ficticia y no se guarda). Al pulsar **Pagar** aparece "Procesando pago…" y luego **¡Pago aprobado!**. En **Mis boletos** aparece cada boleto con su QR (RF-20) y el **Comprobante PDF** (RF-22).
 6. **Anular compra** con motivo (RF-23): los asientos vuelven a estar libres. Explicar el plazo de 24 horas antes de la apertura (RN-12).
 7. Como Administrador, **Venta en mostrador** (RF-24): buscar al cliente por documento, elegir asientos y vender; aparece en el detalle del cliente y en el reporte de ventas con canal Mostrador.
 
@@ -93,7 +93,7 @@ Proyecto completo: **base de datos y los 4 roles** (Administrador, Organizador, 
 ## 6. Cierre (1 min)
 
 - **Arquitectura MVC en capas:** Servlet → Servicio (reglas y transacciones) → DAO (JDBC) → MySQL, con vistas JSP/JSTL.
-- **Pruebas:** 54 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
+- **Pruebas:** 58 pruebas JUnit (`mvn test`) de las reglas que no dependen de la base.
 - **Flujo completo (criterio 8):** el Organizador publica → el Cliente elige asiento y compra → Control de acceso valida → el Administrador ve el reporte.
 
 ## Preguntas frecuentes

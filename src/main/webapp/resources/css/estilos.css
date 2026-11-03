@@ -717,3 +717,79 @@ dl.datos dd { margin: 0; }
     .acceso-formulario h1 { font-size: 2rem; }
 }
 @media (max-width: 480px) { .acceso-par { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   Pago con tarjeta (simulación de pasarela)
+   ===================================================================== */
+.checkout { max-width: 1140px; }
+.pasos-compra { display: flex; gap: 10px; list-style: none; padding: 0; margin: 0 0 22px; flex-wrap: wrap; }
+.pasos-compra li { display: flex; align-items: center; gap: 8px; color: var(--texto-suave); font-weight: 600; }
+.pasos-compra li:not(:last-child)::after { content: ""; width: 40px; height: 2px; background: var(--borde); margin-left: 6px; }
+.pasos-compra span {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: #e6eaf0; color: var(--texto-suave); font-size: .8rem;
+}
+.pasos-compra .hecho span { background: var(--verde); color: #fff; }
+.pasos-compra .actual { color: var(--primario); }
+.pasos-compra .actual span { background: var(--acento); color: #fff; }
+.checkout-rejilla { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
+.checkout-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 1.1rem; }
+.checkout-titulo span {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--primario); color: #fff; font-size: .8rem;
+}
+.metodo-pago {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-bottom: 18px;
+    border: 2px solid var(--acento); border-radius: 10px; background: #fff7f3;
+}
+.metodo-pago .ayuda { display: block; }
+.metodo-radio { width: 18px; height: 18px; border-radius: 50%; border: 5px solid var(--acento); background: #fff; flex: none; }
+.marcas-tarjeta { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.marcas-tarjeta span {
+    font-size: .68rem; font-weight: 800; padding: 3px 7px; border-radius: 4px;
+    border: 1px solid var(--borde); color: var(--primario); background: #fff;
+}
+.tarjeta-pago { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+.tarjeta-visual {
+    height: 182px; border-radius: 14px; padding: 18px; color: #fff; display: flex; flex-direction: column;
+    justify-content: space-between; box-shadow: 0 10px 24px rgba(21, 42, 69, .3);
+    background: radial-gradient(circle at 85% 15%, rgba(228, 87, 46, .85), transparent 45%),
+                linear-gradient(135deg, var(--primario-oscuro), var(--primario) 60%, #2c5282);
+}
+.tarjeta-visual .chip { width: 40px; height: 30px; border-radius: 6px; background: linear-gradient(135deg, #f1d38b, #c9a447); }
+.tv-numero { font-size: 1.15rem; letter-spacing: 2px; font-variant-numeric: tabular-nums; word-break: break-all; }
+.tv-pie { display: flex; justify-content: space-between; gap: 10px; font-size: .85rem; }
+.tv-pie small { display: block; opacity: .7; font-size: .65rem; text-transform: uppercase; }
+.tv-pie span { font-weight: 600; }
+.campos-tarjeta .grupo-campo { margin-bottom: 12px; }
+.checkout-resumen { position: sticky; top: 76px; }
+.resumen-evento { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+.resumen-evento img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--borde); }
+.resumen-evento .ayuda { display: block; }
+.resumen-lineas { list-style: none; padding: 0; margin: 0 0 12px; border-top: 1px solid var(--borde); }
+.resumen-lineas li { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--borde); }
+.resumen-lineas.totales li { border-bottom: 0; padding: 5px 0; color: var(--texto-suave); }
+.resumen-lineas li.total { font-weight: 800; font-size: 1.15rem; color: var(--primario); border-top: 1px solid var(--borde); padding-top: 10px; }
+.resumen-tiempo { text-align: center; color: var(--texto-suave); margin: 6px 0 12px; }
+.resumen-tiempo strong.urgente { color: var(--rojo); }
+.nota-segura { font-size: .8rem; color: var(--texto-suave); text-align: center; margin: 10px 0; }
+.procesando { position: fixed; inset: 0; z-index: 100; background: rgba(21, 42, 69, .7); display: grid; place-items: center; }
+.procesando-caja {
+    background: #fff; border-radius: 14px; padding: 28px 36px; text-align: center; display: flex; flex-direction: column;
+    gap: 6px; align-items: center; box-shadow: 0 12px 40px rgba(0, 0, 0, .3);
+}
+.procesando-caja span { color: var(--texto-suave); font-size: .9rem; }
+.girador { width: 46px; height: 46px; border-radius: 50%; border: 4px solid #e6eaf0; border-top-color: var(--acento); animation: girar .8s linear infinite; margin-bottom: 8px; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.pago-aprobado { max-width: 560px; margin: 0 auto; text-align: center; }
+.pago-aprobado .resumen-lineas { text-align: left; margin-top: 18px; }
+.icono-aprobado {
+    width: 72px; height: 72px; margin: 6px auto 12px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--verde); color: #fff; font-size: 2.2rem; font-weight: 800;
+}
+@media (max-width: 960px) {
+    .checkout-rejilla { grid-template-columns: 1fr; }
+    .checkout-resumen { position: static; }
+    .tarjeta-pago { grid-template-columns: 1fr; }
+    .tarjeta-visual { max-width: 320px; }
+}

@@ -36,8 +36,8 @@ import sv.edu.itca.ticka.util.Sesion;
  * Compra de boletos del cliente (CU-06):
  *   GET  muestra el mapa de asientos (RF-16) y, si el cliente tiene una
  *        reserva vigente, el resumen con el tiempo restante y la forma de pago.
- *   POST accion=reservar  reserva los asientos marcados por N minutos (RF-18).
- *   POST accion=comprar   paga la reserva: venta y boletos con QR (RF-17, RF-20, RF-21).
+ *   POST accion=reservar  reserva los asientos marcados por N minutos (RF-18) y
+ *                         lleva al pago con tarjeta (PagoServlet).
  *   POST accion=cancelar  libera la reserva.
  */
 @WebServlet("/cliente/comprar")
@@ -95,7 +95,6 @@ public class CompraServlet extends HttpServlet {
                 LocalDateTime vence = reserva.get(0).getReservadoHasta();
                 req.setAttribute("totalReserva", Formatos.dinero(total));
                 req.setAttribute("segundosRestantes", Math.max(0, Duration.between(LocalDateTime.now(), vence).getSeconds()));
-                req.setAttribute("formasPago", new String[]{"Tarjeta", "Transferencia", "Efectivo"});
             }
         } catch (ServicioException ex) {
             Sesion.error(req, ex.getMessage());
@@ -124,13 +123,7 @@ public class CompraServlet extends HttpServlet {
             switch (accion) {
                 case "reservar":
                     compraServicio.reservar(idEvento, cliente.getId(), Parametros.ids(req.getParameterValues("asiento")));
-                    Sesion.exito(req, "Asientos reservados por " + Configuracion.minutosReserva()
-                            + " minutos. Elija la forma de pago y confirme la compra.");
-                    break;
-                case "comprar":
-                    long idVenta = compraServicio.comprar(idEvento, cliente.getId(), req.getParameter("formaPago"));
-                    Sesion.exito(req, "¡Compra realizada! Sus boletos con código QR ya están en Mis boletos.");
-                    resp.sendRedirect(req.getContextPath() + "/cliente/boletos#venta-" + idVenta);
+                    resp.sendRedirect(req.getContextPath() + "/cliente/pago?evento=" + idEvento);
                     return;
                 case "cancelar":
                     compraServicio.cancelarReserva(idEvento, cliente.getId());

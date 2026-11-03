@@ -131,7 +131,8 @@ Este archivo no tiene credenciales y sí se sube a Git. Después de cambiarlo, r
 | Crear cuenta (sin documento ni correo repetidos) | `/registro` | RF-13, RF-14 |
 | Cartelera con búsqueda y filtros por tipo, categoría, recinto y fechas | `/` | RF-15 |
 | Detalle público del evento: precios y disponibilidad por zona | `/evento?id=` | RF-15 |
-| Mapa de asientos para elegir, reserva temporal con cuenta regresiva y compra con forma de pago | `/cliente/comprar?evento=` | RF-16 a RF-21 |
+| Mapa de asientos para elegir y reserva temporal con cuenta regresiva | `/cliente/comprar?evento=` | RF-16 a RF-19 |
+| Pago con tarjeta (única forma de pago en línea), al estilo de una pasarela: datos de facturación, tarjeta con vista previa, resumen del pedido, "Procesando pago…" y confirmación. La validación es ficticia: solo exige que los datos estén escritos y los datos de la tarjeta no se guardan | `/cliente/pago?evento=` | RF-17, RF-20, RF-21 |
 | Mis boletos: boletos con QR, comprobante PDF y anulación con motivo | `/cliente/boletos` | RF-20, RF-22, RF-23 |
 | Mi perfil y cambio de contraseña | `/cliente/perfil` | RF-13 |
 
@@ -180,7 +181,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 mvn test
 ```
 
-Son 54 pruebas JUnit, sin base de datos:
+Son 58 pruebas JUnit, sin base de datos:
 
 | Clase de prueba | Qué cubre |
 |---|---|
@@ -196,6 +197,7 @@ Son 54 pruebas JUnit, sin base de datos:
 | `ReglasCompraTest` | Venta abierta, máximo por compra y plazo de anulación (RN-03, RN-04, RN-12) |
 | `ValidadorClienteTest` | Datos del registro del cliente |
 | `GeneradorCodigoTest` | Formato y unicidad de los códigos de boleto e imagen QR |
+| `ValidadorPagoTest` | Pago simulado: solo exige datos escritos, sin revisar dígitos ni la tarjeta |
 | `ValidadorAccesoTest` | Rechazos en puerta, horario, re-entrada y transiciones de incidencias |
 | `ValidadorImagenTest` | Afiche: tipo real por firma de bytes, archivo falso y límite de 2 MB |
 

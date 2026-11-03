@@ -26,7 +26,7 @@
         </c:choose>
     </div>
 </nav>
-<c:if test="${not empty u and paginaActiva != 'inicio'}">
+<c:if test="${not empty u and paginaActiva != 'inicio' and empty sinMenuLateral}">
     <aside class="menu-lateral" aria-label="Menú del rol">
         <a class="${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
         <c:if test="${u.cliente}">
