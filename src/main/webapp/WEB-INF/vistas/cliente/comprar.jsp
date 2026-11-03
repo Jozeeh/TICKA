@@ -115,7 +115,9 @@
             <div class="leyenda compacta">
                 <span><i class="Disponible"></i> Disponible</span>
                 <span><i class="Seleccionado"></i> Su selección</span>
-                <span><i class="Ocupado"></i> Ocupado</span>
+                <span><i class="Reservado"></i> Reservado</span>
+                <span><i class="Vendido"></i> Vendido</span>
+                <span><i class="Bloqueado"></i> No disponible</span>
             </div>
         </div>
 
