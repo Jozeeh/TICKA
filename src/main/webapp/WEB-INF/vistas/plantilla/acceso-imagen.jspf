@@ -1,0 +1,12 @@
+<%-- Panel izquierdo de las pantallas de acceso (login, registro y configuración
+     inicial): foto del público con la marca, enlace al inicio y el lema. --%>
+<aside class="acceso-imagen">
+    <div class="acceso-imagen-arriba">
+        <a class="acceso-marca" href="${pageContext.request.contextPath}/">TICK<span>A</span></a>
+        <a class="acceso-volver" href="${pageContext.request.contextPath}/">Volver al inicio <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="acceso-lema">
+        <p class="grande">Vive cada evento,<br>asiento por asiento</p>
+        <p>Conciertos, partidos, ópera y teatro con tu boleto QR siempre a mano.</p>
+    </div>
+</aside>

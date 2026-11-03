@@ -1,0 +1,13 @@
+<%-- Botón "ojo" para mostrar u ocultar la contraseña en los campos .campo-clave. --%>
+<script>
+    document.querySelectorAll('.campo-clave').forEach(function (campo) {
+        var input = campo.querySelector('input');
+        var boton = campo.querySelector('button');
+        boton.addEventListener('click', function () {
+            var oculta = input.type === 'password';
+            input.type = oculta ? 'text' : 'password';
+            boton.setAttribute('aria-label', oculta ? 'Ocultar contraseña' : 'Mostrar contraseña');
+            boton.classList.toggle('activo', oculta);
+        });
+    });
+</script>

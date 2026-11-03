@@ -6,11 +6,13 @@
 <head>
     <%@ include file="/WEB-INF/vistas/plantilla/head.jspf" %>
 </head>
-<body>
-<main class="pagina-acceso">
-    <section class="caja-acceso">
-        <div class="marca-grande">TICK<span>A</span></div>
-        <p class="lema">Sistema de Eventos en Vivo</p>
+<body class="cuerpo-acceso">
+<main class="acceso-pantalla">
+    <%@ include file="/WEB-INF/vistas/plantilla/acceso-imagen.jspf" %>
+
+    <section class="acceso-formulario">
+        <h1>Iniciar sesión</h1>
+        <p class="acceso-sub">¿No tienes cuenta? <a href="${pageContext.request.contextPath}/registro">Crear cuenta</a></p>
 
         <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
         <c:if test="${not empty mensajeExito}">
@@ -22,28 +24,25 @@
 
         <form method="post" action="${pageContext.request.contextPath}/acceso" autocomplete="on">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-            <div class="grupo-campo">
-                <label for="usuario">Usuario</label>
-                <input type="text" id="usuario" name="usuario" maxlength="50" required
-                       autocomplete="username" value="<c:out value='${ultimoUsuario}' />">
+            <label for="usuario" class="solo-lector">Usuario</label>
+            <input type="text" id="usuario" name="usuario" maxlength="50" required placeholder="Usuario"
+                   autocomplete="username" value="<c:out value='${ultimoUsuario}' />" ${empty ultimoUsuario ? 'autofocus' : ''}>
+
+            <label for="clave" class="solo-lector">Contraseña</label>
+            <div class="campo-clave">
+                <input type="password" id="clave" name="clave" required placeholder="Contraseña"
+                       autocomplete="current-password" ${not empty ultimoUsuario ? 'autofocus' : ''}>
+                <button type="button" aria-label="Mostrar contraseña"><%@ include file="/WEB-INF/vistas/plantilla/icono-ojo.jspf" %></button>
             </div>
-            <div class="grupo-campo">
-                <label for="clave">Contraseña</label>
-                <input type="password" id="clave" name="clave" required autocomplete="current-password">
-            </div>
-            <div class="grupo-campo">
-                <label class="casilla">
-                    <input type="checkbox" name="recordar" value="si" ${not empty ultimoUsuario ? 'checked' : ''}>
-                    Recordar mi usuario en este equipo
-                </label>
-            </div>
-            <button type="submit" class="boton acento">Ingresar</button>
+
+            <label class="casilla acceso-casilla">
+                <input type="checkbox" name="recordar" value="si" ${not empty ultimoUsuario ? 'checked' : ''}>
+                Recordar mi usuario en este equipo
+            </label>
+            <button type="submit" class="boton acento acento-grande">Ingresar</button>
         </form>
-        <p class="ayuda" style="text-align:center;margin-top:16px">
-            ¿No tiene cuenta? <a href="${pageContext.request.contextPath}/registro">Crear cuenta de cliente</a> ·
-            <a href="${pageContext.request.contextPath}/">Volver al inicio</a>
-        </p>
     </section>
 </main>
+<%@ include file="/WEB-INF/vistas/plantilla/clave-visible.jspf" %>
 </body>
 </html>

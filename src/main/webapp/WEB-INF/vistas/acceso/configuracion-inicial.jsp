@@ -6,41 +6,47 @@
 <head>
     <%@ include file="/WEB-INF/vistas/plantilla/head.jspf" %>
 </head>
-<body>
-<main class="pagina-acceso">
-    <section class="caja-acceso">
-        <div class="marca-grande">TICK<span>A</span></div>
-        <p class="lema">Configuración inicial</p>
+<body class="cuerpo-acceso">
+<main class="acceso-pantalla">
+    <%@ include file="/WEB-INF/vistas/plantilla/acceso-imagen.jspf" %>
 
-        <div class="alerta info">La base de datos no tiene un administrador activo.
-            Cree la primera cuenta de administrador para comenzar.</div>
+    <section class="acceso-formulario">
+        <h1>Configuración inicial</h1>
+        <p class="acceso-sub">La base de datos no tiene un administrador activo. Cree la primera cuenta de administrador para comenzar.</p>
+
         <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
         <form method="post" action="${pageContext.request.contextPath}/configuracion-inicial">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-            <div class="grupo-campo">
-                <label for="nombre">Nombre completo</label>
-                <input type="text" id="nombre" name="nombre" maxlength="100" required
-                       value="<c:out value='${nombre}' />">
+            <label for="nombre" class="solo-lector">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" maxlength="100" required placeholder="Nombre completo"
+                   value="<c:out value='${nombre}' />">
+
+            <label for="usuario" class="solo-lector">Usuario</label>
+            <input type="text" id="usuario" name="usuario" maxlength="30" required autocomplete="username"
+                   placeholder="Usuario (4 a 30: minúsculas, números, punto o guion)" value="<c:out value='${usuario}' />">
+
+            <div class="acceso-par">
+                <div>
+                    <label for="clave" class="solo-lector">Contraseña</label>
+                    <div class="campo-clave">
+                        <input type="password" id="clave" name="clave" required autocomplete="new-password" placeholder="Contraseña">
+                        <button type="button" aria-label="Mostrar contraseña"><%@ include file="/WEB-INF/vistas/plantilla/icono-ojo.jspf" %></button>
+                    </div>
+                </div>
+                <div>
+                    <label for="confirmacion" class="solo-lector">Confirmar contraseña</label>
+                    <div class="campo-clave">
+                        <input type="password" id="confirmacion" name="confirmacion" required autocomplete="new-password" placeholder="Confirmar contraseña">
+                        <button type="button" aria-label="Mostrar contraseña"><%@ include file="/WEB-INF/vistas/plantilla/icono-ojo.jspf" %></button>
+                    </div>
+                </div>
             </div>
-            <div class="grupo-campo">
-                <label for="usuario">Usuario</label>
-                <input type="text" id="usuario" name="usuario" maxlength="30" required
-                       autocomplete="username" value="<c:out value='${usuario}' />">
-                <span class="ayuda">De 4 a 30 caracteres: minúsculas, números, punto, guion o guion bajo.</span>
-            </div>
-            <div class="grupo-campo">
-                <label for="clave">Contraseña</label>
-                <input type="password" id="clave" name="clave" required autocomplete="new-password">
-                <span class="ayuda">Mínimo 8 caracteres, con letras y números.</span>
-            </div>
-            <div class="grupo-campo">
-                <label for="confirmacion">Confirmar contraseña</label>
-                <input type="password" id="confirmacion" name="confirmacion" required autocomplete="new-password">
-            </div>
-            <button type="submit" class="boton acento">Crear administrador</button>
+            <p class="acceso-nota">Mínimo 8 caracteres, con letras y números.</p>
+            <button type="submit" class="boton acento acento-grande">Crear administrador</button>
         </form>
     </section>
 </main>
+<%@ include file="/WEB-INF/vistas/plantilla/clave-visible.jspf" %>
 </body>
 </html>
