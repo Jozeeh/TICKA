@@ -115,9 +115,7 @@
             <div class="leyenda compacta">
                 <span><i class="Disponible"></i> Disponible</span>
                 <span><i class="Seleccionado"></i> Su selección</span>
-                <span><i class="Reservado"></i> Reservado</span>
-                <span><i class="Vendido"></i> Vendido</span>
-                <span><i class="Bloqueado"></i> No disponible</span>
+                <span><i class="Ocupado"></i> Ocupado</span>
             </div>
         </div>
 
@@ -136,12 +134,12 @@
                         <li class="total"><span>Total</span><span>${totalReserva}</span></li>
                     </ul>
                     <div class="acciones-linea">
-                        <a class="boton verde" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
+                        <a class="boton" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
                         <form method="post" action="${ctx}/cliente/comprar" class="linea">
                             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                             <input type="hidden" name="evento" value="${evento.id}">
                             <input type="hidden" name="accion" value="cancelar">
-                            <button type="submit" class="boton gris">Cancelar</button>
+                            <button type="submit" class="boton borde">Cancelar</button>
                         </form>
                     </div>
                 </section>
