@@ -90,6 +90,7 @@ public class CompraServlet extends HttpServlet {
             req.setAttribute("maximo", Configuracion.maximoPorCompra());
             req.setAttribute("minutos", Configuracion.minutosReserva());
             req.setAttribute("reserva", reserva);
+            Sesion.carrito(req, evento.getId(), reserva.size());
             if (!reserva.isEmpty()) {
                 BigDecimal total = reserva.stream().map(AsientoSeleccionado::getPrecio).reduce(BigDecimal.ZERO, BigDecimal::add);
                 LocalDateTime vence = reserva.get(0).getReservadoHasta();
@@ -127,6 +128,7 @@ public class CompraServlet extends HttpServlet {
                     return;
                 case "cancelar":
                     compraServicio.cancelarReserva(idEvento, cliente.getId());
+                    Sesion.limpiarCarrito(req);
                     Sesion.exito(req, "Reserva cancelada: los asientos se liberaron.");
                     break;
                 default:

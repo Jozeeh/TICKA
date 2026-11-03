@@ -75,6 +75,13 @@ h2 { margin: 24px 0 10px; font-size: 1.2rem; }
     color: #d7e1ee;
 }
 .navbar .usuario form { margin: 0; }
+.carrito { position: relative; display: inline-flex; color: #fff; padding: 4px; border-radius: 6px; }
+.carrito:hover { background: rgba(255, 255, 255, .12); }
+.carrito-cantidad {
+    position: absolute; top: -4px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 9px; background: var(--acento); color: #fff; font-size: .7rem; font-weight: 700;
+    line-height: 18px; text-align: center;
+}
 
 /* ---------- Contenedores ---------- */
 .contenedor {

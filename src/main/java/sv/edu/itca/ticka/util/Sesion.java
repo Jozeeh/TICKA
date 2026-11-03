@@ -24,4 +24,22 @@ public final class Sesion {
     public static void error(HttpServletRequest req, String mensaje) {
         req.getSession().setAttribute("flashError", mensaje);
     }
+
+    /** Recuerda la reserva pendiente de pago para el carrito de la barra superior. */
+    public static void carrito(HttpServletRequest req, long idEvento, int asientos) {
+        if (asientos <= 0) {
+            limpiarCarrito(req);
+            return;
+        }
+        req.getSession().setAttribute("carritoEvento", idEvento);
+        req.getSession().setAttribute("carritoAsientos", asientos);
+    }
+
+    public static void limpiarCarrito(HttpServletRequest req) {
+        HttpSession s = req.getSession(false);
+        if (s != null) {
+            s.removeAttribute("carritoEvento");
+            s.removeAttribute("carritoAsientos");
+        }
+    }
 }

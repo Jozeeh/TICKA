@@ -17,6 +17,14 @@
                 <c:if test="${paginaActiva == 'inicio'}">
                     <a class="boton acento chico" href="${ctx}${u.cliente ? '/cliente/boletos' : '/panel'}">${u.cliente ? 'Mis boletos' : 'Ir a mi panel'}</a>
                 </c:if>
+                <c:if test="${u.cliente}">
+                    <c:set var="carritoAsientos" value="${sessionScope.carritoAsientos}" />
+                    <a class="carrito" href="${ctx}${empty carritoAsientos ? '/cliente/cartelera' : '/cliente/pago?evento='.concat(sessionScope.carritoEvento)}"
+                       title="${empty carritoAsientos ? 'Su carrito está vacío' : 'Pagar sus asientos reservados'}" aria-label="Carrito">
+                        <%@ include file="/WEB-INF/vistas/plantilla/icono-carrito.jspf" %>
+                        <c:if test="${not empty carritoAsientos}"><span class="carrito-cantidad">${carritoAsientos}</span></c:if>
+                    </a>
+                </c:if>
                 <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
                 <form method="post" action="${ctx}/cerrar-sesion">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">

@@ -78,6 +78,7 @@ public class PagoServlet extends HttpServlet {
             }
             Long idEvento = Parametros.enteroLargo(req.getParameter("evento"));
             if (!prepararFormulario(req, cliente, idEvento)) {
+                Sesion.limpiarCarrito(req);
                 Sesion.error(req, "No tiene asientos reservados para pagar. Elíjalos de nuevo en el mapa.");
                 resp.sendRedirect(req.getContextPath() + (idEvento == null ? "/cliente/cartelera" : "/cliente/comprar?evento=" + idEvento));
                 return;
@@ -109,6 +110,7 @@ public class PagoServlet extends HttpServlet {
         req.setAttribute("evento", evento);
         req.setAttribute("cliente", cliente);
         req.setAttribute("reserva", reserva);
+        Sesion.carrito(req, evento.getId(), reserva.size());
         req.setAttribute("total", Formatos.dinero(total));
         req.setAttribute("segundosRestantes",
                 Math.max(0, Duration.between(LocalDateTime.now(), reserva.get(0).getReservadoHasta()).getSeconds()));
@@ -151,6 +153,7 @@ public class PagoServlet extends HttpServlet {
             }
             // Solo tarjeta: es la única forma de pago del portal del cliente.
             long idVenta = compraServicio.comprar(idEvento, cliente.getId(), "Tarjeta");
+            Sesion.limpiarCarrito(req);
             resp.sendRedirect(req.getContextPath() + "/cliente/pago?venta=" + idVenta);
             return;
         } catch (ServicioException ex) {
