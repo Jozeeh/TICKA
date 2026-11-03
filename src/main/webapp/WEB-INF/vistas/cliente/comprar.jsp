@@ -122,40 +122,31 @@
         </div>
 
         <div class="panel-mitad panel-seleccion">
-            <%-- Reserva vigente (RF-18): continuar al pago o cancelar --%>
-            <c:if test="${not empty reserva and aLaVenta}">
-                <section class="reserva-activa">
+            <%-- Una sola sección: la selección (con el tiempo de la reserva vigente, RF-18).
+                 "Continuar al pago" reserva lo marcado (reemplaza la reserva anterior) y lleva al pago. --%>
+            <c:if test="${aLaVenta}">
+                <section>
                     <div class="fila-entre">
-                        <h2>Su reserva</h2>
-                        <span class="cuenta-regresiva" id="cuentaRegresiva" data-segundos="${segundosRestantes}">--:--</span>
+                        <h2>Su selección</h2>
+                        <c:if test="${not empty reserva}">
+                            <span class="cuenta-regresiva chica" id="cuentaRegresiva" data-segundos="${segundosRestantes}"
+                                  title="Tiempo que quedan apartados sus asientos">--:--</span>
+                        </c:if>
                     </div>
-                    <ul class="resumen-lineas">
-                        <c:forEach var="a" items="${reserva}">
-                            <li><span><c:out value="${a.etiqueta}" /></span><span>${a.precioTexto}</span></li>
-                        </c:forEach>
-                        <li class="total"><span>Total</span><span>${totalReserva}</span></li>
-                    </ul>
-                    <div class="acciones-linea">
-                        <a class="boton" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
-                        <form method="post" action="${ctx}/cliente/comprar" class="linea">
+                    <ul class="resumen-lineas" id="listaSeleccion"><li class="vacio-sel">Elija una zona y marque sus asientos en el mapa.</li></ul>
+                    <div class="fila-entre total-seleccion"><span>Total</span><strong id="totalSeleccion">$0.00</strong></div>
+                    <p class="ayuda">Máximo ${maximo} asientos por compra. Quedan apartados ${minutos} minutos mientras paga.</p>
+                    <button type="submit" form="formReserva" class="boton acento acento-grande" id="botonReservar" disabled>Continuar al pago</button>
+                    <c:if test="${not empty reserva}">
+                        <form method="post" action="${ctx}/cliente/comprar" class="cancelar-reserva"
+                              data-confirmar="¿Cancelar su reserva?" data-boton="Sí, cancelar"
+                              data-detalle="Los asientos apartados quedarán libres.">
                             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                             <input type="hidden" name="evento" value="${evento.id}">
                             <input type="hidden" name="accion" value="cancelar">
-                            <button type="submit" class="boton borde">Cancelar</button>
+                            <button type="submit" class="enlace-boton">Cancelar reserva</button>
                         </form>
-                    </div>
-                </section>
-            </c:if>
-
-            <%-- Selección actual (se arma con JavaScript) y botón para reservar --%>
-            <c:if test="${aLaVenta}">
-                <section>
-                    <h2>Su selección</h2>
-                    <ul class="resumen-lineas" id="listaSeleccion"><li class="vacio-sel">Elija una zona y marque sus asientos en el mapa.</li></ul>
-                    <div class="fila-entre total-seleccion"><span>Total</span><strong id="totalSeleccion">$0.00</strong></div>
-                    <p class="ayuda">Máximo ${maximo} asientos por compra. Al reservar, quedan apartados ${minutos} minutos.</p>
-                    <button type="submit" form="formReserva" class="boton acento acento-grande" id="botonReservar" disabled>
-                        ${empty reserva ? 'Reservar asientos' : 'Actualizar reserva'}</button>
+                    </c:if>
                 </section>
             </c:if>
         </div>

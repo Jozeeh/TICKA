@@ -612,6 +612,10 @@ dl.datos dd { margin: 0; }
 .resumen-compra { border-left: 5px solid var(--acento); }
 .cuenta-regresiva { font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primario); }
 .cuenta-regresiva.urgente { color: var(--rojo); }
+.cuenta-regresiva.chica { font-size: 1.05rem; font-weight: 700; }
+.cancelar-reserva { margin: 10px 0 0; text-align: center; }
+.enlace-boton { background: none; border: 0; padding: 4px; font: inherit; font-size: .88rem; color: var(--texto-suave); text-decoration: underline; cursor: pointer; }
+.enlace-boton:hover { color: var(--rojo); }
 
 /* Mis boletos */
 .compra-cliente-cabecera { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
@@ -858,7 +862,7 @@ dl.datos dd { margin: 0; }
 .panel-mitad { min-height: 0; overflow-y: auto; }
 .panel-mitad h2 { font-size: 1rem; margin: 0; padding: 16px 18px; }
 .panel-sectores { flex: 1 1 auto; }
-.compra-zonas.dividida .panel-sectores { flex: 0 0 42%; border-bottom: 2px solid var(--borde); }
+.compra-zonas.dividida .panel-sectores { flex: 0 0 auto; max-height: 60%; border-bottom: 2px solid var(--borde); }
 .panel-seleccion { flex: 1 1 auto; padding: 0 18px 18px; }
 .panel-seleccion h2 { padding: 16px 0 10px; }
 .reserva-activa h2 { padding: 0; }
