@@ -44,17 +44,23 @@ public class InicioServlet extends HttpServlet {
         recintoDAO = new RecintoDAOImpl();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        TipoEvento tipo = TipoEvento.desdeBd(req.getParameter("tipo"));
+    /** Filtros de la cartelera (RF-15); también los usa la cartelera del panel del cliente. */
+    public static FiltroEvento leerFiltro(HttpServletRequest req) {
         FiltroEvento filtro = new FiltroEvento();
-        filtro.setTipo(tipo);
+        filtro.setTipo(TipoEvento.desdeBd(req.getParameter("tipo")));
         filtro.setTexto(Parametros.texto(req.getParameter("texto")));
         filtro.setIdCategoria(Parametros.enteroLargo(req.getParameter("categoria")));
         filtro.setIdRecinto(Parametros.enteroLargo(req.getParameter("recinto")));
         filtro.setDesde(Parametros.fecha(req.getParameter("desde")));
         filtro.setHasta(Parametros.fecha(req.getParameter("hasta")));
+        return filtro;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        FiltroEvento filtro = leerFiltro(req);
+        TipoEvento tipo = filtro.getTipo();
         try {
             // Los indicadores de la portada se calculan con toda la cartelera.
             List<Evento> todos = eventoDAO.listarCartelera(new FiltroEvento());

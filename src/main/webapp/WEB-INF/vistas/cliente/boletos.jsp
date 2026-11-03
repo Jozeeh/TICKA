@@ -15,12 +15,12 @@
             <h1>Mis boletos</h1>
             <p class="subtitulo">Sus compras con cada boleto y su código QR. Puede anular una compra hasta ${horasAnulacion} horas antes de la apertura de puertas.</p>
         </div>
-        <a class="boton acento" href="${ctx}/#cartelera">Comprar más boletos</a>
+        <a class="boton acento" href="${ctx}/cliente/cartelera">Comprar más boletos</a>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <c:if test="${empty compras and empty error}">
-        <div class="tarjeta vacio">Todavía no tiene compras. Explore la <a href="${ctx}/#cartelera">cartelera</a> y elija sus asientos.</div>
+        <div class="tarjeta vacio">Todavía no tiene compras. Explore la <a href="${ctx}/cliente/cartelera">cartelera</a> y elija sus asientos.</div>
     </c:if>
 
     <c:forEach var="compra" items="${compras}">

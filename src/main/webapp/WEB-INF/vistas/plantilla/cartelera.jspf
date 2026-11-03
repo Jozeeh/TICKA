@@ -1,0 +1,93 @@
+<%-- Cartelera (RF-15): encabezado con tipos, búsqueda con filtros y tarjetas de eventos.
+     Lo usan la página de inicio y la cartelera del panel del cliente. Antes de incluirlo se
+     definen: rutaCartelera (ruta de la página), anclaCartelera (ej. #cartelera o vacío) y
+     enlaceTarjeta (a dónde lleva "Ver boletos", seguido del id del evento). --%>
+<div class="cabecera-pagina">
+    <div>
+        <h2 class="titulo-seccion">Cartelera</h2>
+        <p class="subtitulo">Eventos a la venta y en curso, ordenados por fecha.</p>
+    </div>
+    <nav class="chips">
+        <a class="chip ${empty tipoActivo ? 'activo' : ''}" href="${ctx}${rutaCartelera}${anclaCartelera}">Todos</a>
+        <c:forEach var="t" items="${tipos}">
+            <c:if test="${t != 'OTRO'}">
+                <a class="chip ${tipoActivo == t ? 'activo' : ''}" href="${ctx}${rutaCartelera}?tipo=${t.bd}${anclaCartelera}">${t.etiqueta}</a>
+            </c:if>
+        </c:forEach>
+    </nav>
+</div>
+
+<%-- Búsqueda y filtros de la cartelera (RF-15) --%>
+<form method="get" action="${ctx}${rutaCartelera}" class="tarjeta filtros">
+    <input type="hidden" name="tipo" value="${tipoActivo.bd}">
+    <div class="grupo-campo" style="min-width:220px">
+        <label for="texto">Buscar</label>
+        <input type="text" id="texto" name="texto" placeholder="Evento o artista" value="<c:out value='${filtro.texto}' />">
+    </div>
+    <div class="grupo-campo">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria">
+            <option value="">Todas</option>
+            <c:forEach var="cat" items="${categorias}">
+                <option value="${cat.id}" ${filtro.idCategoria == cat.id ? 'selected' : ''}><c:out value="${cat.nombre}" /></option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="grupo-campo">
+        <label for="recinto">Recinto</label>
+        <select id="recinto" name="recinto">
+            <option value="">Todos</option>
+            <c:forEach var="r" items="${recintos}">
+                <option value="${r.id}" ${filtro.idRecinto == r.id ? 'selected' : ''}><c:out value="${r.nombre}" /></option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="grupo-campo">
+        <label for="desde">Desde</label>
+        <input type="date" id="desde" name="desde" value="${filtro.desde}">
+    </div>
+    <div class="grupo-campo">
+        <label for="hasta">Hasta</label>
+        <input type="date" id="hasta" name="hasta" value="${filtro.hasta}">
+    </div>
+    <button type="submit" class="boton">Buscar</button>
+    <a class="boton gris" href="${ctx}${rutaCartelera}${anclaCartelera}">Limpiar</a>
+</form>
+
+<div class="cartelera">
+    <c:forEach var="ev" items="${eventos}">
+        <article class="tarjeta-evento">
+            <div class="evento-recinto"><c:out value="${ev.recinto}" /></div>
+            <%-- Si el evento no tiene afiche (o no carga) se ve la imagen por defecto. --%>
+            <c:choose>
+                <c:when test="${ev.conAfiche}">
+                    <div class="cartel" style="background-image:url('${ctx}/afiche?evento=${ev.id}'), url('${ctx}/resources/img/sin-imagen.png')">
+                </c:when>
+                <c:otherwise>
+                    <div class="cartel">
+                </c:otherwise>
+            </c:choose>
+                <c:choose>
+                    <c:when test="${ev.estado == 'AGOTADO' or ev.disponibles == 0}">
+                        <span class="aviso-cartel agotado">Agotado</span>
+                    </c:when>
+                    <c:when test="${ev.estado == 'EN_CURSO'}">
+                        <span class="aviso-cartel en-curso">En curso</span>
+                    </c:when>
+                    <c:when test="${ev.ultimosAsientos}">
+                        <span class="aviso-cartel ultimos">Últimos asientos</span>
+                    </c:when>
+                </c:choose>
+            </div>
+            <div class="tarjeta-cuerpo">
+                <h3><c:out value="${ev.nombre}" /></h3>
+                <p class="evento-linea"><c:if test="${not empty ev.participantes}"><c:out value="${ev.participantes}" /> | </c:if>${ev.fechaLarga}</p>
+                <p class="evento-suave">${ev.tipo.etiqueta}<c:if test="${not empty ev.categoria}"> · <c:out value="${ev.categoria}" /></c:if> · ${ev.horarioTexto}</p>
+                <a class="boton chico" href="${ctx}${enlaceTarjeta}${ev.id}">Ver boletos</a>
+            </div>
+        </article>
+    </c:forEach>
+</div>
+<c:if test="${empty eventos and empty error}">
+    <div class="tarjeta vacio">No hay eventos en cartelera${empty tipoActivo ? '' : ' de este tipo'} por ahora.</div>
+</c:if>

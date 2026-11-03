@@ -31,7 +31,7 @@
         <a class="${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
         <c:if test="${u.cliente}">
             <p class="seccion">Mi cuenta</p>
-            <a class="${paginaActiva == 'cartelera' ? 'activo' : ''}" href="${ctx}/#cartelera">Cartelera</a>
+            <a class="${paginaActiva == 'cartelera' ? 'activo' : ''}" href="${ctx}/cliente/cartelera">Cartelera</a>
             <a class="${paginaActiva == 'boletos' ? 'activo' : ''}" href="${ctx}/cliente/boletos">Mis boletos</a>
             <a class="${paginaActiva == 'perfil' ? 'activo' : ''}" href="${ctx}/cliente/perfil">Mi perfil</a>
         </c:if>

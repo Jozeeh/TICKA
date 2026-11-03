@@ -129,7 +129,7 @@ Este archivo no tiene credenciales y sí se sube a Git. Después de cambiarlo, r
 | Pantalla | Ruta | Requerimientos |
 |---|---|---|
 | Crear cuenta (sin documento ni correo repetidos) | `/registro` | RF-13, RF-14 |
-| Cartelera con búsqueda y filtros por tipo, categoría, recinto y fechas | `/` | RF-15 |
+| Cartelera con búsqueda y filtros por tipo, categoría, recinto y fechas (pública en el inicio y también dentro del panel del cliente) | `/`, `/cliente/cartelera` | RF-15 |
 | Detalle público del evento: precios y disponibilidad por zona | `/evento?id=` | RF-15 |
 | Mapa de asientos para elegir y reserva temporal con cuenta regresiva | `/cliente/comprar?evento=` | RF-16 a RF-19 |
 | Pago con tarjeta (única forma de pago en línea), al estilo de una pasarela: datos de facturación, tarjeta con vista previa, resumen del pedido, "Procesando pago…" y confirmación. La validación es ficticia: solo exige que los datos estén escritos y los datos de la tarjeta no se guardan | `/cliente/pago?evento=` | RF-17, RF-20, RF-21 |

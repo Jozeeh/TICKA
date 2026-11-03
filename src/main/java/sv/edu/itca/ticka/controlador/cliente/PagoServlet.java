@@ -79,17 +79,17 @@ public class PagoServlet extends HttpServlet {
             Long idEvento = Parametros.enteroLargo(req.getParameter("evento"));
             if (!prepararFormulario(req, cliente, idEvento)) {
                 Sesion.error(req, "No tiene asientos reservados para pagar. Elíjalos de nuevo en el mapa.");
-                resp.sendRedirect(req.getContextPath() + (idEvento == null ? "/#cartelera" : "/cliente/comprar?evento=" + idEvento));
+                resp.sendRedirect(req.getContextPath() + (idEvento == null ? "/cliente/cartelera" : "/cliente/comprar?evento=" + idEvento));
                 return;
             }
         } catch (ServicioException ex) {
             Sesion.error(req, ex.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/#cartelera");
+            resp.sendRedirect(req.getContextPath() + "/cliente/cartelera");
             return;
         } catch (DAOException ex) {
             log("Error de persistencia", ex);
             Sesion.error(req, "No se pudo cargar el pago. Intente de nuevo.");
-            resp.sendRedirect(req.getContextPath() + "/#cartelera");
+            resp.sendRedirect(req.getContextPath() + "/cliente/cartelera");
             return;
         }
         req.getRequestDispatcher(VISTA).forward(req, resp);

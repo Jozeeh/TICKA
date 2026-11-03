@@ -73,7 +73,7 @@ public class CompraServlet extends HttpServlet {
             Evento evento = idEvento == null ? null : eventoDAO.buscarPorId(idEvento).orElse(null);
             if (evento == null) {
                 Sesion.error(req, "El evento no existe.");
-                resp.sendRedirect(req.getContextPath() + "/#cartelera");
+                resp.sendRedirect(req.getContextPath() + "/cliente/cartelera");
                 return;
             }
             Cliente cliente = cliente(req);
@@ -98,12 +98,12 @@ public class CompraServlet extends HttpServlet {
             }
         } catch (ServicioException ex) {
             Sesion.error(req, ex.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/#cartelera");
+            resp.sendRedirect(req.getContextPath() + "/cliente/cartelera");
             return;
         } catch (DAOException ex) {
             log("Error de persistencia", ex);
             Sesion.error(req, "No se pudo cargar el mapa de asientos.");
-            resp.sendRedirect(req.getContextPath() + "/#cartelera");
+            resp.sendRedirect(req.getContextPath() + "/cliente/cartelera");
             return;
         }
         req.getRequestDispatcher(VISTA).forward(req, resp);

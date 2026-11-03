@@ -10,7 +10,7 @@
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
 <main class="contenedor">
-    <div class="migas"><a href="${ctx}/#cartelera">Cartelera</a> ›
+    <div class="migas"><a href="${ctx}/cliente/cartelera">Cartelera</a> ›
         <a href="${ctx}/evento?id=${evento.id}"><c:out value="${evento.nombre}" /></a> › Comprar</div>
     <div class="cabecera-pagina">
         <div>

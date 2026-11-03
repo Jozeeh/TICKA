@@ -54,7 +54,7 @@
             </a>
         </c:if>
         <c:if test="${u.cliente}">
-            <a class="tarjeta modulo" href="${ctx}/#cartelera" style="text-decoration:none">
+            <a class="tarjeta modulo" href="${ctx}/cliente/cartelera" style="text-decoration:none">
                 <h3>Cartelera</h3>
                 <p>Buscar eventos, ver precios por zona y elegir sus asientos en el mapa.</p>
             </a>
