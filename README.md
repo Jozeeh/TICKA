@@ -131,7 +131,7 @@ Este archivo no tiene credenciales y sí se sube a Git. Después de cambiarlo, r
 | Crear cuenta (sin documento ni correo repetidos) | `/registro` | RF-13, RF-14 |
 | Cartelera con búsqueda y filtros por tipo, categoría, recinto y fechas (pública en el inicio y también dentro del panel del cliente) | `/`, `/cliente/cartelera` | RF-15 |
 | Detalle público del evento: precios y disponibilidad por zona | `/evento?id=` | RF-15 |
-| Elegir asientos en tres columnas: evento con zonas, precios y disponibilidad a la izquierda; mapa con todas las zonas en el centro (zoom a la zona elegida y las demás en gris); zonas arriba y asientos de la zona abajo a la derecha. Los asientos se marcan en el mapa o en la lista. Reserva temporal con cuenta regresiva | `/cliente/comprar?evento=` | RF-16 a RF-19 |
+| Elegir asientos en tres columnas: datos del evento con zonas, precios y disponibilidad a la izquierda; mapa fijo con todas las zonas en el centro (la zona elegida resaltada y las demás en gris); zonas arriba y la selección o reserva abajo a la derecha. Reserva temporal con cuenta regresiva | `/cliente/comprar?evento=` | RF-16 a RF-19 |
 | Pago con tarjeta (única forma de pago en línea), al estilo de una pasarela: datos de facturación, tarjeta con vista previa, resumen del pedido, "Procesando pago…" y confirmación. La validación es ficticia: solo exige que los datos estén escritos y los datos de la tarjeta no se guardan | `/cliente/pago?evento=` | RF-17, RF-20, RF-21 |
 | Mis boletos: boletos con QR, comprobante PDF y anulación con motivo | `/cliente/boletos` | RF-20, RF-22, RF-23 |
 | Mi perfil y cambio de contraseña | `/cliente/perfil` | RF-13 |

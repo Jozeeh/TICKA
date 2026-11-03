@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="titulo" value="Elegir asientos" />
 <c:set var="paginaActiva" value="cartelera" />
-<%-- Pantalla de compra a pantalla completa (sin menú lateral): evento | mapa | zonas y asientos. --%>
+<%-- Pantalla de compra a pantalla completa (sin menú lateral): evento | mapa | zonas y selección. --%>
 <c:set var="sinMenuLateral" value="${true}" />
 <!DOCTYPE html>
 <html lang="es">
@@ -13,76 +13,38 @@
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
 <main class="compra-app">
 
-    <%-- ============ Columna izquierda: evento, zonas/precios, selección y reserva ============ --%>
+    <%-- ============ Izquierda: datos del evento y zonas (minimalista) ============ --%>
     <aside class="compra-col compra-info">
         <a class="ayuda" href="${ctx}/cliente/cartelera">← Volver a la cartelera</a>
         <div class="compra-evento">
-            <img alt="" src="${evento.conAfiche ? ctx += '/afiche?evento=' += evento.id : ctx += '/resources/img/sin-imagen.png'}">
-            <div>
-                <h1><c:out value="${evento.nombre}" /></h1>
-                <p><c:out value="${evento.participantes}" /></p>
-                <p class="ayuda">${evento.fechaLarga} · ${evento.horarioTexto}<br><c:out value="${evento.recinto}" /></p>
-            </div>
+            <h1><c:out value="${evento.nombre}" /></h1>
+            <p><c:out value="${evento.participantes}" /></p>
+            <dl class="dato-evento">
+                <dt>Fecha</dt><dd>${evento.fechaLarga}</dd>
+                <dt>Horario</dt><dd>${evento.horarioTexto}</dd>
+                <dt>Lugar</dt><dd><c:out value="${evento.recinto}" /></dd>
+            </dl>
         </div>
         <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
         <c:if test="${not aLaVenta}">
             <div class="alerta aviso"><c:out value="${motivoSinVenta}" /></div>
         </c:if>
 
-        <%-- Reserva vigente (RF-18): continuar al pago o cancelar --%>
-        <c:if test="${not empty reserva and aLaVenta}">
-            <section class="bloque-compra reserva-activa">
-                <div class="fila-entre">
-                    <h2>Su reserva</h2>
-                    <span class="cuenta-regresiva" id="cuentaRegresiva" data-segundos="${segundosRestantes}">--:--</span>
-                </div>
-                <ul class="resumen-lineas">
-                    <c:forEach var="a" items="${reserva}">
-                        <li><span><c:out value="${a.etiqueta}" /></span><span>${a.precioTexto}</span></li>
-                    </c:forEach>
-                    <li class="total"><span>Total</span><span>${totalReserva}</span></li>
-                </ul>
-                <div class="acciones-linea">
-                    <a class="boton verde" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
-                    <form method="post" action="${ctx}/cliente/comprar" class="linea">
-                        <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                        <input type="hidden" name="evento" value="${evento.id}">
-                        <input type="hidden" name="accion" value="cancelar">
-                        <button type="submit" class="boton gris">Cancelar</button>
-                    </form>
-                </div>
-            </section>
-        </c:if>
-
-        <%-- Zonas, precios y disponibilidad --%>
         <section class="bloque-compra">
             <h2>Zonas y precios</h2>
             <ul class="lista-precios">
                 <c:forEach var="z" items="${zonas}" varStatus="s">
                     <li class="zc${s.index % 7}">
                         <span class="punto-zona"></span>
-                        <div>
-                            <strong><c:out value="${z.nombre}" /></strong>
-                            <span class="ayuda">${z.disponibles} de ${z.total} disponibles</span>
-                            <div class="barra"><span style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></span></div>
-                        </div>
+                        <span>
+                            <c:out value="${z.nombre}" />
+                            <span class="ayuda">${z.disponibles} disponibles</span>
+                        </span>
                         <span class="precio-zona">${empty z.precio ? '—' : z.precioTexto}</span>
                     </li>
                 </c:forEach>
             </ul>
         </section>
-
-        <%-- Selección actual (se arma con JavaScript) y botón para reservar --%>
-        <c:if test="${aLaVenta}">
-            <section class="bloque-compra">
-                <h2>Su selección</h2>
-                <ul class="resumen-lineas" id="listaSeleccion"><li class="vacio-sel">Elija una zona y marque sus asientos.</li></ul>
-                <div class="fila-entre total-seleccion"><span>Total</span><strong id="totalSeleccion">$0.00</strong></div>
-                <p class="ayuda">Máximo ${maximo} asientos por compra. Al reservar, quedan apartados ${minutos} minutos.</p>
-                <button type="submit" form="formReserva" class="boton acento acento-grande" id="botonReservar" disabled>
-                    ${empty reserva ? 'Reservar asientos' : 'Actualizar reserva'}</button>
-            </section>
-        </c:if>
 
         <div class="leyenda compacta">
             <span><i class="Disponible"></i> Disponible</span>
@@ -93,13 +55,8 @@
         </div>
     </aside>
 
-    <%-- ============ Centro: mapa con todas las zonas (zoom a la zona elegida) ============ --%>
+    <%-- ============ Centro: mapa fijo con todas las zonas ============ --%>
     <section class="compra-col compra-mapa">
-        <div class="controles-mapa">
-            <button type="button" id="zoomReiniciar" title="Ver todas las zonas" aria-label="Ver todas las zonas">⟲</button>
-            <button type="button" id="zoomMas" title="Acercar" aria-label="Acercar">+</button>
-            <button type="button" id="zoomMenos" title="Alejar" aria-label="Alejar">−</button>
-        </div>
         <span class="etiqueta-mapa" id="etiquetaMapa">Mapa referencial · elija una zona</span>
         <form method="post" action="${ctx}/cliente/comprar" id="formReserva" class="mapa-lienzo">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
@@ -121,16 +78,15 @@
                                             <c:when test="${aLaVenta and (a.estado == 'Disponible' or a.estado == 'Seleccionado')}">
                                                 <label class="asiento-sel" title="<c:out value='${z.nombre}' /> fila ${fila.letra}, asiento ${a.numero}">
                                                     <input type="checkbox" name="asiento" value="${a.idEventoAsiento}"
-                                                           data-zona="${z.idZona}" data-precio="${z.precio}" data-fila="${fila.letra}"
-                                                           data-numero="${a.numero}" data-etiqueta="<c:out value='${z.nombre}' /> ${a.etiqueta}"
+                                                           data-zona="${z.idZona}" data-precio="${z.precio}"
+                                                           data-etiqueta="<c:out value='${z.nombre}' /> ${a.etiqueta}"
                                                            ${a.estado == 'Seleccionado' ? 'checked' : ''}>
                                                     <span class="asiento Disponible">${a.numero}</span>
                                                 </label>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="asiento ${a.estado == 'Seleccionado' ? 'Reservado' : a.estado}" data-zona="${z.idZona}"
-                                                      data-fila="${fila.letra}" data-numero="${a.numero}"
-                                                      data-estado="${a.estado}" title="${a.etiqueta} · no disponible">${a.numero}</span>
+                                                <span class="asiento ${a.estado == 'Seleccionado' ? 'Reservado' : a.estado}"
+                                                      title="${a.etiqueta} · no disponible">${a.numero}</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:forEach>
@@ -146,8 +102,8 @@
         </form>
     </section>
 
-    <%-- ============ Derecha: zonas (arriba) y asientos de la zona elegida (abajo) ============ --%>
-    <aside class="compra-col compra-zonas" id="panelZonas">
+    <%-- ============ Derecha: zonas (arriba) y selección / reserva (abajo) ============ --%>
+    <aside class="compra-col compra-zonas dividida" id="panelZonas">
         <div class="panel-mitad panel-sectores">
             <h2>Seleccionar zona</h2>
             <ul class="lista-sectores">
@@ -164,13 +120,44 @@
                 </c:forEach>
             </ul>
         </div>
-        <div class="panel-mitad panel-asientos" id="panelAsientos" hidden>
-            <div class="fila-entre">
-                <h2 id="tituloAsientos">Asientos</h2>
-                <button type="button" class="boton borde chico" id="cerrarZona">Ver todas</button>
-            </div>
-            <label class="casilla"><input type="checkbox" id="soloDisponibles" checked> Mostrar solo disponibles</label>
-            <ul class="lista-asientos" id="listaAsientos"></ul>
+
+        <div class="panel-mitad panel-seleccion">
+            <%-- Reserva vigente (RF-18): continuar al pago o cancelar --%>
+            <c:if test="${not empty reserva and aLaVenta}">
+                <section class="reserva-activa">
+                    <div class="fila-entre">
+                        <h2>Su reserva</h2>
+                        <span class="cuenta-regresiva" id="cuentaRegresiva" data-segundos="${segundosRestantes}">--:--</span>
+                    </div>
+                    <ul class="resumen-lineas">
+                        <c:forEach var="a" items="${reserva}">
+                            <li><span><c:out value="${a.etiqueta}" /></span><span>${a.precioTexto}</span></li>
+                        </c:forEach>
+                        <li class="total"><span>Total</span><span>${totalReserva}</span></li>
+                    </ul>
+                    <div class="acciones-linea">
+                        <a class="boton verde" href="${ctx}/cliente/pago?evento=${evento.id}">Continuar al pago</a>
+                        <form method="post" action="${ctx}/cliente/comprar" class="linea">
+                            <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                            <input type="hidden" name="evento" value="${evento.id}">
+                            <input type="hidden" name="accion" value="cancelar">
+                            <button type="submit" class="boton gris">Cancelar</button>
+                        </form>
+                    </div>
+                </section>
+            </c:if>
+
+            <%-- Selección actual (se arma con JavaScript) y botón para reservar --%>
+            <c:if test="${aLaVenta}">
+                <section>
+                    <h2>Su selección</h2>
+                    <ul class="resumen-lineas" id="listaSeleccion"><li class="vacio-sel">Elija una zona y marque sus asientos en el mapa.</li></ul>
+                    <div class="fila-entre total-seleccion"><span>Total</span><strong id="totalSeleccion">$0.00</strong></div>
+                    <p class="ayuda">Máximo ${maximo} asientos por compra. Al reservar, quedan apartados ${minutos} minutos.</p>
+                    <button type="submit" form="formReserva" class="boton acento acento-grande" id="botonReservar" disabled>
+                        ${empty reserva ? 'Reservar asientos' : 'Actualizar reserva'}</button>
+                </section>
+            </c:if>
         </div>
     </aside>
 </main>
@@ -180,141 +167,69 @@
         var maximo = ${empty maximo ? 6 : maximo};
         var contenido = document.getElementById('mapaContenido');
         var lienzo = document.getElementById('formReserva');
-        var panel = document.getElementById('panelZonas');
-        var panelAsientos = document.getElementById('panelAsientos');
-        var lista = document.getElementById('listaAsientos');
-        var soloDisp = document.getElementById('soloDisponibles');
         var etiquetaMapa = document.getElementById('etiquetaMapa');
-        var zonaActual = null;
-        var escala = 1, dx = 0, dy = 0;
 
         function casillas() { return Array.prototype.slice.call(document.querySelectorAll('input[name="asiento"]')); }
         function marcadas() { return casillas().filter(function (c) { return c.checked; }); }
-        function aplicar() { contenido.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + escala + ')'; }
 
-        // Encuadra el elemento dentro del lienzo: zoom a la zona elegida o vista general.
-        function encuadrar(el) {
-            if (!el) { return; }
-            escala = 1; dx = 0; dy = 0;
-            contenido.style.transition = 'none';
-            aplicar();
-            var l = lienzo.getBoundingClientRect(), r = el.getBoundingClientRect();
-            var e = Math.min((l.width - 48) / r.width, (l.height - 48) / r.height, 2.4);
-            escala = Math.max(e, 0.3);
-            dx = (l.width - r.width * escala) / 2 - (r.left - l.left) * escala;
-            dy = (l.height - r.height * escala) / 2 - (r.top - l.top) * escala;
-            void contenido.offsetWidth;
-            contenido.style.transition = '';
-            aplicar();
+        // Mapa fijo: se escala una sola vez para que todas las zonas quepan en el centro (no se explora).
+        function ajustar() {
+            contenido.style.transform = 'none';
+            var zonas = contenido.querySelector('.mapa-zonas');
+            if (!zonas) { return; }
+            var l = lienzo.getBoundingClientRect(), r = zonas.getBoundingClientRect();
+            var e = Math.min((l.width - 32) / r.width, (l.height - 32) / r.height, 1.6);
+            var dx = (l.width - r.width * e) / 2, dy = (l.height - r.height * e) / 2;
+            contenido.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + e + ')';
         }
-        function vistaGeneral() { encuadrar(contenido.querySelector('.mapa-zonas')); }
 
-        // Elegir zona: zoom en el mapa, las demás en gris y la lista de sus asientos abajo a la derecha.
+        // Elegir zona: se resalta en el mapa y las demás quedan en gris.
         function elegirZona(id) {
-            zonaActual = id;
             document.querySelectorAll('.zona-bloque').forEach(function (b) {
                 b.classList.toggle('enfocada', b.dataset.zona === id);
                 b.classList.toggle('atenuada', b.dataset.zona !== id);
             });
             document.querySelectorAll('.sector').forEach(function (s) { s.classList.toggle('activo', s.dataset.zona === id); });
             var sector = document.querySelector('.sector[data-zona="' + id + '"]');
-            document.getElementById('tituloAsientos').textContent = 'Asientos · ' + sector.dataset.nombre;
-            etiquetaMapa.textContent = sector.dataset.nombre;
-            panel.classList.add('dividida');
-            panelAsientos.hidden = false;
-            pintarLista();
-            encuadrar(document.querySelector('.zona-bloque[data-zona="' + id + '"]'));
-        }
-        function soltarZona() {
-            zonaActual = null;
-            document.querySelectorAll('.zona-bloque').forEach(function (b) { b.classList.remove('enfocada', 'atenuada'); });
-            document.querySelectorAll('.sector').forEach(function (s) { s.classList.remove('activo'); });
-            panel.classList.remove('dividida');
-            panelAsientos.hidden = true;
-            etiquetaMapa.textContent = 'Mapa referencial · elija una zona';
-            vistaGeneral();
-        }
-
-        // Lista de asientos de la zona. La casilla del mapa es la única fuente: la lista solo la marca o desmarca.
-        function pintarLista() {
-            lista.innerHTML = '';
-            if (!zonaActual) { return; }
-            var bloque = document.querySelector('.zona-bloque[data-zona="' + zonaActual + '"]');
-            bloque.querySelectorAll('.asiento-sel input, span.asiento[data-estado]').forEach(function (el) {
-                var libre = el.tagName === 'INPUT';
-                if (!libre && soloDisp.checked) { return; }
-                var li = document.createElement('li');
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'item-asiento' + (libre && el.checked ? ' marcado' : '') + (libre ? '' : ' ocupado');
-                b.disabled = !libre;
-                var t = document.createElement('span');
-                t.textContent = 'Fila ' + el.dataset.fila + ' · Asiento ' + el.dataset.numero;
-                var d = document.createElement('span');
-                d.className = 'estado-item';
-                d.textContent = libre ? (el.checked ? '✓ Seleccionado' : '$' + parseFloat(el.dataset.precio || 0).toFixed(2))
-                                      : (el.dataset.estado === 'Vendido' ? 'Vendido'
-                                         : el.dataset.estado === 'Bloqueado' ? 'No disponible' : 'Reservado');
-                b.appendChild(t);
-                b.appendChild(d);
-                if (libre) {
-                    b.addEventListener('click', function () { alternar(el); });
-                }
-                li.appendChild(b);
-                lista.appendChild(li);
-            });
-            if (!lista.children.length) {
-                var vacio = document.createElement('li');
-                vacio.className = 'vacio-sel';
-                vacio.textContent = 'No quedan asientos disponibles en esta zona.';
-                lista.appendChild(vacio);
-            }
+            etiquetaMapa.textContent = sector ? sector.dataset.nombre : '';
         }
 
         function avisarLimite() {
             if (window.avisar) { avisar('Límite de asientos', 'Puede elegir como máximo ' + maximo + ' asientos por compra.'); }
         }
 
-        function alternar(input) {
-            if (!input.checked && marcadas().length >= maximo) { avisarLimite(); return; }
-            input.checked = !input.checked;
-            actualizar();
-        }
-
-        // Resumen "Su selección" (columna izquierda) y lista de la zona.
+        // "Su selección" (columna derecha): asientos marcados, total y botón de reservar.
         function actualizar() {
-            var sel = marcadas();
             var ul = document.getElementById('listaSeleccion');
-            if (ul) {
-                var total = 0;
-                ul.innerHTML = '';
-                sel.forEach(function (c) {
-                    total += parseFloat(c.dataset.precio || 0);
-                    var li = document.createElement('li');
-                    var a = document.createElement('span');
-                    a.textContent = c.dataset.etiqueta;
-                    var b = document.createElement('span');
-                    b.textContent = '$' + parseFloat(c.dataset.precio || 0).toFixed(2);
-                    li.appendChild(a);
-                    li.appendChild(b);
-                    ul.appendChild(li);
-                });
-                if (!sel.length) {
-                    var v = document.createElement('li');
-                    v.className = 'vacio-sel';
-                    v.textContent = 'Elija una zona y marque sus asientos.';
-                    ul.appendChild(v);
-                }
-                document.getElementById('totalSeleccion').textContent = '$' + total.toFixed(2);
-                document.getElementById('botonReservar').disabled = sel.length === 0 || sel.length > maximo;
+            if (!ul) { return; }
+            var sel = marcadas();
+            var total = 0;
+            ul.innerHTML = '';
+            sel.forEach(function (c) {
+                total += parseFloat(c.dataset.precio || 0);
+                var li = document.createElement('li');
+                var a = document.createElement('span');
+                a.textContent = c.dataset.etiqueta;
+                var b = document.createElement('span');
+                b.textContent = '$' + parseFloat(c.dataset.precio || 0).toFixed(2);
+                li.appendChild(a);
+                li.appendChild(b);
+                ul.appendChild(li);
+            });
+            if (!sel.length) {
+                var v = document.createElement('li');
+                v.className = 'vacio-sel';
+                v.textContent = 'Elija una zona y marque sus asientos en el mapa.';
+                ul.appendChild(v);
             }
-            pintarLista();
+            document.getElementById('totalSeleccion').textContent = '$' + total.toFixed(2);
+            document.getElementById('botonReservar').disabled = sel.length === 0 || sel.length > maximo;
         }
 
         casillas().forEach(function (c) {
             c.addEventListener('change', function () {
                 if (c.checked && marcadas().length > maximo) { c.checked = false; avisarLimite(); }
-                if (zonaActual !== c.dataset.zona) { elegirZona(c.dataset.zona); }
+                elegirZona(c.dataset.zona);
                 actualizar();
             });
         });
@@ -327,23 +242,13 @@
                 if (b.classList.contains('atenuada')) { e.preventDefault(); elegirZona(b.dataset.zona); }
             });
         });
-        document.getElementById('cerrarZona').addEventListener('click', soltarZona);
-        soloDisp.addEventListener('change', pintarLista);
-        document.getElementById('zoomMas').addEventListener('click', function () { escala = Math.min(escala * 1.25, 4); aplicar(); });
-        document.getElementById('zoomMenos').addEventListener('click', function () { escala = Math.max(escala / 1.25, 0.2); aplicar(); });
-        document.getElementById('zoomReiniciar').addEventListener('click', soltarZona);
-        window.addEventListener('resize', function () {
-            if (zonaActual) {
-                encuadrar(document.querySelector('.zona-bloque[data-zona="' + zonaActual + '"]'));
-            } else {
-                vistaGeneral();
-            }
-        });
+        window.addEventListener('resize', ajustar);
 
+        ajustar();
         actualizar();
-        // Con una reserva vigente, se abre la zona de sus asientos.
+        // Con una reserva vigente, se resalta la zona de sus asientos.
         var primera = marcadas()[0];
-        if (primera) { elegirZona(primera.dataset.zona); } else { vistaGeneral(); }
+        if (primera) { elegirZona(primera.dataset.zona); }
 
         // Cuenta regresiva de la reserva (RF-18).
         var reloj = document.getElementById('cuentaRegresiva');
