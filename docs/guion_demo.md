@@ -6,8 +6,8 @@ Proyecto completo: **base de datos y los 4 roles** (Administrador, Organizador, 
 
 1. Ejecutar de nuevo `sql/01_esquema_ticka.sql` y `sql/02_datos_prueba.sql` para tener los datos limpios. Las fechas de los eventos se calculan desde el día en que se ejecuta el script.
 2. Iniciar la aplicación en Tomcat 9 y abrir la página de inicio: deben aparecer los eventos en cartelera (si no aparecen, revisar MySQL y `db.properties`).
-3. Entrar a `/acceso`, crear el administrador en **Configuración inicial** y, desde **Usuarios**, crear una cuenta de Organizador y una de Control de acceso.
-4. Registrar un cliente desde **Crear cuenta** (o hacerlo en vivo en la sección del Cliente).
+3. Cuentas de prueba (contraseña `itca1234`): `admin`, `organizador`, `puerta` y `cliente`.
+4. En la sección del Cliente se puede registrar además una cuenta nueva en vivo desde **Crear cuenta**.
 5. Para la puerta: editar un evento publicado para que su apertura de puertas sea antes de la hora de la demo (solo se valida entre la apertura y el fin, RF-30).
 6. Tener abiertas varias ventanas (normal e incógnito) para cambiar de rol rápido.
 7. Tener a mano `docs/diagrama_er.md` (en GitHub se ven los diagramas).

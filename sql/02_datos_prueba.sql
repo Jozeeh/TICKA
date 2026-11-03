@@ -15,9 +15,13 @@
 -- Las fechas son relativas a hoy (CURDATE), así la demo siempre tiene
 -- eventos próximos y eventos pasados.
 --
--- SEGURIDAD: ninguna cuenta de este script puede iniciar sesión. Su
--- password_hash es '!', que no es un hash BCrypt válido. El primer
--- administrador se crea desde la aplicación (/configuracion-inicial).
+-- CUENTAS PARA EL EQUIPO: una por rol, todas con la contraseña itca1234
+-- (guardada con hash BCrypt): admin, organizador, puerta y cliente.
+-- Son solo para pruebas y la demostración; en un servidor real se deben
+-- cambiar o desactivar.
+--
+-- Las demás cuentas (clientes de demostración y personal de apoyo) NO pueden
+-- iniciar sesión: su password_hash es '!', que no es un hash BCrypt válido.
 -- =====================================================================
 
 USE ticka;
@@ -56,6 +60,19 @@ INSERT INTO cliente (id, id_usuario, nombres, apellidos, documento, correo, tele
     (6, 8,  'José',     'Martínez',  '05561234-7', 'jose.martinez@correo.test',  '7567-8901'),
     (7, 9,  'Sofía',    'Castillo',  '06345178-2', 'sofia.castillo@correo.test', '7678-9012'),
     (8, 10, 'Diego',    'Navarro',   '03765412-5', 'diego.navarro@correo.test',  '7789-0123');
+
+-- ---------------------------------------------------------------------
+-- Cuentas de prueba para el equipo: una por rol, contraseña itca1234.
+-- Roles del script 01: 1 Organizador, 2 Cliente, 3 Control de acceso, 4 Administrador.
+-- ---------------------------------------------------------------------
+INSERT INTO usuario (id, username, password_hash, nombre, id_rol, activo) VALUES
+    (11, 'admin',       '$2a$10$ISxQig27zG45eSeU6WUPeuzSWIF.l.qJHl21eXx/CHTbzk4wa2eqm', 'Administrador TICKA',      4, 1),
+    (12, 'organizador', '$2a$10$GxbTtyK4HIqtv0pTCJTSmerBLgEfbR5rY5FXc8pLwtcbHqpB1ft5q', 'Organizador TICKA',        1, 1),
+    (13, 'puerta',      '$2a$10$xNpvTExlcPGWmukefXNHcewN6lO0Ax1yCiQl0iCZuQlVrF2c.72cW', 'Control de Acceso TICKA',  3, 1),
+    (14, 'cliente',     '$2a$10$GYP/dvN.bZXFv5pAGOUTJOMbdRc98xxkGlwbT1R5AjeaHys9s4Eme', 'Cliente TICKA',            2, 1);
+
+INSERT INTO cliente (id, id_usuario, nombres, apellidos, documento, correo, telefono) VALUES
+    (9, 14, 'Cliente', 'TICKA', '01010101-0', 'cliente@ticka.test', '7000-0000');
 
 -- ---------------------------------------------------------------------
 -- Recintos, zonas y asientos

@@ -54,15 +54,22 @@ Copie `src/main/resources/db.properties.example` como `src/main/resources/db.pro
 
 Abra <http://localhost:8080/ticka/>: la página de inicio muestra la cartelera de eventos leída de MySQL; si aparece un aviso de conexión, revise MySQL y `db.properties`.
 
-### 4. Primer acceso
+### 4. Cuentas de prueba
 
-La primera vez, `/acceso` lleva a **Configuración inicial** para crear el administrador (el repositorio no guarda usuarios ni contraseñas). Desde **Usuarios** el administrador crea después las cuentas del personal, por ejemplo un Organizador.
+`02_datos_prueba.sql` crea una cuenta por rol, todas con la contraseña **`itca1234`**:
 
-Las cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no pueden iniciar sesión**: existen solo para que haya ventas y accesos en los reportes.
+| Usuario | Rol |
+|---|---|
+| `admin` | Administrador |
+| `organizador` | Organizador |
+| `puerta` | Control de acceso |
+| `cliente` | Cliente (documento 01010101-0) |
 
-Para probar los otros roles:
-- **Cliente:** en la página de inicio, **Crear cuenta** (`/registro`). La cuenta queda con la sesión iniciada.
-- **Control de acceso:** el Administrador la crea desde **Usuarios** con el rol *Control de acceso*.
+Son solo para pruebas y la demostración; en un servidor real se deben cambiar o desactivar. También se pueden crear más clientes desde **Crear cuenta** (`/registro`) y más personal desde **Usuarios**.
+
+Si se usa una base sin datos de prueba (solo `01_esquema_ticka.sql`), la primera vez `/acceso` lleva a **Configuración inicial** para crear el administrador.
+
+Las demás cuentas de `02_datos_prueba.sql` (clientes y personal de demostración) **no pueden iniciar sesión**: existen solo para que haya ventas y accesos en los reportes.
 
 ### 5. Parámetros de negocio (`src/main/resources/ticka.properties`)
 
