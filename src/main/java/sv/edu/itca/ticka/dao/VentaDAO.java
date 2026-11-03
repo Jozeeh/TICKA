@@ -30,6 +30,9 @@ public interface VentaDAO {
     /** Asientos reservados (vigentes) por el cliente en el evento, con su precio. */
     List<AsientoSeleccionado> reservados(long idEvento, long idCliente);
 
+    /** Evento donde el cliente tiene asientos reservados vigentes (el de la reserva más reciente). */
+    Optional<Long> eventoConReserva(long idCliente);
+
     /** Igual que reservados(), bloqueando las filas para comprar (FOR UPDATE). */
     List<AsientoSeleccionado> reservadosParaComprar(Connection cn, long idEvento, long idCliente);
 

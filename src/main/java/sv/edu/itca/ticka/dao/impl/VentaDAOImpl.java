@@ -97,6 +97,21 @@ public class VentaDAOImpl implements VentaDAO {
     }
 
     @Override
+    public Optional<Long> eventoConReserva(long idCliente) {
+        String sql = "SELECT id_evento FROM evento_asiento WHERE estado = 'Reservado' AND id_cliente_reserva = ? "
+                + "AND reservado_hasta >= NOW() ORDER BY reservado_hasta DESC LIMIT 1";
+        try (Connection cn = ConexionBD.obtenerConexion();
+                PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, idCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(rs.getLong(1)) : Optional.empty();
+            }
+        } catch (SQLException ex) {
+            throw new DAOException("No se pudo consultar la reserva", ex);
+        }
+    }
+
+    @Override
     public List<AsientoSeleccionado> reservadosParaComprar(Connection cn, long idEvento, long idCliente) {
         try (PreparedStatement ps = cn.prepareStatement(SQL_RESERVADOS + " FOR UPDATE")) {
             ps.setLong(1, idEvento);

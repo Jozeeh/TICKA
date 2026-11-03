@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import sv.edu.itca.ticka.dao.DAOException;
 import sv.edu.itca.ticka.dao.UsuarioDAO;
+import sv.edu.itca.ticka.controlador.cliente.CarritoServlet;
 import sv.edu.itca.ticka.dao.impl.UsuarioDAOImpl;
 import sv.edu.itca.ticka.filtro.AutenticacionFilter;
 import sv.edu.itca.ticka.filtro.CsrfFilter;
@@ -108,6 +109,14 @@ public class AccesoServlet extends HttpServlet {
         HttpSession sesion = req.getSession(true);
         sesion.setAttribute(AutenticacionFilter.USUARIO_SESION, usuario);
         sesion.removeAttribute(CsrfFilter.ATRIBUTO);
+        if (usuario.isCliente()) {
+            // Contador del carrito si dejó asientos reservados en otra sesión.
+            try {
+                CarritoServlet.cargar(req, usuario.getId());
+            } catch (DAOException ex) {
+                log("No se pudo cargar el carrito", ex);
+            }
+        }
 
         if ("si".equals(req.getParameter("recordar"))) {
             agregarCookie(req, resp, usuario.getUsername(), 7 * 24 * 60 * 60);

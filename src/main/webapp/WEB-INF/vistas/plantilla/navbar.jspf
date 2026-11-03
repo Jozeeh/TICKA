@@ -19,7 +19,7 @@
                 </c:if>
                 <c:if test="${u.cliente}">
                     <c:set var="carritoAsientos" value="${sessionScope.carritoAsientos}" />
-                    <a class="carrito" href="${ctx}${empty carritoAsientos ? '/cliente/cartelera' : '/cliente/pago?evento='.concat(sessionScope.carritoEvento)}"
+                    <a class="carrito" href="${ctx}/cliente/carrito"
                        title="${empty carritoAsientos ? 'Su carrito está vacío' : 'Pagar sus asientos reservados'}" aria-label="Carrito">
                         <%@ include file="/WEB-INF/vistas/plantilla/icono-carrito.jspf" %>
                         <c:if test="${not empty carritoAsientos}"><span class="carrito-cantidad">${carritoAsientos}</span></c:if>
