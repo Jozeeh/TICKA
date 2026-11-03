@@ -43,6 +43,7 @@
     <filter-mapping>
         <filter-name>AutenticacionFilter</filter-name>
         <url-pattern>/panel</url-pattern>
+        <url-pattern>/perfil</url-pattern>
         <url-pattern>/organizador/*</url-pattern>
         <url-pattern>/admin/*</url-pattern>
         <url-pattern>/reportes</url-pattern>

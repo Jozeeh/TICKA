@@ -99,6 +99,33 @@ public class UsuarioServicio {
         usuarioDAO.cambiarEstado(id, activo);
     }
 
+    /** Mi perfil (personal): cada usuario cambia su propio nombre; usuario y rol no se tocan. */
+    public void actualizarNombrePropio(long id, String nombre) {
+        Usuario u = usuarioDAO.buscarPorId(id)
+                .orElseThrow(() -> new ServicioException("La cuenta no existe."));
+        String limpio = nombre == null ? null : nombre.trim();
+        String error = ValidadorUsuario.validarNombre(limpio);
+        if (error != null) {
+            throw new ServicioException(error);
+        }
+        u.setNombre(limpio);
+        usuarioDAO.actualizar(u);
+    }
+
+    /** Mi perfil: cambia la contraseña propia verificando la actual. */
+    public void cambiarClavePropia(long id, String actual, String nueva, String confirmacion) {
+        Usuario u = usuarioDAO.buscarPorId(id)
+                .orElseThrow(() -> new ServicioException("La cuenta no existe."));
+        if (!SeguridadClave.verificar(actual, u.getPasswordHash())) {
+            throw new ServicioException("La contraseña actual no es correcta.");
+        }
+        String error = ValidadorUsuario.validarClave(nueva, confirmacion);
+        if (error != null) {
+            throw new ServicioException(error);
+        }
+        usuarioDAO.cambiarClave(id, SeguridadClave.generarHash(nueva));
+    }
+
     public void desbloquear(long id) {
         usuarioDAO.reiniciarIntentos(id);
     }

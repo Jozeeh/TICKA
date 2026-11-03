@@ -75,6 +75,8 @@ h2 { margin: 24px 0 10px; font-size: 1.2rem; }
     color: #d7e1ee;
 }
 .navbar .usuario form { margin: 0; }
+.enlace-perfil { color: inherit; text-decoration: none; }
+.enlace-perfil:hover { color: #fff; text-decoration: underline; }
 .carrito { position: relative; display: inline-flex; color: #fff; padding: 4px; border-radius: 6px; }
 .carrito:hover { background: rgba(255, 255, 255, .12); }
 .carrito-cantidad {

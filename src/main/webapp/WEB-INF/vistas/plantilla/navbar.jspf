@@ -25,7 +25,7 @@
                         <c:if test="${not empty carritoAsientos}"><span class="carrito-cantidad">${carritoAsientos}</span></c:if>
                     </a>
                 </c:if>
-                <span><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></span>
+                <a class="enlace-perfil" href="${ctx}${u.cliente ? '/cliente/perfil' : '/perfil'}" title="Mi perfil"><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></a>
                 <form method="post" action="${ctx}/cerrar-sesion">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <button type="submit" class="boton borde chico" style="color:#fff;border-color:#fff">Cerrar sesión</button>
@@ -66,6 +66,10 @@
             <a class="${paginaActiva == 'mostrador' ? 'activo' : ''}" href="${ctx}/admin/mostrador">Venta en mostrador</a>
             <a class="${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
             <a class="${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
+        </c:if>
+        <c:if test="${not u.cliente}">
+            <p class="seccion">Mi cuenta</p>
+            <a class="${paginaActiva == 'perfil' ? 'activo' : ''}" href="${ctx}/perfil">Mi perfil</a>
         </c:if>
     </aside>
 </c:if>
