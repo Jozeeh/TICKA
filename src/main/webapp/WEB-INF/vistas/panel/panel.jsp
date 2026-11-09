@@ -42,12 +42,12 @@
                 <h3>Categorías</h3>
                 <p>Catálogo para clasificar los eventos de la cartelera.</p>
             </a>
+        </c:if>
+        <c:if test="${u.administrador}">
             <a class="tarjeta modulo" href="${ctx}/reportes" style="text-decoration:none">
                 <h3>Reportes</h3>
                 <p>General por evento, ventas, asistencia, ocupación e incidencias con filtros y exportación a PDF y CSV.</p>
             </a>
-        </c:if>
-        <c:if test="${u.administrador}">
             <a class="tarjeta modulo" href="${ctx}/admin/mostrador" style="text-decoration:none">
                 <h3>Venta en mostrador</h3>
                 <p>Vender boletos a nombre de un cliente eligiendo sus asientos en el mapa.</p>

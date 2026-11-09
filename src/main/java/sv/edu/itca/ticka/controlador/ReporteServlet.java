@@ -33,7 +33,7 @@ import sv.edu.itca.ticka.util.Parametros;
 import sv.edu.itca.ticka.util.Sesion;
 
 /**
- * Reportes (RF-43 a RF-49) para el Administrador y el Organizador: general
+ * Reportes (RF-43 a RF-49) para el Administrador: general
  * por evento, ventas, asistencia, ocupación e incidencias, con filtros por
  * fechas, evento, tipo, categoría y zona. Con formato=pdf el reporte se abre
  * en el navegador (pestaña nueva) y con formato=csv se descarga.

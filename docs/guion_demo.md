@@ -43,7 +43,7 @@ Proyecto completo: **base de datos y los 4 roles** (Administrador, Organizador, 
    - La pestaña de ventas incluye el **vendedor** (las ventas de mostrador muestran quién las registró).
    - Pestaña **General** (RF-49): sin evento muestra el resumen de todos; al elegir *Maná* aparece toda su información (asientos vendidos y sin vender, ingresos por canal, zonas, asistencia e incidencias).
    - Filtrar por tipo, categoría o zona (RF-48) y **Exportar PDF**: se abre en una pestaña nueva con formato formal (datos del informe, resumen, detalle y "Página X de Y"). Luego **Exportar CSV** y abrirlo en Excel para mostrar que las tildes se ven bien.
-   - Con la cuenta del Organizador, abrir **Reportes** en su menú lateral: también los consulta, pero `/admin/dashboard` responde 403.
+   - Con la cuenta del Organizador, comprobar que **Reportes** no aparece en su menú lateral: `/ticka/reportes` responde 403.
 6. **Autorización:** en la ventana del Organizador, abrir `/ticka/admin/dashboard`: responde **403 Acceso denegado**.
 
 ## 3. Organizador (6 a 7 min)

@@ -179,7 +179,7 @@ Control de acceso ──valida en puerta, registra incidencias──▶ Administ
 | RF-54 | Detalle de un cliente: datos, resumen y todas sus compras con cada boleto (evento, zona, asiento, precio y estado). Solo consulta. | M |
 | RF-55 | Búsqueda y paginación en los listados de usuarios del personal (por nombre, usuario y rol) y de clientes. | M |
 
-### M7 — Dashboard y reportes *(Administrador; el Organizador consulta los reportes RF-43 a RF-49)*
+### M7 — Dashboard y reportes *(Administrador)*
 | ID | Requerimiento | Prior. |
 |---|---|---|
 | RF-42 | Dashboard: eventos activos, boletos vendidos, ingresos, ocupación por zona, asistencia. | M |
@@ -359,7 +359,7 @@ Las vistas están organizadas por rol (`vistas/organizador`, `vistas/admin`, y l
 | Persistencia JDBC/DAO | Todas las entidades; transacciones en compra, reserva y anulación (RNF-05) | Todos |
 | JSF, PrimeFaces, AJAX | Listados con filtro, mapa de asientos con refresco, ocupación en vivo, dashboard (RF-03, RF-16, RF-28, RF-42) | Todos |
 | Seguridad | Hash, filtros de rol, CSRF, control de propiedad (RF-38, RF-39, RF-40, RNF-04) | Administrador |
-| Reportería | General por evento, ventas, asistencia, ocupación, incidencias (RF-43 a RF-49) | Administrador / Organizador |
+| Reportería | General por evento, ventas, asistencia, ocupación, incidencias (RF-43 a RF-49) | Administrador |
 
 ---
 

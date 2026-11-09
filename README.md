@@ -122,7 +122,7 @@ Este archivo no tiene credenciales y sí se sube a Git. Después de cambiarlo, r
 | Dashboard de indicadores con gráficos (Chart.js, copia local) | `/admin/dashboard` | RF-42, RF-53 |
 | Usuarios del personal: búsqueda, filtro por rol y paginación; crear, editar rol y estado, restablecer contraseña, desbloquear | `/admin/usuarios` | RF-37, RF-39, RF-40, RF-55 |
 | Clientes: búsqueda y paginación, activación y **detalle** con todas sus compras y boletos | `/admin/clientes`, `?accion=ver&id=` | RF-37, RF-54, RF-55 |
-| Reportes (también para el Organizador): general por evento, ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; PDF en pestaña nueva y descarga CSV | `/reportes` | RF-43 a RF-49 |
+| Reportes: general por evento, ventas (por zona, canal y vendedor), asistencia, ocupación e incidencias; filtros por fechas, evento, tipo, categoría y zona; PDF en pestaña nueva y descarga CSV | `/reportes` | RF-43 a RF-49 |
 
 ### Cliente (`/cliente/*`; la cartelera y el detalle del evento son públicos)
 
@@ -156,7 +156,7 @@ Inicio y cierre de sesión con cookie "recordar usuario" (RF-36, RF-41), bloqueo
 ## Seguridad
 
 - Contraseñas con **BCrypt** (hash con salt). Nunca se guardan ni se muestran en texto plano.
-- **Filtro de autorización:** `/admin/*` solo admite Administrador; `/organizador/*` y `/reportes` admiten Organizador y Administrador; `/cliente/*` solo Cliente; `/puerta/*` Control de acceso y Administrador. Cualquier otro rol recibe 403.
+- **Filtro de autorización:** `/admin/*` y `/reportes` solo admiten Administrador; `/organizador/*` admite Organizador y Administrador; `/cliente/*` solo Cliente; `/puerta/*` Control de acceso y Administrador. Cualquier otro rol recibe 403.
 - **Control de propiedad (RN-13):** los boletos, QR y comprobantes se consultan siempre filtrando por el cliente en sesión, así que cambiar un id en la URL no da acceso a boletos ajenos (responde 404).
 - **Códigos de boleto** cortos (`TK-XXXX`) generados con `SecureRandom`, con un alfabeto sin caracteres que se confunden (sin 0/O ni 1/I). Si sale un código repetido, el `UNIQUE` de `entrada.codigo` lo rechaza y se genera otro.
 - **Token CSRF** en todos los formularios POST, y cierre de sesión solo por POST.
@@ -188,7 +188,7 @@ Son 58 pruebas JUnit, sin base de datos:
 | `ValidadorUsuarioTest` | Formato de usuario y política de contraseñas |
 | `SeguridadClaveTest` | Hash BCrypt y verificación |
 | `AutenticacionServicioTest` | Inicio de sesión, cuenta desactivada y bloqueo al quinto intento (DAO en memoria) |
-| `AutenticacionFilterTest` | Matriz de permisos por rol (incluye `/reportes` para el Organizador) |
+| `AutenticacionFilterTest` | Matriz de permisos por rol (`/reportes` solo para el Administrador) |
 | `ValidadorEventoTest` | Fechas del evento y regla de traslape de horarios |
 | `GeneradorAsientosTest` | Cálculo de filas y límites; flujo de estados del evento |
 | `ExportadorCsvTest` | Formato CSV, comillas y protección contra fórmulas |

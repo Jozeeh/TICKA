@@ -55,9 +55,6 @@
             <a class="${paginaActiva == 'calendario' ? 'activo' : ''}" href="${ctx}/organizador/calendario">Calendario</a>
             <a class="${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
             <a class="${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
-            <c:if test="${not u.administrador}">
-                <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/reportes">Reportes</a>
-            </c:if>
         </c:if>
         <c:if test="${u.administrador}">
             <p class="seccion">Administración</p>

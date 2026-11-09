@@ -44,8 +44,8 @@ public class AutenticacionFilterTest {
     }
 
     @Test
-    public void reportesSoloParaOrganizadorYAdministrador() {
-        assertTrue(AutenticacionFilter.tienePermiso(con(Rol.ORGANIZADOR), "/reportes"));
+    public void reportesSoloParaAdministrador() {
+        assertFalse(AutenticacionFilter.tienePermiso(con(Rol.ORGANIZADOR), "/reportes"));
         assertTrue(AutenticacionFilter.tienePermiso(con(Rol.ADMINISTRADOR), "/reportes"));
         assertFalse(AutenticacionFilter.tienePermiso(con(Rol.CLIENTE), "/reportes"));
     }

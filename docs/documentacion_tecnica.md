@@ -81,7 +81,7 @@ Las JSP están dentro de `WEB-INF`, así que el navegador no puede abrirlas dire
 | Rol | Ruta | Funciones |
 |---|---|---|
 | **Administrador** | `/admin/*`, `/reportes` y además lo del Organizador y Control de acceso | Usuarios, clientes, dashboard, reportes, venta en mostrador |
-| **Organizador** | `/organizador/*`, `/reportes` | Eventos, calendario, recintos, zonas, asientos, categorías, reportes |
+| **Organizador** | `/organizador/*` | Eventos, calendario, recintos, zonas, asientos, categorías |
 | **Cliente** | `/cliente/*` | Registro, cartelera, mapa de asientos, carrito, pago, boletos con QR, anulación, perfil |
 | **Control de acceso** | `/puerta/*` | Validar boletos, ocupación en vivo, incidencias |
 

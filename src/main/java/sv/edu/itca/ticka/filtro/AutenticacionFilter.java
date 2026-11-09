@@ -17,8 +17,8 @@ import sv.edu.itca.ticka.modelo.Usuario;
  *    redirige a /acceso?estado=sesion.
  * 2) Autorización por rol (RF-38, matriz 2.2 de requerimientos):
  *    /admin/*        solo Administrador.
+ *    /reportes       solo Administrador.
  *    /organizador/*  Organizador y Administrador.
- *    /reportes       Organizador y Administrador (solo consulta).
  *    /cliente/*      solo Cliente (portal del cliente, M3).
  *    /puerta/*       Control de acceso y Administrador (M4, M5).
  *    Si el rol no corresponde responde 403 (página de error personalizada).
@@ -64,10 +64,10 @@ public class AutenticacionFilter implements Filter {
     }
 
     static boolean tienePermiso(Usuario usuario, String ruta) {
-        if (ruta.startsWith("/admin")) {
+        if (ruta.startsWith("/admin") || ruta.startsWith("/reportes")) {
             return usuario.isAdministrador();
         }
-        if (ruta.startsWith("/organizador") || ruta.startsWith("/reportes")) {
+        if (ruta.startsWith("/organizador")) {
             return usuario.isGestorEventos();
         }
         if (ruta.startsWith("/cliente")) {
