@@ -8,11 +8,11 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <section class="tarjeta">
-        <h1>500 · Error interno</h1>
-        <p class="subtitulo">Ocurrió un error inesperado. Intente de nuevo; si persiste, revise el registro de Tomcat.</p>
-        <a class="boton" href="${pageContext.request.contextPath}/">Volver al inicio</a>
+<main class="container-xl py-4">
+    <section class="card card-body shadow-sm mb-4">
+        <h1 class="h3 mb-1">500 · Error interno</h1>
+        <p class="text-body-secondary mb-4">Ocurrió un error inesperado. Intente de nuevo; si persiste, revise el registro de Tomcat.</p>
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/">Volver al inicio</a>
     </section>
 </main>
 </body>

@@ -12,7 +12,7 @@
 <div class="escenario">ESCENARIO / CANCHA</div>
 <c:forEach var="z" items="${zonas}">
     <div class="zona-mapa">
-        <h3><c:out value="${z.nombre}" /> <span class="ayuda">· ${empty z.precio ? 'sin precio' : z.precioTexto}</span></h3>
+        <h3><c:out value="${z.nombre}" /> <span class="small text-body-secondary">· ${empty z.precio ? 'sin precio' : z.precioTexto}</span></h3>
         <div class="filas">
             <c:forEach var="fila" items="${z.filas}">
                 <div class="fila-asientos">
@@ -38,13 +38,13 @@
     </div>
 </c:forEach>
 <c:if test="${empty zonas}">
-    <div class="alerta info">El mapa de asientos todavía no está disponible.</div>
+    <div class="alert alert-info">El mapa de asientos todavía no está disponible.</div>
 </c:if>
 
 <%-- Barra fija con la selección: cantidad, total y límite por compra (RF-19). --%>
 <div class="barra-seleccion">
     <span id="resumenSeleccion">Ningún asiento seleccionado.</span>
-    <button type="submit" class="boton acento" id="botonSeleccion" disabled>${textoBotonSeleccion}</button>
+    <button type="submit" class="btn btn-acento" id="botonSeleccion" disabled>${textoBotonSeleccion}</button>
 </div>
 <script>
     (function () {

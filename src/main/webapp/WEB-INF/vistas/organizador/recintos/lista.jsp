@@ -9,22 +9,22 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Recintos</h1>
-            <p class="subtitulo">Lugares físicos con sus zonas y asientos numerados.</p>
+            <h1 class="h3 mb-1">Recintos</h1>
+            <p class="text-body-secondary mb-0">Lugares físicos con sus zonas y asientos numerados.</p>
         </div>
-        <a class="boton verde" href="${ctx}/organizador/recintos?accion=nuevo">Nuevo recinto</a>
+        <a class="btn btn-success" href="${ctx}/organizador/recintos?accion=nuevo">Nuevo recinto</a>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <section class="tarjeta tabla-contenedor">
-        <table class="tabla">
+    <section class="card card-body shadow-sm mb-4 table-responsive">
+        <table class="table table-hover align-middle mb-0">
             <thead>
             <tr>
                 <th>Nombre</th><th>Tipo</th><th>Dirección</th>
-                <th class="numero">Zonas</th><th class="numero">Asientos activos</th>
+                <th class="text-end">Zonas</th><th class="text-end">Asientos activos</th>
                 <th>Estado</th><th>Acciones</th>
             </tr>
             </thead>
@@ -34,25 +34,25 @@
                     <td><strong><c:out value="${r.nombre}" /></strong></td>
                     <td><c:out value="${r.tipo}" /></td>
                     <td><c:out value="${r.direccion}" /></td>
-                    <td class="numero">${r.totalZonas}</td>
-                    <td class="numero">${r.totalAsientos}</td>
-                    <td><span class="etiqueta ${r.activo ? 'activo' : 'inactivo'}">${r.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td class="text-end">${r.totalZonas}</td>
+                    <td class="text-end">${r.totalAsientos}</td>
+                    <td><span class="badge rounded-pill etiqueta ${r.activo ? 'activo' : 'inactivo'}">${r.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td>
-                        <div class="acciones-linea">
-                            <a class="boton chico" href="${ctx}/organizador/zonas?recinto=${r.id}">Zonas y asientos</a>
-                            <a class="boton amarillo chico" href="${ctx}/organizador/recintos?accion=editar&id=${r.id}">Editar</a>
-                            <form method="post" action="${ctx}/organizador/recintos" class="linea">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <a class="btn btn-primary btn-sm" href="${ctx}/organizador/zonas?recinto=${r.id}">Zonas y asientos</a>
+                            <a class="btn btn-warning btn-sm" href="${ctx}/organizador/recintos?accion=editar&id=${r.id}">Editar</a>
+                            <form method="post" action="${ctx}/organizador/recintos" class="d-inline">
                                 <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                 <input type="hidden" name="accion" value="estado">
                                 <input type="hidden" name="id" value="${r.id}">
-                                <button type="submit" class="boton chico ${r.activo ? 'rojo' : 'verde'}">${r.activo ? 'Desactivar' : 'Activar'}</button>
+                                <button type="submit" class="btn btn-sm ${r.activo ? 'btn-danger' : 'btn-success'}">${r.activo ? 'Desactivar' : 'Activar'}</button>
                             </form>
                         </div>
                     </td>
                 </tr>
             </c:forEach>
             <c:if test="${empty recintos}">
-                <tr><td colspan="7" class="vacio">Todavía no hay recintos registrados.</td></tr>
+                <tr><td colspan="7" class="text-center text-body-secondary py-4">Todavía no hay recintos registrados.</td></tr>
             </c:if>
             </tbody>
         </table>

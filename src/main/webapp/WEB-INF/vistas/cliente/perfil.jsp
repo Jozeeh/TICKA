@@ -9,62 +9,62 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <h1>Mi perfil</h1>
-    <p class="subtitulo">Sus datos de cliente. El documento no se puede cambiar.</p>
+<main class="container-xl py-4">
+    <h1 class="h3 mb-1">Mi perfil</h1>
+    <p class="text-body-secondary mb-4">Sus datos de cliente. El documento no se puede cambiar.</p>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <section class="tarjeta formulario" style="max-width:760px">
-        <h2 style="margin-top:0">Datos personales</h2>
+    <section class="card card-body shadow-sm mb-4 formulario">
+        <h2 class="h5 mb-3">Datos personales</h2>
         <form method="post" action="${ctx}/cliente/perfil">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="datos">
-            <div class="rejilla-campos">
-                <div class="grupo-campo">
-                    <label for="nombres">Nombres</label>
-                    <input type="text" id="nombres" name="nombres" maxlength="80" required value="<c:out value='${cliente.nombres}' />">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="nombres">Nombres</label>
+                    <input class="form-control" type="text" id="nombres" name="nombres" maxlength="80" required value="<c:out value='${cliente.nombres}' />">
                 </div>
-                <div class="grupo-campo">
-                    <label for="apellidos">Apellidos</label>
-                    <input type="text" id="apellidos" name="apellidos" maxlength="80" required value="<c:out value='${cliente.apellidos}' />">
+                <div class="col-md-6">
+                    <label class="form-label" for="apellidos">Apellidos</label>
+                    <input class="form-control" type="text" id="apellidos" name="apellidos" maxlength="80" required value="<c:out value='${cliente.apellidos}' />">
                 </div>
-                <div class="grupo-campo">
-                    <label>Documento</label>
-                    <input type="text" value="<c:out value='${cliente.documento}' />" disabled>
+                <div class="col-md-6">
+                    <label class="form-label">Documento</label>
+                    <input class="form-control" type="text" value="<c:out value='${cliente.documento}' />" disabled>
                 </div>
-                <div class="grupo-campo">
-                    <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" maxlength="20" value="<c:out value='${cliente.telefono}' />">
+                <div class="col-md-6">
+                    <label class="form-label" for="telefono">Teléfono</label>
+                    <input class="form-control" type="tel" id="telefono" name="telefono" maxlength="20" value="<c:out value='${cliente.telefono}' />">
                 </div>
-                <div class="grupo-campo completo">
-                    <label for="correo">Correo electrónico</label>
-                    <input type="email" id="correo" name="correo" maxlength="120" required value="<c:out value='${cliente.correo}' />">
+                <div class="col-12">
+                    <label class="form-label" for="correo">Correo electrónico</label>
+                    <input class="form-control" type="email" id="correo" name="correo" maxlength="120" required value="<c:out value='${cliente.correo}' />">
                 </div>
             </div>
-            <div class="acciones-formulario"><button type="submit" class="boton verde">Guardar datos</button></div>
+            <div class="d-flex flex-wrap gap-2 mt-3"><button type="submit" class="btn btn-success">Guardar datos</button></div>
         </form>
     </section>
 
-    <section class="tarjeta formulario" style="max-width:760px">
-        <h2 style="margin-top:0">Cambiar contraseña</h2>
+    <section class="card card-body shadow-sm mb-4 formulario">
+        <h2 class="h5 mb-3">Cambiar contraseña</h2>
         <form method="post" action="${ctx}/cliente/perfil" autocomplete="off">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="clave">
-            <div class="rejilla-campos">
-                <div class="grupo-campo completo">
-                    <label for="actual">Contraseña actual</label>
-                    <input type="password" id="actual" name="actual" required autocomplete="current-password">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label" for="actual">Contraseña actual</label>
+                    <input class="form-control" type="password" id="actual" name="actual" required autocomplete="current-password">
                 </div>
-                <div class="grupo-campo">
-                    <label for="nueva">Nueva contraseña</label>
-                    <input type="password" id="nueva" name="nueva" required minlength="8" autocomplete="new-password">
+                <div class="col-md-6">
+                    <label class="form-label" for="nueva">Nueva contraseña</label>
+                    <input class="form-control" type="password" id="nueva" name="nueva" required minlength="8" autocomplete="new-password">
                 </div>
-                <div class="grupo-campo">
-                    <label for="confirmacion">Confirmar nueva contraseña</label>
-                    <input type="password" id="confirmacion" name="confirmacion" required minlength="8" autocomplete="new-password">
+                <div class="col-md-6">
+                    <label class="form-label" for="confirmacion">Confirmar nueva contraseña</label>
+                    <input class="form-control" type="password" id="confirmacion" name="confirmacion" required minlength="8" autocomplete="new-password">
                 </div>
             </div>
-            <div class="acciones-formulario"><button type="submit" class="boton">Cambiar contraseña</button></div>
+            <div class="d-flex flex-wrap gap-2 mt-3"><button type="submit" class="btn btn-primary">Cambiar contraseña</button></div>
         </form>
     </section>
 </main>

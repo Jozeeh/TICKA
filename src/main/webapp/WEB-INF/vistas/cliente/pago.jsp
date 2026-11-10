@@ -11,7 +11,7 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor checkout">
+<main class="container-xl py-4 checkout">
     <ol class="pasos-compra">
         <li class="hecho"><span>✓</span> Asientos</li>
         <li class="actual"><span>2</span> Pago</li>
@@ -19,100 +19,100 @@
     </ol>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <div class="checkout-rejilla">
+    <div class="row g-4 align-items-start">
         <%-- Formulario: facturación y tarjeta (validación ficticia: solo que los datos estén escritos) --%>
-        <form method="post" action="${ctx}/cliente/pago" id="formPago" class="checkout-formulario" autocomplete="on">
+        <form method="post" action="${ctx}/cliente/pago" id="formPago" class="col-lg-8" autocomplete="on">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="evento" value="${evento.id}">
 
-            <section class="tarjeta">
+            <section class="card card-body shadow-sm mb-4">
                 <h2 class="checkout-titulo"><span>1</span> Datos de facturación</h2>
-                <div class="rejilla-campos">
-                    <div class="grupo-campo">
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" id="nombre" name="nombre" required maxlength="160" autocomplete="name"
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="nombre">Nombre completo</label>
+                        <input class="form-control" type="text" id="nombre" name="nombre" required maxlength="160" autocomplete="name"
                                value="<c:out value='${empty param.nombre ? cliente.nombreCompleto : param.nombre}' />">
                     </div>
-                    <div class="grupo-campo">
-                        <label for="correo">Correo para el comprobante</label>
-                        <input type="email" id="correo" name="correo" required maxlength="120" autocomplete="email"
+                    <div class="col-md-6">
+                        <label class="form-label" for="correo">Correo para el comprobante</label>
+                        <input class="form-control" type="email" id="correo" name="correo" required maxlength="120" autocomplete="email"
                                value="<c:out value='${empty param.correo ? cliente.correo : param.correo}' />">
                     </div>
-                    <div class="grupo-campo">
-                        <label for="pais">País</label>
-                        <select id="pais" name="pais" required autocomplete="country-name">
+                    <div class="col-md-6">
+                        <label class="form-label" for="pais">País</label>
+                        <select class="form-select" id="pais" name="pais" required autocomplete="country-name">
                             <c:forEach var="p" items="${paises}">
                                 <option value="${p}" ${(empty param.pais and p == 'El Salvador') or param.pais == p ? 'selected' : ''}>${p}</option>
                             </c:forEach>
                         </select>
                     </div>
-                    <div class="grupo-campo">
-                        <label for="direccion">Dirección (opcional)</label>
-                        <input type="text" id="direccion" name="direccion" maxlength="200" autocomplete="street-address"
+                    <div class="col-md-6">
+                        <label class="form-label" for="direccion">Dirección (opcional)</label>
+                        <input class="form-control" type="text" id="direccion" name="direccion" maxlength="200" autocomplete="street-address"
                                value="<c:out value='${param.direccion}' />">
                     </div>
                 </div>
             </section>
 
-            <section class="tarjeta">
+            <section class="card card-body shadow-sm mb-4">
                 <h2 class="checkout-titulo"><span>2</span> Método de pago</h2>
                 <%-- Única forma de pago del portal: tarjeta (seleccionada por defecto, sin otras opciones). --%>
                 <div class="metodo-pago">
                     <span class="metodo-radio" aria-hidden="true"></span>
                     <div>
                         <strong>Tarjeta de crédito o débito</strong>
-                        <span class="ayuda">Única forma de pago en línea</span>
+                        <span class="small text-body-secondary d-block">Única forma de pago en línea</span>
                     </div>
                     <div class="marcas-tarjeta" aria-hidden="true"><span>VISA</span><span>Mastercard</span><span>AMEX</span></div>
                 </div>
 
-                <div class="tarjeta-pago">
-                    <div class="tarjeta-visual" aria-hidden="true">
+                <div class="row g-4 align-items-start">
+                    <div class="col-md-5"><div class="tarjeta-visual" aria-hidden="true">
                         <div class="chip"></div>
                         <div class="tv-numero" id="tvNumero">•••• •••• •••• ••••</div>
                         <div class="tv-pie">
                             <div><small>Titular</small><span id="tvTitular">NOMBRE APELLIDO</span></div>
                             <div><small>Vence</small><span id="tvVence">MM/AA</span></div>
                         </div>
-                    </div>
-                    <div class="campos-tarjeta">
-                        <div class="grupo-campo">
-                            <label for="numero">Número de tarjeta</label>
-                            <input type="text" id="numero" name="numero" required inputmode="numeric"
+                    </div></div>
+                    <div class="col-md-7">
+                        <div class="mb-3">
+                            <label class="form-label" for="numero">Número de tarjeta</label>
+                            <input class="form-control" type="text" id="numero" name="numero" required inputmode="numeric"
                                    autocomplete="cc-number" placeholder="1234 5678 9012 3456">
                         </div>
-                        <div class="grupo-campo">
-                            <label for="titular">Nombre del titular</label>
-                            <input type="text" id="titular" name="titular" required autocomplete="cc-name"
+                        <div class="mb-3">
+                            <label class="form-label" for="titular">Nombre del titular</label>
+                            <input class="form-control" type="text" id="titular" name="titular" required autocomplete="cc-name"
                                    placeholder="Como aparece en la tarjeta">
                         </div>
-                        <div class="acceso-par">
-                            <div class="grupo-campo">
-                                <label for="vencimiento">Vencimiento</label>
-                                <input type="text" id="vencimiento" name="vencimiento" required autocomplete="cc-exp" placeholder="MM/AA">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label" for="vencimiento">Vencimiento</label>
+                                <input class="form-control" type="text" id="vencimiento" name="vencimiento" required autocomplete="cc-exp" placeholder="MM/AA">
                             </div>
-                            <div class="grupo-campo">
-                                <label for="cvv">CVV</label>
-                                <input type="password" id="cvv" name="cvv" required inputmode="numeric" autocomplete="cc-csc" placeholder="123">
+                            <div class="col-6">
+                                <label class="form-label" for="cvv">CVV</label>
+                                <input class="form-control" type="password" id="cvv" name="cvv" required inputmode="numeric" autocomplete="cc-csc" placeholder="123">
                             </div>
                         </div>
                     </div>
                 </div>
-                <label class="casilla" style="margin-top:6px">
-                    <input type="checkbox" name="terminos" value="si" required>
+                <label class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="terminos" value="si" required>
                     Acepto los términos de compra: los boletos son personales y solo se anulan hasta 24 horas antes de la apertura de puertas.
                 </label>
             </section>
         </form>
 
         <%-- Resumen del pedido --%>
-        <aside class="checkout-resumen tarjeta">
+        <aside class="col-lg-4 checkout-resumen"><div class="card card-body shadow-sm">
             <div class="resumen-evento">
                 <img alt="" src="${evento.conAfiche ? ctx += '/afiche?evento=' += evento.id : ctx += '/resources/img/sin-imagen.png'}">
                 <div>
                     <strong><c:out value="${evento.nombre}" /></strong>
-                    <span class="ayuda">${evento.fechaLarga} · ${evento.horarioTexto}</span>
-                    <span class="ayuda"><c:out value="${evento.recinto}" /></span>
+                    <span class="small text-body-secondary d-block">${evento.fechaLarga} · ${evento.horarioTexto}</span>
+                    <span class="small text-body-secondary d-block"><c:out value="${evento.recinto}" /></span>
                 </div>
             </div>
             <ul class="resumen-lineas">
@@ -126,10 +126,10 @@
                 <li class="total"><span>Total</span><span>${total}</span></li>
             </ul>
             <p class="resumen-tiempo">Su reserva vence en <strong id="cuentaRegresiva" data-segundos="${segundosRestantes}">--:--</strong></p>
-            <button type="submit" form="formPago" class="boton acento acento-grande" id="botonPagar">Pagar ${total}</button>
+            <button type="submit" form="formPago" class="btn btn-acento btn-lg w-100" id="botonPagar">Pagar ${total}</button>
             <p class="nota-segura">Confirma tu compra</p>
-            <a class="ayuda" href="${ctx}/cliente/comprar?evento=${evento.id}">← Volver a los asientos</a>
-        </aside>
+            <a class="small text-body-secondary text-center" href="${ctx}/cliente/comprar?evento=${evento.id}">← Volver a los asientos</a>
+        </div></aside>
     </div>
 </main>
 

@@ -335,7 +335,7 @@ TICKA/                               (repositorio github.com/Jozeeh/TICKA)
     ├── main/resources/              (db.properties.example; db.properties local, ignorado por Git)
     ├── main/webapp/
     │   ├── index.jsp
-    │   ├── resources/css/estilos.css
+    │   ├── resources/css/bootstrap.min.css y estilos.css
     │   └── WEB-INF/ (web.xml, vistas/{plantilla,acceso,panel,organizador,admin,error})
     └── test/java/                   (pruebas JUnit de las reglas de negocio)
 ```

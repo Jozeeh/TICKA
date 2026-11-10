@@ -9,7 +9,7 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
+<main class="container-xl py-4">
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
     <%-- Misma cartelera que la página de inicio; cada tarjeta lleva a elegir asientos. --%>
     <c:set var="rutaCartelera" value="/cliente/cartelera" />

@@ -9,45 +9,45 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="migas"><a href="${ctx}/organizador/recintos">Recintos</a> › <c:out value="${recinto.nombre}" /></div>
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <nav aria-label="Ruta"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="${ctx}/organizador/recintos">Recintos</a></li><li class="breadcrumb-item active" aria-current="page"><c:out value="${recinto.nombre}" /></li></ol></nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1><c:out value="${recinto.nombre}" /></h1>
-            <p class="subtitulo"><c:out value="${recinto.tipo}" /> · ${recinto.totalZonas} zonas ·
+            <h1 class="h3 mb-1"><c:out value="${recinto.nombre}" /></h1>
+            <p class="text-body-secondary mb-0"><c:out value="${recinto.tipo}" /> · ${recinto.totalZonas} zonas ·
                 ${recinto.totalAsientos} asientos activos</p>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <%-- Nueva zona: nombre, descripción y distribución de asientos en un solo paso --%>
-    <section class="tarjeta">
-        <h2 style="margin-top:0">Agregar zona</h2>
-        <form method="post" action="${ctx}/organizador/zonas" class="form-zona">
+    <section class="card card-body shadow-sm mb-4">
+        <h2 class="h5 mb-3">Agregar zona</h2>
+        <form method="post" action="${ctx}/organizador/zonas" class="row g-2 align-items-end mb-3">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="recinto" value="${recinto.id}">
-            <div class="grupo-campo">
-                <label>Nombre</label>
-                <input type="text" name="nombre" maxlength="60" required placeholder="Platea, Palco, Gradas...">
+            <div class="col-md">
+                <label class="form-label">Nombre</label>
+                <input class="form-control" type="text" name="nombre" maxlength="60" required placeholder="Platea, Palco, Gradas...">
             </div>
-            <div class="grupo-campo">
-                <label>Descripción</label>
-                <input type="text" name="descripcion" maxlength="200" placeholder="Opcional">
+            <div class="col-md">
+                <label class="form-label">Descripción</label>
+                <input class="form-control" type="text" name="descripcion" maxlength="200" placeholder="Opcional">
             </div>
-            <div class="grupo-campo corto">
-                <label>Fila desde</label>
-                <input type="text" name="desde" maxlength="1" required placeholder="A">
+            <div class="col-6 col-md-2">
+                <label class="form-label">Fila desde</label>
+                <input class="form-control" type="text" name="desde" maxlength="1" required placeholder="A">
             </div>
-            <div class="grupo-campo corto">
-                <label>Fila hasta</label>
-                <input type="text" name="hasta" maxlength="1" required placeholder="J">
+            <div class="col-6 col-md-2">
+                <label class="form-label">Fila hasta</label>
+                <input class="form-control" type="text" name="hasta" maxlength="1" required placeholder="J">
             </div>
-            <div class="grupo-campo corto">
-                <label>Asientos por fila</label>
-                <input type="number" name="porFila" min="1" max="50" required placeholder="20">
+            <div class="col-6 col-md-2">
+                <label class="form-label">Asientos por fila</label>
+                <input class="form-control" type="number" name="porFila" min="1" max="50" required placeholder="20">
             </div>
-            <button type="submit" class="boton verde">Agregar zona</button>
+            <div class="col-auto"><button type="submit" class="btn btn-success">Agregar zona</button></div>
         </form>
     </section>
 
@@ -57,56 +57,56 @@
     </div>
 
     <c:forEach var="z" items="${zonas}">
-        <section class="tarjeta zona-mapa">
-            <div class="cabecera-pagina" style="margin-bottom:6px">
+        <section class="card card-body shadow-sm mb-4 zona-mapa">
+            <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-2">
                 <div>
                     <h3><c:out value="${z.nombre}" /></h3>
-                    <span class="ayuda">${z.asientosActivos} activos de ${z.totalAsientos}</span>
+                    <span class="small text-body-secondary">${z.asientosActivos} activos de ${z.totalAsientos}</span>
                 </div>
                 <c:if test="${z.totalAsientos == 0}">
-                    <form method="post" action="${ctx}/organizador/zonas" class="linea"
+                    <form method="post" action="${ctx}/organizador/zonas" class="d-inline"
                           data-confirmar="¿Eliminar esta zona?" data-boton="Sí, eliminar" data-peligro="si">
                         <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                         <input type="hidden" name="accion" value="eliminar">
                         <input type="hidden" name="recinto" value="${recinto.id}">
                         <input type="hidden" name="id" value="${z.id}">
-                        <button type="submit" class="boton rojo chico">Eliminar</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                     </form>
                 </c:if>
             </div>
 
             <%-- Un solo formulario para los datos de la zona y su distribución --%>
-            <form method="post" action="${ctx}/organizador/zonas" class="form-zona">
+            <form method="post" action="${ctx}/organizador/zonas" class="row g-2 align-items-end mb-3">
                 <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                 <input type="hidden" name="accion" value="guardar">
                 <input type="hidden" name="recinto" value="${recinto.id}">
                 <input type="hidden" name="id" value="${z.id}">
-                <div class="grupo-campo">
-                    <label>Nombre</label>
-                    <input type="text" name="nombre" maxlength="60" required value="<c:out value='${z.nombre}' />">
+                <div class="col-md">
+                    <label class="form-label">Nombre</label>
+                    <input class="form-control" type="text" name="nombre" maxlength="60" required value="<c:out value='${z.nombre}' />">
                 </div>
-                <div class="grupo-campo">
-                    <label>Descripción</label>
-                    <input type="text" name="descripcion" maxlength="200" value="<c:out value='${z.descripcion}' />">
+                <div class="col-md">
+                    <label class="form-label">Descripción</label>
+                    <input class="form-control" type="text" name="descripcion" maxlength="200" value="<c:out value='${z.descripcion}' />">
                 </div>
-                <div class="grupo-campo corto">
-                    <label>Fila desde</label>
-                    <input type="text" name="desde" maxlength="1" required placeholder="A" value="${z.filaDesde}">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Fila desde</label>
+                    <input class="form-control" type="text" name="desde" maxlength="1" required placeholder="A" value="${z.filaDesde}">
                 </div>
-                <div class="grupo-campo corto">
-                    <label>Fila hasta</label>
-                    <input type="text" name="hasta" maxlength="1" required placeholder="J" value="${z.filaHasta}">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Fila hasta</label>
+                    <input class="form-control" type="text" name="hasta" maxlength="1" required placeholder="J" value="${z.filaHasta}">
                 </div>
-                <div class="grupo-campo corto">
-                    <label>Asientos por fila</label>
-                    <input type="number" name="porFila" min="1" max="50" required placeholder="20" value="${z.asientosPorFila}">
+                <div class="col-6 col-md-2">
+                    <label class="form-label">Asientos por fila</label>
+                    <input class="form-control" type="number" name="porFila" min="1" max="50" required placeholder="20" value="${z.asientosPorFila}">
                 </div>
-                <button type="submit" class="boton">Guardar zona</button>
+                <div class="col-auto"><button type="submit" class="btn btn-primary">Guardar zona</button></div>
             </form>
 
             <c:choose>
                 <c:when test="${empty z.filas}">
-                    <p class="ayuda">Esta zona todavía no tiene asientos: indique las filas y los asientos por fila y pulse Guardar zona.</p>
+                    <p class="small text-body-secondary">Esta zona todavía no tiene asientos: indique las filas y los asientos por fila y pulse Guardar zona.</p>
                 </c:when>
                 <c:otherwise>
                     <form method="post" action="${ctx}/organizador/zonas" class="filas">
@@ -129,7 +129,7 @@
         </section>
     </c:forEach>
     <c:if test="${empty zonas}">
-        <div class="alerta info">Este recinto todavía no tiene zonas. Agregue la primera con el formulario de arriba.</div>
+        <div class="alert alert-info">Este recinto todavía no tiene zonas. Agregue la primera con el formulario de arriba.</div>
     </c:if>
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>

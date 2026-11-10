@@ -9,67 +9,67 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="migas"><a href="${ctx}/admin/usuarios">Usuarios</a> › <c:out value="${titulo}" /></div>
-    <h1><c:out value="${titulo}" /></h1>
-    <p class="subtitulo">Las contraseñas se guardan con hash BCrypt; nadie puede verlas, solo restablecerlas.</p>
+<main class="container-xl py-4">
+    <nav aria-label="Ruta"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="${ctx}/admin/usuarios">Usuarios</a></li><li class="breadcrumb-item active" aria-current="page"><c:out value="${titulo}" /></li></ol></nav>
+    <h1 class="h3 mb-1"><c:out value="${titulo}" /></h1>
+    <p class="text-body-secondary mb-4">Las contraseñas se guardan con hash BCrypt; nadie puede verlas, solo restablecerlas.</p>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <section class="tarjeta formulario">
+    <section class="card card-body shadow-sm mb-4 formulario">
         <form method="post" action="${ctx}/admin/usuarios" autocomplete="off">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="id" value="${usuario.id}">
-            <div class="rejilla-campos">
-                <div class="grupo-campo">
-                    <label for="username">Usuario</label>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="username">Usuario</label>
                     <c:choose>
                         <c:when test="${empty usuario.id}">
-                            <input type="text" id="username" name="username" maxlength="30" required
+                            <input class="form-control" type="text" id="username" name="username" maxlength="30" required
                                    value="<c:out value='${usuario.username}' />">
-                            <span class="ayuda">Minúsculas, números, punto, guion o guion bajo (4 a 30).</span>
+                            <span class="small text-body-secondary">Minúsculas, números, punto, guion o guion bajo (4 a 30).</span>
                         </c:when>
                         <c:otherwise>
-                            <input type="text" id="username" value="<c:out value='${usuario.username}' />" disabled>
-                            <span class="ayuda">El usuario no se puede cambiar.</span>
+                            <input class="form-control" type="text" id="username" value="<c:out value='${usuario.username}' />" disabled>
+                            <span class="small text-body-secondary">El usuario no se puede cambiar.</span>
                         </c:otherwise>
                     </c:choose>
                 </div>
-                <div class="grupo-campo">
-                    <label for="nombre">Nombre completo</label>
-                    <input type="text" id="nombre" name="nombre" maxlength="100" required
+                <div class="col-md-6">
+                    <label class="form-label" for="nombre">Nombre completo</label>
+                    <input class="form-control" type="text" id="nombre" name="nombre" maxlength="100" required
                            value="<c:out value='${usuario.nombre}' />">
                 </div>
-                <div class="grupo-campo">
-                    <label for="rol">Rol</label>
-                    <select id="rol" name="rol" required>
+                <div class="col-md-6">
+                    <label class="form-label" for="rol">Rol</label>
+                    <select class="form-select" id="rol" name="rol" required>
                         <c:forEach var="r" items="${roles}">
                             <option value="${r}" ${usuario.rol == r ? 'selected' : ''}>${r.nombre}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <c:if test="${not empty usuario.id}">
-                    <div class="grupo-campo">
-                        <label>&nbsp;</label>
-                        <label class="casilla">
-                            <input type="checkbox" name="activo" value="si" ${usuario.activo ? 'checked' : ''}>
+                    <div class="col-md-6">
+                        <label class="form-label">&nbsp;</label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="activo" value="si" ${usuario.activo ? 'checked' : ''}>
                             Cuenta activa
                         </label>
                     </div>
                 </c:if>
-                <div class="grupo-campo">
-                    <label for="clave">${empty usuario.id ? 'Contraseña' : 'Nueva contraseña (opcional)'}</label>
-                    <input type="password" id="clave" name="clave" autocomplete="new-password" ${empty usuario.id ? 'required' : ''}>
-                    <span class="ayuda">Mínimo 8 caracteres, con letras y números.</span>
+                <div class="col-md-6">
+                    <label class="form-label" for="clave">${empty usuario.id ? 'Contraseña' : 'Nueva contraseña (opcional)'}</label>
+                    <input class="form-control" type="password" id="clave" name="clave" autocomplete="new-password" ${empty usuario.id ? 'required' : ''}>
+                    <span class="small text-body-secondary">Mínimo 8 caracteres, con letras y números.</span>
                 </div>
-                <div class="grupo-campo">
-                    <label for="confirmacion">Confirmar contraseña</label>
-                    <input type="password" id="confirmacion" name="confirmacion" autocomplete="new-password" ${empty usuario.id ? 'required' : ''}>
+                <div class="col-md-6">
+                    <label class="form-label" for="confirmacion">Confirmar contraseña</label>
+                    <input class="form-control" type="password" id="confirmacion" name="confirmacion" autocomplete="new-password" ${empty usuario.id ? 'required' : ''}>
                 </div>
             </div>
-            <div class="acciones-formulario">
-                <button type="submit" class="boton verde">Guardar</button>
-                <a class="boton gris" href="${ctx}/admin/usuarios">Cancelar</a>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a class="btn btn-secondary" href="${ctx}/admin/usuarios">Cancelar</a>
             </div>
         </form>
     </section>

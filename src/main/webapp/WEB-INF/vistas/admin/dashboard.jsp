@@ -9,39 +9,39 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Dashboard</h1>
-            <p class="subtitulo">Resumen general de ventas, ocupación y asistencia.</p>
+            <h1 class="h3 mb-1">Dashboard</h1>
+            <p class="text-body-secondary mb-0">Resumen general de ventas, ocupación y asistencia.</p>
         </div>
-        <a class="boton" href="${ctx}/reportes">Ver reportes</a>
+        <a class="btn btn-primary" href="${ctx}/reportes">Ver reportes</a>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <section class="indicadores">
-        <div class="indicador"><div class="valor">${indicadores.eventosActivos}</div><div class="nombre">Eventos activos</div></div>
-        <div class="indicador acento"><div class="valor">${indicadores.boletosVendidos}</div><div class="nombre">Boletos vendidos</div></div>
-        <div class="indicador verde"><div class="valor">${indicadores.ingresosTexto}</div><div class="nombre">Ingresos registrados</div></div>
-        <div class="indicador"><div class="valor">${indicadores.ocupacion}%</div><div class="nombre">Ocupación de eventos activos</div></div>
-        <div class="indicador verde"><div class="valor">${indicadores.asistencia}%</div><div class="nombre">Asistencia en eventos finalizados</div></div>
-        <div class="indicador amarillo"><div class="valor">${indicadores.incidenciasAbiertas}</div><div class="nombre">Incidencias abiertas</div></div>
-        <div class="indicador"><div class="valor">${indicadores.clientesActivos}</div><div class="nombre">Clientes activos</div></div>
+    <section class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 mb-4 indicadores">
+        <div class="col"><div class="card h-100 indicador"><div class="card-body"><div class="valor">${indicadores.eventosActivos}</div><div class="nombre">Eventos activos</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador acento"><div class="card-body"><div class="valor">${indicadores.boletosVendidos}</div><div class="nombre">Boletos vendidos</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador verde"><div class="card-body"><div class="valor">${indicadores.ingresosTexto}</div><div class="nombre">Ingresos registrados</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador"><div class="card-body"><div class="valor">${indicadores.ocupacion}%</div><div class="nombre">Ocupación de eventos activos</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador verde"><div class="card-body"><div class="valor">${indicadores.asistencia}%</div><div class="nombre">Asistencia en eventos finalizados</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador amarillo"><div class="card-body"><div class="valor">${indicadores.incidenciasAbiertas}</div><div class="nombre">Incidencias abiertas</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador"><div class="card-body"><div class="valor">${indicadores.clientesActivos}</div><div class="nombre">Clientes activos</div></div></div></div>
     </section>
 
     <%-- Gráficos (RF-53) con Chart.js (copia local). Las series llegan en JSON desde el servlet. --%>
     <c:if test="${not empty graficoMeses}">
-        <section class="graficos">
-            <div class="tarjeta"><h2>Ingresos por mes</h2><div class="lienzo"><canvas id="gMeses"></canvas></div></div>
-            <div class="tarjeta"><h2>Ingresos por canal</h2><div class="lienzo"><canvas id="gCanal"></canvas></div></div>
-            <div class="tarjeta"><h2>Eventos con más ingresos</h2><div class="lienzo"><canvas id="gTop"></canvas></div></div>
-            <div class="tarjeta"><h2>Ocupación de los próximos eventos</h2><div class="lienzo"><canvas id="gOcupacion"></canvas></div></div>
+        <section class="row row-cols-1 row-cols-lg-2 g-4 mb-4">
+            <div class="col"><div class="card card-body shadow-sm h-100"><h2 class="h6 mb-3">Ingresos por mes</h2><div class="lienzo"><canvas id="gMeses"></canvas></div></div></div>
+            <div class="col"><div class="card card-body shadow-sm h-100"><h2 class="h6 mb-3">Ingresos por canal</h2><div class="lienzo"><canvas id="gCanal"></canvas></div></div></div>
+            <div class="col"><div class="card card-body shadow-sm h-100"><h2 class="h6 mb-3">Eventos con más ingresos</h2><div class="lienzo"><canvas id="gTop"></canvas></div></div></div>
+            <div class="col"><div class="card card-body shadow-sm h-100"><h2 class="h6 mb-3">Ocupación de los próximos eventos</h2><div class="lienzo"><canvas id="gOcupacion"></canvas></div></div></div>
         </section>
     </c:if>
 
-    <section class="tarjeta tabla-contenedor">
-        <h2 style="margin-top:0">Próximos eventos</h2>
-        <table class="tabla">
+    <section class="card card-body shadow-sm mb-4 table-responsive">
+        <h2 class="h5 mb-3">Próximos eventos</h2>
+        <table class="table table-hover align-middle mb-0">
             <thead>
             <tr><th>Fecha</th><th>Evento</th><th>Recinto</th><th>Estado</th><th>Vendidos</th><th></th></tr>
             </thead>
@@ -49,29 +49,29 @@
             <c:forEach var="ev" items="${proximos}">
                 <tr>
                     <td>${ev.fechaInicioTexto}</td>
-                    <td><strong><c:out value="${ev.nombre}" /></strong> <span class="ayuda">${ev.tipo.etiqueta}</span></td>
+                    <td><strong><c:out value="${ev.nombre}" /></strong> <span class="small text-body-secondary">${ev.tipo.etiqueta}</span></td>
                     <td><c:out value="${ev.recinto}" /></td>
-                    <td><span class="etiqueta ${ev.estado.clase}">${ev.estado.bd}</span></td>
+                    <td><span class="badge rounded-pill etiqueta ${ev.estado.clase}">${ev.estado.bd}</span></td>
                     <td style="min-width:180px">${ev.vendidos} / ${ev.totalAsientos} (${ev.porcentajeVendido}%)
-                        <div class="barra"><span style="width:${ev.porcentajeVendido}%"></span></div></td>
-                    <td><a class="boton chico borde" href="${ctx}/organizador/eventos?accion=ver&id=${ev.id}">Ver</a></td>
+                        <div class="progress mt-1" role="progressbar" style="height:8px"><div class="progress-bar bg-success" style="width:${ev.porcentajeVendido}%"></div></div></td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="${ctx}/organizador/eventos?accion=ver&id=${ev.id}">Ver</a></td>
                 </tr>
             </c:forEach>
             <c:if test="${empty proximos}">
-                <tr><td colspan="6" class="vacio">No hay eventos publicados o en curso.</td></tr>
+                <tr><td colspan="6" class="text-center text-body-secondary py-4">No hay eventos publicados o en curso.</td></tr>
             </c:if>
             </tbody>
         </table>
     </section>
 
     <c:if test="${not empty ocupacion}">
-        <section class="tarjeta tabla-contenedor">
-            <h2 style="margin-top:0"><c:out value="${ocupacion.titulo}" /></h2>
-            <table class="tabla">
+        <section class="card card-body shadow-sm mb-4 table-responsive">
+            <h2 class="h5 mb-3"><c:out value="${ocupacion.titulo}" /></h2>
+            <table class="table table-hover align-middle mb-0">
                 <thead>
                 <tr>
                     <c:forEach var="col" items="${ocupacion.columnas}" varStatus="s">
-                        <th class="${ocupacion.numericas.contains(s.index) ? 'numero' : ''}"><c:out value="${col}" /></th>
+                        <th class="${ocupacion.numericas.contains(s.index) ? 'text-end' : ''}"><c:out value="${col}" /></th>
                     </c:forEach>
                 </tr>
                 </thead>
@@ -79,7 +79,7 @@
                 <c:forEach var="fila" items="${ocupacion.filas}">
                     <tr>
                         <c:forEach var="valor" items="${fila}" varStatus="s">
-                            <td class="${ocupacion.numericas.contains(s.index) ? 'numero' : ''}"><c:out value="${valor}" /></td>
+                            <td class="${ocupacion.numericas.contains(s.index) ? 'text-end' : ''}"><c:out value="${valor}" /></td>
                         </c:forEach>
                     </tr>
                 </c:forEach>

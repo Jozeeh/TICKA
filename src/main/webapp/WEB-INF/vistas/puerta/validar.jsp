@@ -9,16 +9,16 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <h1>Validar boletos</h1>
-    <p class="subtitulo">Escanee el QR (con lector o con la cámara) o escriba el código. Cada boleto entra una sola vez<c:if test="${reentrada}"> (re-entrada habilitada)</c:if>.</p>
+<main class="container-xl py-4">
+    <h1 class="h3 mb-1">Validar boletos</h1>
+    <p class="text-body-secondary mb-4">Escanee el QR (con lector o con la cámara) o escriba el código. Cada boleto entra una sola vez<c:if test="${reentrada}"> (re-entrada habilitada)</c:if>.</p>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <%-- Evento de trabajo (se recuerda en la sesión) --%>
-    <form method="get" action="${ctx}/puerta/validar" class="tarjeta filtros">
-        <div class="grupo-campo" style="min-width:320px">
-            <label for="evento">Evento que controla</label>
-            <select id="evento" name="evento" onchange="this.form.submit()">
+    <form method="get" action="${ctx}/puerta/validar" class="card card-body shadow-sm mb-4 filtros d-flex flex-row flex-wrap gap-3 align-items-end">
+        <div class="campo-filtro" style="min-width:320px">
+            <label class="form-label" for="evento">Evento que controla</label>
+            <select class="form-select" id="evento" name="evento" onchange="this.form.submit()">
                 <option value="">Seleccione...</option>
                 <c:forEach var="ev" items="${eventos}">
                     <option value="${ev.id}" ${evento.id == ev.id ? 'selected' : ''}>
@@ -28,13 +28,13 @@
             </select>
         </div>
         <c:if test="${not empty evento}">
-            <span class="ayuda" style="align-self:center">Puertas: ${evento.aperturaPuertasTexto} · Fin: ${evento.fechaFinTexto}</span>
+            <span class="small text-body-secondary align-self-center">Puertas: ${evento.aperturaPuertasTexto} · Fin: ${evento.fechaFinTexto}</span>
         </c:if>
     </form>
 
     <c:if test="${not empty evento}">
-        <div class="puerta-rejilla">
-            <div>
+        <div class="row g-4">
+            <div class="col-xl-6">
                 <%-- Resultado de la última lectura (RF-26, RF-27) --%>
                 <c:if test="${not empty resultado}">
                     <div class="resultado-validacion ${resultado.valido ? 'valido' : 'rechazado'}" id="resultado">
@@ -55,43 +55,43 @@
                     </div>
                 </c:if>
 
-                <section class="tarjeta">
-                    <h2 style="margin-top:0">Leer código</h2>
+                <section class="card card-body shadow-sm mb-4">
+                    <h2 class="h5 mb-3">Leer código</h2>
                     <form method="post" action="${ctx}/puerta/validar" id="formValidar">
                         <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                         <input type="hidden" name="accion" value="validar">
-                        <div class="rejilla-campos">
-                            <div class="grupo-campo completo">
-                                <label for="codigo">Código del boleto</label>
-                                <input type="text" id="codigo" name="codigo" class="campo-codigo" required autofocus
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="codigo">Código del boleto</label>
+                                <input type="text" id="codigo" name="codigo" class="form-control form-control-lg campo-codigo" required autofocus
                                        autocomplete="off" maxlength="60" placeholder="TK-...">
                             </div>
-                            <div class="grupo-campo">
-                                <label for="puerta">Puerta</label>
-                                <input type="text" id="puerta" name="puerta" required maxlength="20" value="<c:out value='${puerta}' />">
+                            <div class="col-md-6">
+                                <label class="form-label" for="puerta">Puerta</label>
+                                <input class="form-control" type="text" id="puerta" name="puerta" required maxlength="20" value="<c:out value='${puerta}' />">
                             </div>
                         </div>
-                        <div class="acciones-linea">
-                            <button type="submit" class="boton verde">Validar</button>
-                            <button type="button" class="boton borde" id="botonCamara" hidden>Escanear con la cámara</button>
+                        <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
+                            <button type="submit" class="btn btn-success">Validar</button>
+                            <button type="button" class="btn btn-outline-primary" id="botonCamara" hidden>Escanear con la cámara</button>
                         </div>
                     </form>
-                    <div class="lector-camara" id="lectorCamara" hidden style="margin-top:12px">
+                    <div class="lector-camara mt-3" id="lectorCamara" hidden>
                         <video id="video" playsinline muted></video>
-                        <p class="ayuda">Apunte la cámara al código QR del boleto.</p>
+                        <p class="small text-body-secondary">Apunte la cámara al código QR del boleto.</p>
                     </div>
                 </section>
 
                 <%-- Búsqueda por documento (RF-25) --%>
-                <section class="tarjeta">
-                    <h2 style="margin-top:0">Buscar por documento</h2>
-                    <form method="get" action="${ctx}/puerta/validar" class="acciones-linea">
-                        <input type="text" name="documento" placeholder="00000000-0" required style="max-width:220px"
+                <section class="card card-body shadow-sm mb-4">
+                    <h2 class="h5 mb-3">Buscar por documento</h2>
+                    <form method="get" action="${ctx}/puerta/validar" class="d-flex flex-wrap gap-2 align-items-center">
+                        <input class="form-control form-control-sm" type="text" name="documento" placeholder="00000000-0" required style="max-width:220px"
                                value="<c:out value='${documento}' />">
-                        <button type="submit" class="boton">Buscar boletos</button>
+                        <button type="submit" class="btn btn-primary">Buscar boletos</button>
                     </form>
                     <c:if test="${not empty documento}">
-                        <table class="tabla" style="margin-top:12px">
+                        <table class="table table-hover align-middle mb-0 mt-3">
                             <thead><tr><th>Cliente</th><th>Asiento</th><th>Estado</th><th></th></tr></thead>
                             <tbody>
                             <c:forEach var="b" items="${boletosDocumento}">
@@ -101,19 +101,19 @@
                                     <td><c:out value="${b.estado}" /></td>
                                     <td>
                                         <c:if test="${b.estado == 'Emitida'}">
-                                            <form method="post" action="${ctx}/puerta/validar" class="linea">
+                                            <form method="post" action="${ctx}/puerta/validar" class="d-inline">
                                                 <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                                 <input type="hidden" name="accion" value="validar">
                                                 <input type="hidden" name="codigo" value="${b.codigo}">
                                                 <input type="hidden" name="puerta" value="<c:out value='${puerta}' />">
-                                                <button type="submit" class="boton verde chico">Dar ingreso</button>
+                                                <button type="submit" class="btn btn-success btn-sm">Dar ingreso</button>
                                             </form>
                                         </c:if>
                                     </td>
                                 </tr>
                             </c:forEach>
                             <c:if test="${empty boletosDocumento}">
-                                <tr><td colspan="4" class="vacio">Ese documento no tiene boletos para este evento.</td></tr>
+                                <tr><td colspan="4" class="text-center text-body-secondary py-4">Ese documento no tiene boletos para este evento.</td></tr>
                             </c:if>
                             </tbody>
                         </table>
@@ -122,12 +122,13 @@
             </div>
 
             <%-- Bitácora de la puerta con anulación de ingresos (RF-27, RF-29) --%>
-            <section class="tarjeta tabla-contenedor">
-                <div class="cabecera-pagina" style="margin-bottom:8px">
-                    <h2 style="margin:0">Últimos accesos</h2>
-                    <a class="boton borde chico" href="${ctx}/puerta/ocupacion">Ver ocupación</a>
+            <div class="col-xl-6">
+            <section class="card card-body shadow-sm mb-4 table-responsive">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
+                    <h2 class="h5 mb-0">Últimos accesos</h2>
+                    <a class="btn btn-outline-primary btn-sm" href="${ctx}/puerta/ocupacion">Ver ocupación</a>
                 </div>
-                <table class="tabla">
+                <table class="table table-hover align-middle mb-0">
                     <thead><tr><th>Hora</th><th>Resultado</th><th>Asiento / motivo</th><th>Puerta</th><th></th></tr></thead>
                     <tbody>
                     <c:forEach var="a" items="${accesos}">
@@ -135,41 +136,42 @@
                             <td>${a.horaTexto}</td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${a.anulado}"><span class="etiqueta Borrador">Anulado</span></c:when>
-                                    <c:when test="${a.valido}"><span class="etiqueta activo">Válido</span></c:when>
-                                    <c:otherwise><span class="etiqueta inactivo">Rechazado</span></c:otherwise>
+                                    <c:when test="${a.anulado}"><span class="badge rounded-pill etiqueta Borrador">Anulado</span></c:when>
+                                    <c:when test="${a.valido}"><span class="badge rounded-pill etiqueta activo">Válido</span></c:when>
+                                    <c:otherwise><span class="badge rounded-pill etiqueta inactivo">Rechazado</span></c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
                                 <c:out value="${a.valido ? a.asiento : a.motivoRechazo}" />
-                                <c:if test="${a.anulado}"><br><span class="ayuda"><c:out value="${a.motivoAnulacion}" /></span></c:if>
+                                <c:if test="${a.anulado}"><br><span class="small text-body-secondary"><c:out value="${a.motivoAnulacion}" /></span></c:if>
                             </td>
                             <td><c:out value="${a.puerta}" /></td>
                             <td>
                                 <c:if test="${a.valido and not a.anulado}">
-                                    <form method="post" action="${ctx}/puerta/validar" class="acciones-linea"
+                                    <form method="post" action="${ctx}/puerta/validar" class="d-flex flex-wrap gap-2 align-items-center"
                                           data-confirmar="¿Anular este ingreso?" data-peligro="si" data-boton="Sí, anular"
                                           data-detalle="El boleto volverá a quedar disponible para ingresar.">
                                         <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                         <input type="hidden" name="accion" value="anular">
                                         <input type="hidden" name="acceso" value="${a.id}">
-                                        <input type="text" name="motivo" required minlength="5" maxlength="200" placeholder="Motivo" style="width:130px">
-                                        <button type="submit" class="boton rojo chico">Anular</button>
+                                        <input class="form-control form-control-sm" type="text" name="motivo" required minlength="5" maxlength="200" placeholder="Motivo" style="width:130px">
+                                        <button type="submit" class="btn btn-danger btn-sm">Anular</button>
                                     </form>
                                 </c:if>
                             </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty accesos}">
-                        <tr><td colspan="5" class="vacio">Todavía no hay accesos en este evento.</td></tr>
+                        <tr><td colspan="5" class="text-center text-body-secondary py-4">Todavía no hay accesos en este evento.</td></tr>
                     </c:if>
                     </tbody>
                 </table>
             </section>
+            </div>
         </div>
     </c:if>
     <c:if test="${empty evento}">
-        <div class="tarjeta vacio">Seleccione el evento que está controlando para empezar a validar.</div>
+        <div class="card card-body shadow-sm mb-4 text-center text-body-secondary py-4">Seleccione el evento que está controlando para empezar a validar.</div>
     </c:if>
 </main>
 <%@ include file="/WEB-INF/vistas/plantilla/pie.jspf" %>

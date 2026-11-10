@@ -19,7 +19,7 @@ TICKA es una aplicación web para administrar espectáculos en vivo (conciertos,
 | Construcción | Maven |
 | Servidor | Apache Tomcat 9 |
 | API web | Servlets y JSP con paquetes `javax.servlet.*` (Java EE 8, mediante `jakarta.jakartaee-api` 8.0.0) |
-| Vistas | JSP + JSTL 1.2, CSS propio y JavaScript sin frameworks |
+| Vistas | JSP + JSTL 1.2 con Bootstrap 5.3.3 (copia local) y JavaScript sin frameworks; `estilos.css` solo agrega los colores de la marca y las piezas propias (mapa de asientos, calendario, boletos) |
 | Acceso a datos | JDBC con `PreparedStatement` y patrón DAO (SQL escrito a mano, sin ORM) |
 | Base de datos | MySQL 8 (`mysql-connector-j` 8.4.0) |
 | Contraseñas | BCrypt, costo 10 (jBCrypt 0.4) |
@@ -178,6 +178,7 @@ Cuentas de prueba, todas con contraseña `itca1234`:
 |---|---|
 | ¿Qué arquitectura usa? | MVC en capas: Servlets, servicios, DAO y JSP |
 | ¿Usa Spring o Hibernate? | No. Servlets, JSP y JDBC directo |
+| ¿Con qué se hizo el diseño? | Con Bootstrap 5 (rejilla, tarjetas, formularios, tablas, menú). Chart.js para gráficos y SweetAlert2 para las alertas |
 | ¿`javax` o `jakarta`? | `javax`, por eso requiere Tomcat 9 |
 | ¿Cómo se accede a la base? | JDBC con `PreparedStatement`, a través de interfaces DAO |
 | ¿Cómo evitan la doble venta? | `UPDATE` condicional dentro de transacciones |

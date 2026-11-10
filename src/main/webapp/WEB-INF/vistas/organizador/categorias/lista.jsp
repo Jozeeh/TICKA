@@ -9,53 +9,53 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Categorías</h1>
-            <p class="subtitulo">Clasifican los eventos en la cartelera (Rock, Ópera, Fútbol...).</p>
+            <h1 class="h3 mb-1">Categorías</h1>
+            <p class="text-body-secondary mb-0">Clasifican los eventos en la cartelera (Rock, Ópera, Fútbol...).</p>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <section class="tarjeta">
-        <h2 style="margin-top:0">${empty categoria.id ? 'Nueva categoría' : 'Editar categoría'}</h2>
-        <form method="post" action="${ctx}/organizador/categorias" class="filtros">
+    <section class="card card-body shadow-sm mb-4">
+        <h2 class="h5 mb-3">${empty categoria.id ? 'Nueva categoría' : 'Editar categoría'}</h2>
+        <form method="post" action="${ctx}/organizador/categorias" class="filtros d-flex flex-row flex-wrap gap-3 align-items-end">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <input type="hidden" name="accion" value="guardar">
             <input type="hidden" name="id" value="${categoria.id}">
-            <div class="grupo-campo" style="min-width:280px">
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" name="nombre" maxlength="60" required
+            <div class="campo-filtro" style="min-width:280px">
+                <label class="form-label" for="nombre">Nombre</label>
+                <input class="form-control" type="text" id="nombre" name="nombre" maxlength="60" required
                        value="<c:out value='${categoria.nombre}' />">
             </div>
-            <button type="submit" class="boton verde">Guardar</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
             <c:if test="${not empty categoria.id}">
-                <a class="boton gris" href="${ctx}/organizador/categorias">Cancelar</a>
+                <a class="btn btn-secondary" href="${ctx}/organizador/categorias">Cancelar</a>
             </c:if>
         </form>
     </section>
 
-    <section class="tarjeta tabla-contenedor">
-        <table class="tabla">
+    <section class="card card-body shadow-sm mb-4 table-responsive">
+        <table class="table table-hover align-middle mb-0">
             <thead>
-            <tr><th>Nombre</th><th class="numero">Eventos</th><th>Acciones</th></tr>
+            <tr><th>Nombre</th><th class="text-end">Eventos</th><th>Acciones</th></tr>
             </thead>
             <tbody>
             <c:forEach var="cat" items="${categorias}">
                 <tr>
                     <td><c:out value="${cat.nombre}" /></td>
-                    <td class="numero">${cat.totalEventos}</td>
+                    <td class="text-end">${cat.totalEventos}</td>
                     <td>
-                        <div class="acciones-linea">
-                            <a class="boton amarillo chico" href="${ctx}/organizador/categorias?accion=editar&id=${cat.id}">Editar</a>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <a class="btn btn-warning btn-sm" href="${ctx}/organizador/categorias?accion=editar&id=${cat.id}">Editar</a>
                             <c:if test="${cat.totalEventos == 0}">
-                                <form method="post" action="${ctx}/organizador/categorias" class="linea"
+                                <form method="post" action="${ctx}/organizador/categorias" class="d-inline"
                                       data-confirmar="¿Eliminar esta categoría?" data-boton="Sí, eliminar" data-peligro="si">
                                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                                     <input type="hidden" name="accion" value="eliminar">
                                     <input type="hidden" name="id" value="${cat.id}">
-                                    <button type="submit" class="boton rojo chico">Eliminar</button>
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                                 </form>
                             </c:if>
                         </div>
@@ -63,7 +63,7 @@
                 </tr>
             </c:forEach>
             <c:if test="${empty categorias}">
-                <tr><td colspan="3" class="vacio">Todavía no hay categorías.</td></tr>
+                <tr><td colspan="3" class="text-center text-body-secondary py-4">Todavía no hay categorías.</td></tr>
             </c:if>
             </tbody>
         </table>

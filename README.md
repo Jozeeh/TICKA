@@ -21,7 +21,7 @@ La base de datos está completa para los 4 roles, y los datos de prueba incluyen
 
 ## Tecnologías
 
-Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · OpenPDF (reportes y comprobantes en PDF) · ZXing (códigos QR) · Chart.js y SweetAlert2 (copias locales) · JUnit 4.
+Java 11 · Maven (WAR) · Apache Tomcat 9 (`javax.servlet.*`, nunca `jakarta`) · Servlets + JSP/JSTL · JDBC con patrón DAO · MySQL 8 · BCrypt (jBCrypt) · OpenPDF (reportes y comprobantes en PDF) · ZXing (códigos QR) · Bootstrap 5.3, Chart.js y SweetAlert2 (copias locales) · JUnit 4.
 
 ## Puesta en marcha
 

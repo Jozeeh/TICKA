@@ -9,41 +9,38 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="migas">
-        <a href="${ctx}/organizador/eventos">Eventos</a> ›
-        <a href="${ctx}/organizador/eventos?accion=ver&id=${evento.id}"><c:out value="${evento.nombre}" /></a> › Mapa
-    </div>
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <nav aria-label="Ruta"><ol class="breadcrumb small mb-2"><li class="breadcrumb-item"><a href="${ctx}/organizador/eventos">Eventos</a></li><li class="breadcrumb-item"><a href="${ctx}/organizador/eventos?accion=ver&id=${evento.id}"><c:out value="${evento.nombre}" /></a></li><li class="breadcrumb-item active" aria-current="page">Mapa</li></ol></nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Mapa de asientos <span class="etiqueta ${evento.estado.clase}">${evento.estado.bd}</span></h1>
-            <p class="subtitulo"><c:out value="${evento.nombre}" /> · <c:out value="${evento.recinto}" /> · ${evento.fechaInicioTexto}</p>
+            <h1 class="h3 mb-1">Mapa de asientos <span class="badge rounded-pill etiqueta ${evento.estado.clase}">${evento.estado.bd}</span></h1>
+            <p class="text-body-secondary mb-0"><c:out value="${evento.nombre}" /> · <c:out value="${evento.recinto}" /> · ${evento.fechaInicioTexto}</p>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <div class="indicadores">
-        <div class="indicador verde"><div class="valor">${conteo['Disponible']}</div><div class="nombre">Disponibles</div></div>
-        <div class="indicador amarillo"><div class="valor">${conteo['Reservado']}</div><div class="nombre">Reservados</div></div>
-        <div class="indicador acento"><div class="valor">${conteo['Vendido']}</div><div class="nombre">Vendidos</div></div>
-        <div class="indicador"><div class="valor">${conteo['Bloqueado']}</div><div class="nombre">Bloqueados</div></div>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 mb-4 indicadores">
+        <div class="col"><div class="card h-100 indicador verde"><div class="card-body"><div class="valor">${conteo['Disponible']}</div><div class="nombre">Disponibles</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador amarillo"><div class="card-body"><div class="valor">${conteo['Reservado']}</div><div class="nombre">Reservados</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador acento"><div class="card-body"><div class="valor">${conteo['Vendido']}</div><div class="nombre">Vendidos</div></div></div></div>
+        <div class="col"><div class="card h-100 indicador"><div class="card-body"><div class="valor">${conteo['Bloqueado']}</div><div class="nombre">Bloqueados</div></div></div></div>
     </div>
 
-    <section class="tarjeta">
+    <section class="card card-body shadow-sm mb-4">
         <div class="leyenda">
             <span><i class="Disponible"></i> Disponible</span>
             <span><i class="Reservado"></i> Reservado</span>
             <span><i class="Vendido"></i> Vendido</span>
             <span><i class="Bloqueado"></i> Bloqueado</span>
             <c:if test="${puedeBloquear}">
-                <span class="ayuda">Clic en un asiento disponible para bloquearlo (cortesías, producción); clic en uno bloqueado para liberarlo.</span>
+                <span class="small text-body-secondary">Clic en un asiento disponible para bloquearlo (cortesías, producción); clic en uno bloqueado para liberarlo.</span>
             </c:if>
         </div>
         <div class="escenario">ESCENARIO / CANCHA</div>
 
         <c:forEach var="z" items="${zonas}">
             <div class="zona-mapa">
-                <h3><c:out value="${z.nombre}" /> <span class="ayuda">· ${empty z.precio ? 'sin precio' : z.precioTexto}</span></h3>
+                <h3><c:out value="${z.nombre}" /> <span class="small text-body-secondary">· ${empty z.precio ? 'sin precio' : z.precioTexto}</span></h3>
                 <form method="post" action="${ctx}/organizador/mapa" class="filas">
                     <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                     <input type="hidden" name="evento" value="${evento.id}">
@@ -68,7 +65,7 @@
             </div>
         </c:forEach>
         <c:if test="${empty zonas}">
-            <div class="alerta info">El mapa se genera al publicar el evento.</div>
+            <div class="alert alert-info">El mapa se genera al publicar el evento.</div>
         </c:if>
     </section>
 </main>

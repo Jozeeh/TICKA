@@ -15,9 +15,9 @@
 
     <%-- ============ Izquierda: datos del evento y zonas (minimalista) ============ --%>
     <aside class="compra-col compra-info">
-        <a class="ayuda" href="${ctx}/cliente/cartelera">← Volver a la cartelera</a>
+        <a class="small text-body-secondary" href="${ctx}/cliente/cartelera">← Volver a la cartelera</a>
         <div class="compra-evento">
-            <h1><c:out value="${evento.nombre}" /></h1>
+            <h1 class="h3 mb-1"><c:out value="${evento.nombre}" /></h1>
             <p><c:out value="${evento.participantes}" /></p>
             <dl class="dato-evento">
                 <dt>Fecha</dt><dd>${evento.fechaLarga}</dd>
@@ -27,19 +27,19 @@
         </div>
         <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
         <c:if test="${not aLaVenta}">
-            <div class="alerta aviso"><c:out value="${motivoSinVenta}" /></div>
+            <div class="alert alert-warning"><c:out value="${motivoSinVenta}" /></div>
         </c:if>
 
         <section class="bloque-compra">
-            <h2>Disponibilidad</h2>
+            <h2 class="h5">Disponibilidad</h2>
             <ul class="lista-precios">
                 <c:forEach var="z" items="${zonas}">
                     <li>
                         <div class="fila-entre">
                             <span><c:out value="${z.nombre}" /></span>
-                            <span class="ayuda">${z.disponibles} de ${z.total}</span>
+                            <span class="small text-body-secondary">${z.disponibles} de ${z.total}</span>
                         </div>
-                        <span class="barra" title="${z.disponibles} de ${z.total} disponibles"><span style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></span></span>
+                        <div class="progress mt-1" role="progressbar" style="height:6px" title="${z.disponibles} de ${z.total} disponibles"><div class="progress-bar bg-success" style="width:${z.total == 0 ? 0 : z.disponibles * 100 / z.total}%"></div></div>
                     </li>
                 </c:forEach>
             </ul>
@@ -89,7 +89,7 @@
                     </c:forEach>
                 </div>
                 <c:if test="${empty zonas}">
-                    <div class="alerta info">El mapa de asientos todavía no está disponible.</div>
+                    <div class="alert alert-info">El mapa de asientos todavía no está disponible.</div>
                 </c:if>
             </div>
         </form>
@@ -98,14 +98,14 @@
     <%-- ============ Derecha: zonas (arriba) y selección / reserva (abajo) ============ --%>
     <aside class="compra-col compra-zonas dividida" id="panelZonas">
         <div class="panel-mitad panel-sectores">
-            <h2>Seleccionar zona</h2>
+            <h2 class="h5">Seleccionar zona</h2>
             <ul class="lista-sectores">
                 <c:forEach var="z" items="${zonas}" varStatus="s">
                     <li>
                         <button type="button" class="sector" data-zona="${z.idZona}" data-nombre="<c:out value='${z.nombre}' />">
                             <span>
                                 <strong><c:out value="${z.nombre}" /></strong>
-                                <span class="ayuda">${empty z.precio ? 'Sin precio' : z.precioTexto}</span>
+                                <span class="small text-body-secondary">${empty z.precio ? 'Sin precio' : z.precioTexto}</span>
                             </span>
                             <span class="chevron" aria-hidden="true">›</span>
                         </button>
@@ -127,7 +127,7 @@
             <c:if test="${aLaVenta}">
                 <section>
                     <div class="fila-entre">
-                        <h2>Su selección</h2>
+                        <h2 class="h5">Su selección</h2>
                         <c:if test="${not empty reserva}">
                             <span class="cuenta-regresiva chica" id="cuentaRegresiva" data-segundos="${segundosRestantes}"
                                   title="Tiempo que quedan apartados sus asientos">--:--</span>
@@ -135,8 +135,8 @@
                     </div>
                     <ul class="resumen-lineas" id="listaSeleccion"><li class="vacio-sel">Elija una zona y marque sus asientos en el mapa.</li></ul>
                     <div class="fila-entre total-seleccion"><span>Total</span><strong id="totalSeleccion">$0.00</strong></div>
-                    <p class="ayuda">Máximo ${maximo} asientos por compra. Quedan apartados ${minutos} minutos mientras paga.</p>
-                    <button type="submit" form="formReserva" class="boton acento acento-grande" id="botonReservar" disabled>Continuar al pago</button>
+                    <p class="small text-body-secondary">Máximo ${maximo} asientos por compra. Quedan apartados ${minutos} minutos mientras paga.</p>
+                    <button type="submit" form="formReserva" class="btn btn-acento btn-lg w-100" id="botonReservar" disabled>Continuar al pago</button>
                     <c:if test="${not empty reserva}">
                         <form method="post" action="${ctx}/cliente/comprar" class="cancelar-reserva"
                               data-confirmar="¿Cancelar su reserva?" data-boton="Sí, cancelar"
@@ -144,7 +144,7 @@
                             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
                             <input type="hidden" name="evento" value="${evento.id}">
                             <input type="hidden" name="accion" value="cancelar">
-                            <button type="submit" class="enlace-boton">Cancelar reserva</button>
+                            <button type="submit" class="btn btn-link btn-sm link-secondary">Cancelar reserva</button>
                         </form>
                     </c:if>
                 </section>

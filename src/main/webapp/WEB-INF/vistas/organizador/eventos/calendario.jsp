@@ -9,37 +9,37 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Calendario de eventos</h1>
-            <p class="subtitulo">${totalMes} eventos en ${tituloMes}. Haga clic en un evento para ver su detalle.</p>
+            <h1 class="h3 mb-1">Calendario de eventos</h1>
+            <p class="text-body-secondary mb-0">${totalMes} eventos en ${tituloMes}. Haga clic en un evento para ver su detalle.</p>
         </div>
-        <div class="acciones-linea">
-            <a class="boton borde" href="${ctx}/organizador/eventos">Ver listado</a>
-            <a class="boton verde" href="${ctx}/organizador/eventos?accion=nuevo">Nuevo evento</a>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <a class="btn btn-outline-primary" href="${ctx}/organizador/eventos">Ver listado</a>
+            <a class="btn btn-success" href="${ctx}/organizador/eventos?accion=nuevo">Nuevo evento</a>
         </div>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
     <%-- Filtros (RF-50, RF-52) --%>
-    <form method="get" action="${ctx}/organizador/calendario" class="tarjeta filtros">
+    <form method="get" action="${ctx}/organizador/calendario" class="card card-body shadow-sm mb-4 filtros d-flex flex-row flex-wrap gap-3 align-items-end">
         <input type="hidden" name="mes" value="${mes}">
-        <div class="grupo-campo">
-            <label for="recinto">Recinto</label>
-            <select id="recinto" name="recinto" onchange="this.form.submit()">
+        <div class="campo-filtro">
+            <label class="form-label" for="recinto">Recinto</label>
+            <select class="form-select" id="recinto" name="recinto" onchange="this.form.submit()">
                 <option value="">Todos</option>
                 <c:forEach var="r" items="${recintos}">
                     <option value="${r.id}" ${idRecinto == r.id ? 'selected' : ''}><c:out value="${r.nombre}" /></option>
                 </c:forEach>
             </select>
         </div>
-        <label class="casilla" style="align-self:center">
-            <input type="checkbox" name="mios" value="si" ${mios ? 'checked' : ''} onchange="this.form.submit()"> Solo mis eventos
+        <label class="form-check align-self-center mb-2">
+            <input class="form-check-input" type="checkbox" name="mios" value="si" ${mios ? 'checked' : ''} onchange="this.form.submit()"> Solo mis eventos
         </label>
     </form>
 
-    <section class="tarjeta calendario">
+    <section class="card card-body shadow-sm mb-4 calendario">
         <div class="calendario-cabecera">
             <c:url var="anterior" value="/organizador/calendario">
                 <c:param name="mes" value="${mesAnterior}" />
@@ -56,11 +56,11 @@
                 <c:param name="recinto" value="${idRecinto}" />
                 <c:param name="mios" value="${mios ? 'si' : ''}" />
             </c:url>
-            <a class="boton borde chico" href="${anterior}">‹ Anterior</a>
-            <h2>${tituloMes}</h2>
-            <div class="acciones-linea">
-                <a class="boton gris chico" href="${actual}">Hoy</a>
-                <a class="boton borde chico" href="${siguiente}">Siguiente ›</a>
+            <a class="btn btn-outline-primary btn-sm" href="${anterior}">‹ Anterior</a>
+            <h2 class="h5">${tituloMes}</h2>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a class="btn btn-secondary btn-sm" href="${actual}">Hoy</a>
+                <a class="btn btn-outline-primary btn-sm" href="${siguiente}">Siguiente ›</a>
             </div>
         </div>
 

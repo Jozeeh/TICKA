@@ -1,72 +1,99 @@
-<%-- Barra superior común (marca, enlaces públicos y sesión) y menú lateral con
-     las opciones del rol. El menú lateral solo aparece con sesión iniciada y
-     fuera de la página de inicio (la cartelera pública). --%>
+<%-- Barra superior común (navbar de Bootstrap: marca, enlaces públicos y sesión) y menú
+     lateral con las opciones del rol. El menú lateral solo aparece con sesión iniciada y
+     fuera de la página de inicio; en pantallas pequeñas se abre como offcanvas. --%>
 <c:set var="u" value="${sessionScope.usuarioAutenticado}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<nav class="navbar">
-    <a class="marca" href="${ctx}/">TICK<span>A</span></a>
-    <a class="enlace ${paginaActiva == 'inicio' ? 'activo' : ''}" href="${ctx}/">Inicio</a>
-    <a class="enlace" href="${ctx}/#cartelera">Cartelera</a>
-    <div class="usuario">
-        <c:choose>
-            <c:when test="${empty u}">
-                <a class="enlace" href="${ctx}/registro">Crear cuenta</a>
-                <a class="boton acento chico" href="${ctx}/acceso">Iniciar sesión</a>
-            </c:when>
-            <c:otherwise>
-                <c:if test="${paginaActiva == 'inicio'}">
-                    <a class="boton acento chico" href="${ctx}${u.cliente ? '/cliente/boletos' : '/panel'}">${u.cliente ? 'Mis boletos' : 'Ir a mi panel'}</a>
-                </c:if>
-                <c:if test="${u.cliente}">
-                    <c:set var="carritoAsientos" value="${sessionScope.carritoAsientos}" />
-                    <a class="carrito" href="${ctx}/cliente/carrito"
-                       title="${empty carritoAsientos ? 'Su carrito está vacío' : 'Pagar sus asientos reservados'}" aria-label="Carrito">
-                        <%@ include file="/WEB-INF/vistas/plantilla/icono-carrito.jspf" %>
-                        <c:if test="${not empty carritoAsientos}"><span class="carrito-cantidad">${carritoAsientos}</span></c:if>
-                    </a>
-                </c:if>
-                <a class="enlace-perfil" href="${ctx}${u.cliente ? '/cliente/perfil' : '/perfil'}" title="Mi perfil"><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></a>
-                <form method="post" action="${ctx}/cerrar-sesion">
-                    <input type="hidden" name="csrf" value="${sessionScope.csrf}">
-                    <button type="submit" class="boton borde chico" style="color:#fff;border-color:#fff">Cerrar sesión</button>
-                </form>
-            </c:otherwise>
-        </c:choose>
+<c:set var="conMenuLateral" value="${not empty u and paginaActiva != 'inicio' and empty sinMenuLateral}" />
+<nav class="navbar navbar-expand-lg navbar-dark barra-ticka sticky-top">
+    <div class="container-fluid px-lg-4">
+        <c:if test="${conMenuLateral}">
+            <button class="btn btn-link text-white d-lg-none me-1 px-1" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#menuLateral" aria-controls="menuLateral" aria-label="Abrir el menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </c:if>
+        <a class="navbar-brand marca" href="${ctx}/">TICK<span>A</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPrincipal"
+                aria-controls="navPrincipal" aria-expanded="false" aria-label="Mostrar la navegación">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navPrincipal">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link ${paginaActiva == 'inicio' ? 'active' : ''}" href="${ctx}/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="${ctx}/#cartelera">Cartelera</a></li>
+            </ul>
+            <div class="d-flex flex-wrap align-items-center gap-3 py-2 py-lg-0">
+                <c:choose>
+                    <c:when test="${empty u}">
+                        <a class="link-light link-opacity-75 link-opacity-100-hover text-decoration-none" href="${ctx}/registro">Crear cuenta</a>
+                        <a class="btn btn-acento btn-sm" href="${ctx}/acceso">Iniciar sesión</a>
+                    </c:when>
+                    <c:otherwise>
+                        <c:if test="${paginaActiva == 'inicio'}">
+                            <a class="btn btn-acento btn-sm" href="${ctx}${u.cliente ? '/cliente/boletos' : '/panel'}">${u.cliente ? 'Mis boletos' : 'Ir a mi panel'}</a>
+                        </c:if>
+                        <c:if test="${u.cliente}">
+                            <c:set var="carritoAsientos" value="${sessionScope.carritoAsientos}" />
+                            <a class="carrito position-relative d-inline-flex text-white p-1 rounded" href="${ctx}/cliente/carrito"
+                               title="${empty carritoAsientos ? 'Su carrito está vacío' : 'Pagar sus asientos reservados'}" aria-label="Carrito">
+                                <%@ include file="/WEB-INF/vistas/plantilla/icono-carrito.jspf" %>
+                                <c:if test="${not empty carritoAsientos}">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-acento">${carritoAsientos}</span>
+                                </c:if>
+                            </a>
+                        </c:if>
+                        <a class="enlace-perfil small" href="${ctx}${u.cliente ? '/cliente/perfil' : '/perfil'}" title="Mi perfil"><c:out value="${u.nombre}" /> · <strong><c:out value="${u.rol.nombre}" /></strong></a>
+                        <form method="post" action="${ctx}/cerrar-sesion" class="m-0">
+                            <input type="hidden" name="csrf" value="${sessionScope.csrf}">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+                        </form>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </div>
 </nav>
-<c:if test="${not empty u and paginaActiva != 'inicio' and empty sinMenuLateral}">
-    <aside class="menu-lateral" aria-label="Menú del rol">
-        <a class="${paginaActiva == 'panel' ? 'activo' : ''}" href="${ctx}/panel">Panel</a>
-        <c:if test="${u.cliente}">
-            <p class="seccion">Mi cuenta</p>
-            <a class="${paginaActiva == 'cartelera' ? 'activo' : ''}" href="${ctx}/cliente/cartelera">Cartelera</a>
-            <a class="${paginaActiva == 'boletos' ? 'activo' : ''}" href="${ctx}/cliente/boletos">Mis boletos</a>
-            <a class="${paginaActiva == 'perfil' ? 'activo' : ''}" href="${ctx}/cliente/perfil">Mi perfil</a>
-        </c:if>
-        <c:if test="${u.personalPuerta}">
-            <p class="seccion">Control de acceso</p>
-            <a class="${paginaActiva == 'validar' ? 'activo' : ''}" href="${ctx}/puerta/validar">Validar boletos</a>
-            <a class="${paginaActiva == 'ocupacion' ? 'activo' : ''}" href="${ctx}/puerta/ocupacion">Ocupación en vivo</a>
-            <a class="${paginaActiva == 'incidencias' ? 'activo' : ''}" href="${ctx}/puerta/incidencias">Incidencias</a>
-        </c:if>
-        <c:if test="${u.gestorEventos}">
-            <p class="seccion">Organizador</p>
-            <a class="${paginaActiva == 'eventos' ? 'activo' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
-            <a class="${paginaActiva == 'calendario' ? 'activo' : ''}" href="${ctx}/organizador/calendario">Calendario</a>
-            <a class="${paginaActiva == 'recintos' ? 'activo' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
-            <a class="${paginaActiva == 'categorias' ? 'activo' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
-        </c:if>
-        <c:if test="${u.administrador}">
-            <p class="seccion">Administración</p>
-            <a class="${paginaActiva == 'dashboard' ? 'activo' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
-            <a class="${paginaActiva == 'reportes' ? 'activo' : ''}" href="${ctx}/reportes">Reportes</a>
-            <a class="${paginaActiva == 'mostrador' ? 'activo' : ''}" href="${ctx}/admin/mostrador">Venta en mostrador</a>
-            <a class="${paginaActiva == 'usuarios' ? 'activo' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
-            <a class="${paginaActiva == 'clientes' ? 'activo' : ''}" href="${ctx}/admin/clientes">Clientes</a>
-        </c:if>
-        <c:if test="${not u.cliente}">
-            <p class="seccion">Mi cuenta</p>
-            <a class="${paginaActiva == 'perfil' ? 'activo' : ''}" href="${ctx}/perfil">Mi perfil</a>
-        </c:if>
+<c:if test="${conMenuLateral}">
+    <aside class="menu-lateral offcanvas-lg offcanvas-start" tabindex="-1" id="menuLateral" aria-label="Menú del rol">
+        <div class="offcanvas-header">
+            <span class="marca-menu">TICK<span>A</span></span>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#menuLateral" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="nav nav-pills flex-column w-100">
+                <a class="nav-link ${paginaActiva == 'panel' ? 'active' : ''}" href="${ctx}/panel">Panel</a>
+                <c:if test="${u.cliente}">
+                    <p class="seccion-menu">Mi cuenta</p>
+                    <a class="nav-link ${paginaActiva == 'cartelera' ? 'active' : ''}" href="${ctx}/cliente/cartelera">Cartelera</a>
+                    <a class="nav-link ${paginaActiva == 'boletos' ? 'active' : ''}" href="${ctx}/cliente/boletos">Mis boletos</a>
+                    <a class="nav-link ${paginaActiva == 'perfil' ? 'active' : ''}" href="${ctx}/cliente/perfil">Mi perfil</a>
+                </c:if>
+                <c:if test="${u.personalPuerta}">
+                    <p class="seccion-menu">Control de acceso</p>
+                    <a class="nav-link ${paginaActiva == 'validar' ? 'active' : ''}" href="${ctx}/puerta/validar">Validar boletos</a>
+                    <a class="nav-link ${paginaActiva == 'ocupacion' ? 'active' : ''}" href="${ctx}/puerta/ocupacion">Ocupación en vivo</a>
+                    <a class="nav-link ${paginaActiva == 'incidencias' ? 'active' : ''}" href="${ctx}/puerta/incidencias">Incidencias</a>
+                </c:if>
+                <c:if test="${u.gestorEventos}">
+                    <p class="seccion-menu">Organizador</p>
+                    <a class="nav-link ${paginaActiva == 'eventos' ? 'active' : ''}" href="${ctx}/organizador/eventos">Eventos</a>
+                    <a class="nav-link ${paginaActiva == 'calendario' ? 'active' : ''}" href="${ctx}/organizador/calendario">Calendario</a>
+                    <a class="nav-link ${paginaActiva == 'recintos' ? 'active' : ''}" href="${ctx}/organizador/recintos">Recintos y asientos</a>
+                    <a class="nav-link ${paginaActiva == 'categorias' ? 'active' : ''}" href="${ctx}/organizador/categorias">Categorías</a>
+                </c:if>
+                <c:if test="${u.administrador}">
+                    <p class="seccion-menu">Administración</p>
+                    <a class="nav-link ${paginaActiva == 'dashboard' ? 'active' : ''}" href="${ctx}/admin/dashboard">Dashboard</a>
+                    <a class="nav-link ${paginaActiva == 'reportes' ? 'active' : ''}" href="${ctx}/reportes">Reportes</a>
+                    <a class="nav-link ${paginaActiva == 'mostrador' ? 'active' : ''}" href="${ctx}/admin/mostrador">Venta en mostrador</a>
+                    <a class="nav-link ${paginaActiva == 'usuarios' ? 'active' : ''}" href="${ctx}/admin/usuarios">Usuarios</a>
+                    <a class="nav-link ${paginaActiva == 'clientes' ? 'active' : ''}" href="${ctx}/admin/clientes">Clientes</a>
+                </c:if>
+                <c:if test="${not u.cliente}">
+                    <p class="seccion-menu">Mi cuenta</p>
+                    <a class="nav-link ${paginaActiva == 'perfil' ? 'active' : ''}" href="${ctx}/perfil">Mi perfil</a>
+                </c:if>
+            </nav>
+        </div>
     </aside>
 </c:if>

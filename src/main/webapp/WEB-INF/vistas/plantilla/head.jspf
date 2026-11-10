@@ -1,5 +1,8 @@
-<%-- Encabezado común: metadatos y hoja de estilos. La página define "titulo". --%>
+<%-- Encabezado común: metadatos, Bootstrap 5 (copia local) y los estilos propios de TICKA.
+     La página define "titulo". --%>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><c:out value="${titulo}" /> | TICKA</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/estilos.css?v=27">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css?v=5.3.3">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/estilos.css?v=28">
+<script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js?v=5.3.3" defer></script>

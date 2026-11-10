@@ -9,20 +9,20 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/vistas/plantilla/navbar.jspf" %>
-<main class="contenedor">
-    <div class="cabecera-pagina">
+<main class="container-xl py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
         <div>
-            <h1>Ocupación en vivo</h1>
-            <p class="subtitulo">Ingresados frente a vendidos por zona. Se actualiza sola cada 10 segundos. <span class="actualizado" id="actualizado"></span></p>
+            <h1 class="h3 mb-1">Ocupación en vivo</h1>
+            <p class="text-body-secondary mb-0">Ingresados frente a vendidos por zona. Se actualiza sola cada 10 segundos. <span class="actualizado" id="actualizado"></span></p>
         </div>
-        <a class="boton" href="${ctx}/puerta/validar">Validar boletos</a>
+        <a class="btn btn-primary" href="${ctx}/puerta/validar">Validar boletos</a>
     </div>
     <%@ include file="/WEB-INF/vistas/plantilla/alertas.jspf" %>
 
-    <form method="get" action="${ctx}/puerta/ocupacion" class="tarjeta filtros">
-        <div class="grupo-campo" style="min-width:320px">
-            <label for="evento">Evento</label>
-            <select id="evento" name="evento" onchange="this.form.submit()">
+    <form method="get" action="${ctx}/puerta/ocupacion" class="card card-body shadow-sm mb-4 filtros d-flex flex-row flex-wrap gap-3 align-items-end">
+        <div class="campo-filtro" style="min-width:320px">
+            <label class="form-label" for="evento">Evento</label>
+            <select class="form-select" id="evento" name="evento" onchange="this.form.submit()">
                 <option value="">Seleccione...</option>
                 <c:forEach var="ev" items="${eventos}">
                     <option value="${ev.id}" ${evento.id == ev.id ? 'selected' : ''}><c:out value="${ev.nombre}" /> · ${ev.fechaInicioTexto}</option>
@@ -32,26 +32,26 @@
     </form>
 
     <c:if test="${not empty evento}">
-        <section class="indicadores">
-            <div class="indicador"><div class="valor" id="totVendidos">—</div><div class="nombre">Boletos vendidos</div></div>
-            <div class="indicador verde"><div class="valor" id="totIngresados">—</div><div class="nombre">Ingresaron</div></div>
-            <div class="indicador acento"><div class="valor" id="totPorcentaje">—</div><div class="nombre">Del público ya está dentro</div></div>
+        <section class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 mb-4 indicadores">
+            <div class="col"><div class="card h-100 indicador"><div class="card-body"><div class="valor" id="totVendidos">—</div><div class="nombre">Boletos vendidos</div></div></div></div>
+            <div class="col"><div class="card h-100 indicador verde"><div class="card-body"><div class="valor" id="totIngresados">—</div><div class="nombre">Ingresaron</div></div></div></div>
+            <div class="col"><div class="card h-100 indicador acento"><div class="card-body"><div class="valor" id="totPorcentaje">—</div><div class="nombre">Del público ya está dentro</div></div></div></div>
         </section>
-        <section class="tarjeta tabla-contenedor">
-            <table class="tabla">
-                <thead><tr><th>Zona</th><th class="numero">Vendidos</th><th class="numero">Ingresaron</th><th class="numero">Faltan</th><th>Avance</th></tr></thead>
+        <section class="card card-body shadow-sm mb-4 table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Zona</th><th class="text-end">Vendidos</th><th class="text-end">Ingresaron</th><th class="text-end">Faltan</th><th>Avance</th></tr></thead>
                 <tbody id="cuerpoZonas">
                 <c:forEach var="z" items="${zonas}">
                     <tr>
                         <td><strong><c:out value="${z.zona}" /></strong></td>
-                        <td class="numero">${z.vendidos}</td>
-                        <td class="numero">${z.ingresados}</td>
-                        <td class="numero">${z.pendientes}</td>
-                        <td style="min-width:180px">${z.porcentaje}% <div class="barra"><span style="width:${z.porcentaje}%"></span></div></td>
+                        <td class="text-end">${z.vendidos}</td>
+                        <td class="text-end">${z.ingresados}</td>
+                        <td class="text-end">${z.pendientes}</td>
+                        <td style="min-width:180px">${z.porcentaje}% <div class="progress mt-1" role="progressbar" style="height:8px"><div class="progress-bar bg-success" style="width:${z.porcentaje}%"></div></div></td>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty zonas}">
-                    <tr><td colspan="5" class="vacio">Este evento no tiene boletos vendidos.</td></tr>
+                    <tr><td colspan="5" class="text-center text-body-secondary py-4">Este evento no tiene boletos vendidos.</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -67,7 +67,7 @@
         function texto(valor) { return document.createTextNode(String(valor)); }
         function celda(valor, numero) {
             var td = document.createElement('td');
-            if (numero) { td.className = 'numero'; }
+            if (numero) { td.className = 'text-end'; }
             td.appendChild(texto(valor));
             return td;
         }
@@ -93,8 +93,10 @@
                 avance.style.minWidth = '180px';
                 avance.appendChild(texto(z.porcentaje + '% '));
                 var barra = document.createElement('div');
-                barra.className = 'barra';
-                var relleno = document.createElement('span');
+                barra.className = 'progress mt-1';
+                barra.style.height = '8px';
+                var relleno = document.createElement('div');
+                relleno.className = 'progress-bar bg-success';
                 relleno.style.width = z.porcentaje + '%';
                 barra.appendChild(relleno);
                 avance.appendChild(barra);
