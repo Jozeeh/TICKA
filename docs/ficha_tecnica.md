@@ -14,6 +14,7 @@ Repositorio: <https://github.com/Jozeeh/TICKA>
 | Paquete base | `sv.edu.itca.ticka` |
 | Artefacto Maven | `sv.edu.itca:TICKA:1.0-SNAPSHOT` → `ticka.war` |
 | URL local | <http://localhost:8080/ticka/> (contexto `/ticka`) |
+| URL en producción | <https://ticka.site> (también <https://ticka.jozeeh.dpdns.org>) |
 | Roles | Administrador, Organizador, Cliente, Control de acceso |
 
 ## 2. Tecnologías y versiones
@@ -241,7 +242,98 @@ Requisitos: JDK 11, Maven, Tomcat 9 y MySQL 8.
 
 Cuentas de prueba (contraseña `itca1234`): `admin`, `organizador`, `puerta`, `cliente`.
 
-## 14. Documentación relacionada
+## 14. Despliegue en producción (VPS con Coolify)
+
+El sitio está publicado en un **VPS propio** administrado con **[Coolify](https://coolify.io/)**, una plataforma
+autohospedada que construye y ejecuta las aplicaciones en contenedores **Docker**. El panel de Coolify está en
+`deploys.jozeeh.dpdns.org` (con inicio de sesión).
+
+### Arquitectura del despliegue
+
+```text
+Usuario ──HTTPS──▶ Cloudflare (DNS) ──▶ VPS
+                                         └─ Proxy de Coolify (enruta por dominio, HTTPS, compresión gzip)
+                                              └─ Contenedor ticka-web  (Tomcat 9, puerto 8080)
+                                                   └─ red interna Docker ──▶ Contenedor ticka-db (MySQL 8.4)
+```
+
+| Elemento | Valor |
+|---|---|
+| Servidor | VPS propio con Coolify (servidor `localhost` de Coolify) |
+| Proyecto en Coolify | `TICKA` · entorno `production` · 2 recursos |
+| Aplicación | `ticka-web` — *TICKA - Sistema de eventos en vivo (Tomcat 9 + MySQL)* |
+| Base de datos | `ticka-db` — recurso MySQL administrado por Coolify |
+| Dominios | `https://ticka.site` y `https://ticka.jozeeh.dpdns.org` |
+| DNS | Cloudflare |
+| HTTPS | Certificado de Let's Encrypt |
+
+### Aplicación `ticka-web`
+
+| Ajuste | Valor |
+|---|---|
+| Tipo de construcción | **Dockerfile** escrito en Coolify (el repositorio no necesita archivos de Docker) |
+| Origen del código | Se clona `https://github.com/Jozeeh/TICKA.git`, rama `main` |
+| Puerto expuesto | 8080 |
+| Contexto | La app se publica como `ROOT.war`, por eso abre en la raíz del dominio (`/`) y no en `/ticka` |
+| Zona horaria | `America/El_Salvador` (variable `TZ` y opción de la JVM) |
+| Memoria de la JVM | `-Xms256m -Xmx768m` |
+| Variables de entorno | `TICKA_DB_URL`, `TICKA_DB_USER`, `TICKA_DB_PASSWORD`, `TZ` |
+
+La conexión a la base se toma de las variables `TICKA_DB_*`, que tienen prioridad sobre `db.properties`
+(ver `ConexionBD`). Por eso no hace falta subir `db.properties` al servidor ni al repositorio, y la
+contraseña solo existe en Coolify.
+
+Dockerfile usado (construcción en dos etapas):
+
+```dockerfile
+# TICKA - Java 11 + Tomcat 9 (javax.servlet), WAR
+# El codigo se clona desde GitHub para no requerir cambios en el repositorio.
+FROM maven:3.9-eclipse-temurin-17 AS build
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+ARG TICKA_REPO=https://github.com/Jozeeh/TICKA.git
+ARG TICKA_REF=main
+RUN git clone --depth 1 --branch "${TICKA_REF}" "${TICKA_REPO}" /src
+WORKDIR /src
+RUN mvn -q -B -DskipTests package
+
+FROM tomcat:9.0-jdk17-temurin
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=build /src/target/ticka.war /usr/local/tomcat/webapps/ROOT.war
+ENV TZ=America/El_Salvador \
+    CATALINA_OPTS="-Xms256m -Xmx768m -Dfile.encoding=UTF-8 -Duser.timezone=America/El_Salvador"
+EXPOSE 8080
+```
+
+| Etapa | Imagen | Qué hace |
+|---|---|---|
+| 1. `build` | `maven:3.9-eclipse-temurin-17` | Clona el repositorio y compila el WAR con Maven (el código apunta a Java 11 con `release 11`) |
+| 2. Ejecución | `tomcat:9.0-jdk17-temurin` | Tomcat 9 oficial (`javax.servlet`); borra las apps de ejemplo y copia `ticka.war` como `ROOT.war` |
+
+La imagen final solo lleva Tomcat y el WAR: Maven y el código fuente se quedan en la primera etapa.
+
+### Base de datos `ticka-db`
+
+| Ajuste | Valor |
+|---|---|
+| Imagen | `mysql:8.4` |
+| Base inicial | `ticka` |
+| Usuario de la aplicación | `ticka_app` (no se usa `root`) |
+| Acceso | **Privado**: sin puerto público, solo alcanzable desde la red interna de Docker de Coolify |
+| Esquema y datos | Scripts de `sql/` (`01_esquema_ticka.sql` y `02_datos_prueba.sql`) |
+
+### Cómo se publica una nueva versión
+
+1. Se sube el cambio a la rama `main` de GitHub.
+2. En Coolify, en `ticka-web`, se pulsa **Redeploy**.
+3. Coolify vuelve a construir la imagen (clona `main`, compila el WAR) y reemplaza el contenedor.
+4. La base `ticka-db` no se toca: los datos se conservan entre despliegues.
+
+> En el Dockerfile la compilación usa `-DskipTests` para que el despliegue sea rápido; las 58 pruebas se
+> ejecutan localmente con `mvn clean package` antes de subir los cambios.
+
+## 15. Documentación relacionada
 
 | Archivo | Contenido |
 |---|---|
